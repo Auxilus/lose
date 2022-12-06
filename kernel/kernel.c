@@ -1,6 +1,9 @@
 /* This will force us to create a kernel entry function instead of jumping to kernel.c:0x00 */
 
 #include "../drivers/vga.h"
+#include "../utils/mem.h"
+#include "./graphics.h"
+
 void dummy_test_entrypoint() {
 }
 
@@ -11,9 +14,11 @@ void main() {
 		//	*video_memory = 'X';
 		//}
 
-		for (int x = 0; x < 320; x++) {
-			for (int y = 0; y < 200; y++) {
-				vga_set_pixel(x, y, 0x11);
-			}
-		}
+		//for (int x = 0; x < 320; x++) {
+		//	for (int y = 0; y < 200; y++) {
+		//		vga_set_pixel(x, y, 0x11);
+		//	}
+		//}
+
+		init_graphics();
 }
