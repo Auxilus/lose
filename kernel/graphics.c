@@ -2,5 +2,5 @@
 
 void init_graphics(void)
 {
-	memset(0xa0000, 0x12, 320*200);
+	memset(GR_START, 0x12, GR_WIDTH*GR_HEIGHT);
 }

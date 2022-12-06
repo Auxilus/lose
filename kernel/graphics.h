@@ -3,6 +3,9 @@
 
 #include "../utils/mem.h"
 
-void init_graphics(void);
+#define GR_START 0xa0000
+#define GR_WIDTH 320
+#define GR_HEIGHT 200
 
+void init_graphics(void);
 #endif
