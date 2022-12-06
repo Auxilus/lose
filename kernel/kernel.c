@@ -13,7 +13,7 @@ void main() {
 
 		for (int x = 0; x < 320; x++) {
 			for (int y = 0; y < 200; y++) {
-				vga_set_pixel(x, y, 0x13);
+				vga_set_pixel(x, y, 0x11);
 			}
 		}
 }
