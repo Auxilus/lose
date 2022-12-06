@@ -1,25 +1,19 @@
-#include <stdint.h>
-#include <stddef.h>
+/* This will force us to create a kernel entry function instead of jumping to kernel.c:0x00 */
 
-#define VIDEO_MEMORY 0xB8000
-#define SCREEN_WIDTH 80
-#define SCREEN_HEIGHT 25
-
-// Print a string to the screen at the current cursor position
-void print_string(const char* str) {
-  uint16_t* video_memory = (uint16_t*)VIDEO_MEMORY;
-
-  for (size_t i = 0; str[i] != '\0'; i++) {
-    //video_memory[i] = (uint16_t)((0x07 << 8) | str[i]);
-		// set bg to blue and fg to green
-    video_memory[i] = (uint16_t)((0x1 << 4 | 0x02) << 8 | str[i]);
-  }
+#include "../drivers/vga.h"
+void dummy_test_entrypoint() {
 }
 
-int main() {
-  print_string("Kernel booted\n\r");
+void main() {
+    //char* video_memory = (char*) 0xa0000; // VGA,MCGA 320x200 256 colors
 
-	while (9999999999){}
+		//while(video_memory++ < 0xa1010) {
+		//	*video_memory = 'X';
+		//}
 
-  return 0;
+		for (int x = 0; x < 320; x++) {
+			for (int y = 0; y < 200; y++) {
+				vga_set_pixel(x, y, 0x13);
+			}
+		}
 }
