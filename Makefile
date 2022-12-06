@@ -23,7 +23,7 @@ kernel.elf: boot/kernel_entry.o ${OBJ}
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ 
 
 run: os-image.bin
-	qemu-system-i386 -d guest_errors -fda format=raw,file=os-image.bin
+	qemu-system-i386 -d guest_errors,int -fda os-image.bin
 
 # Open the connection to qemu and load our kernel-object file with symbols
 debug: os-image.bin kernel.elf
