@@ -17,8 +17,8 @@
 
 print_string:
     mov ah, 0x0e
-    mov bh, 0x0
-    mov bl, 0x07 
+    mov bh, 0x00
+    mov bl, 0x02	; set fg color to green
 
 print_char:
     mov al, [si]
