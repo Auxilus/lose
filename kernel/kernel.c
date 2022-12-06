@@ -10,7 +10,9 @@ void print_string(const char* str) {
   uint16_t* video_memory = (uint16_t*)VIDEO_MEMORY;
 
   for (size_t i = 0; str[i] != '\0'; i++) {
-    video_memory[i] = (uint16_t)((0x07 << 8) | str[i]);
+    //video_memory[i] = (uint16_t)((0x07 << 8) | str[i]);
+		// set bg to blue and fg to green
+    video_memory[i] = (uint16_t)((0x1 << 4 | 0x02) << 8 | str[i]);
   }
 }
 
