@@ -2,17 +2,17 @@
 ;;; Prints character strings in BX register
 ;;;
 print_string:
-    pusha                       ; store all register values onto the stack
-    mov ah, 0x0e                ; int 10/ ah 0x0e BIOS teletype output
+    pusha
+    mov ah, 0x0e
 
 print_char:
-    mov al, [bx]                ; move character value at address in bx into al
+    mov al, [bx]
     cmp al, 0
-    je end_print                ; jump if equal (al = 0) to halt label
-    int 0x10                    ; print character in al
-    add bx, 1                   ; move 1 byte forward/ get next character
-    jmp print_char              ; loop
+    je end_print
+    int 0x10
+    add bx, 1
+    jmp print_char
 
 end_print:
-    popa                        ; restore registers from the stack before returning
+    popa
     ret

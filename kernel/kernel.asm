@@ -1,13 +1,13 @@
     ;; Set video mode
     mov ah, 0x00                ; int 0x10/ ah 0x00 = set video mode
-    mov al, 0x03                ; 40x25 text mode
+    mov al, 0x12                ; 640x480 256 color
     int 0x10
 
     ;; Change color/Palette
-    mov ah, 0x0B
-    mov bh, 0x00
-    mov bl, 0x01
-    int 0x10
+    ;; mov ah, 0x0B
+    ;; mov bh, 0x00
+    ;; mov bl, 0x01
+    ;; int 0x10
 
     mov si, testString
     call print_string
@@ -16,17 +16,17 @@
     hlt                         ; halt the cpu
 
 print_string:
-    mov ah, 0x0e                ; int 10h/ ah 0x0e BIOS teletype output
-    mov bh, 0x0                 ; page number
-    mov bl, 0x07                ; color
+    mov ah, 0x0e
+    mov bh, 0x0
+    mov bl, 0x07 
 
 print_char:
-    mov al, [si]                ; move character value at address in bx into al
+    mov al, [si]
     cmp al, 0
-    je end_print                ; jump if equal (al = 0) to halt label
-    int 0x10                    ; print character in al
-    add si, 1                   ; move 1 byte forward/ get next character
-    jmp print_char              ; loop
+    je end_print
+    int 0x10
+    inc si
+    jmp print_char
 
 end_print:
     ret
