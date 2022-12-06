@@ -2,7 +2,11 @@
 
 		mov [DSKNUM], dl
 
-    ;; set up ES:BX memory address/segment:offset to load sector(s) into
+		;; setup stack pointers
+		mov bp, 0x9000
+		mov sp, bp
+
+    ;; setup ES:BX memory address/segment:offset to load sector(s) into
     mov bx, 0x1000
     mov es, bx                  
     mov bx, 0x0
