@@ -7,7 +7,8 @@
 #define GR_WIDTH 320
 #define GR_HEIGHT 200
 
-#define GR_COLOR_BG 0x12
+#define GR_COLOR_BG 0x10
+#define GR_COLOR_FG 0x5c
 
 void gr_init_graphics(void);
 void gr_clear_screen(void);

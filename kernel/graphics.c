@@ -29,7 +29,7 @@ void gr_print_character(int x, int y, int character)
 	for (cx=0; cx < 8; cx++) {
 		for (cy=0; cy < 8; cy++) {
 			set = bitmap[cx] & 1 << cy;
-			vga_set_pixel(x+cy, y+cx, set ? 4 : GR_COLOR_BG);
+			vga_set_pixel(x+cy, y+cx, set ? GR_COLOR_FG : GR_COLOR_BG);
 		}
 	}
 }
