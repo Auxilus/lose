@@ -11,5 +11,7 @@
 
 void gr_init_graphics(void);
 void gr_clear_screen(void);
+void gr_print_character(int x, int y, int character);
+void gr_print_string(int x, int y, char* string, int length);
 
 #endif

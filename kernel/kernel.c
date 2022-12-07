@@ -22,4 +22,5 @@ void main() {
 		//}
 
 		gr_init_graphics();
+		gr_print_string(15, 15, "HELLO WORLD", 11);
 }
