@@ -1,6 +1,7 @@
 /* This will force us to create a kernel entry function instead of jumping to kernel.c:0x00 */
 
 #include "../drivers/vga.h"
+#include "../drivers/ports.h"
 #include "../utils/mem.h"
 #include "./graphics.h"
 
@@ -20,5 +21,5 @@ void main() {
 		//	}
 		//}
 
-		init_graphics();
+		gr_init_graphics();
 }

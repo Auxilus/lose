@@ -1,6 +1,11 @@
 #include "graphics.h"
 
-void init_graphics(void)
+void gr_init_graphics(void)
 {
-	memset(GR_START, 0x12, GR_WIDTH*GR_HEIGHT);
+	gr_clear_screen();
+}
+
+void gr_clear_screen(void)
+{
+	memset(GR_START, GR_COLOR_BG, GR_WIDTH*GR_HEIGHT);
 }
