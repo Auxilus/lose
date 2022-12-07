@@ -12,11 +12,24 @@ void gr_clear_screen(void)
 	memset(GR_START, GR_COLOR_BG, GR_WIDTH*GR_HEIGHT);
 }
 
-void gr_print_string(int x, int y, char* string, int length)
+void gr_print_string(int x, int y, char* string)
 {
-	for (int i = 0; i < length; i++) {
-		int character = string[i];
-		gr_print_character(x+(8*i), y, character);
+	int cx = x;
+	for (int i = 0; i < strlen(string); i++) {
+		if (string[i] == 10) {
+			// new line, reset x and move cursor back to x
+			y = y + 8;
+			cx = x;
+		}
+		else if (string[i] == 13) {
+			// \r, just reset the cursor
+			cx = x;
+		}
+		else {
+			int character = string[i];
+			gr_print_character(cx, y, character);
+			cx = cx+8;
+		}
 	}
 }
 void gr_print_character(int x, int y, int character)

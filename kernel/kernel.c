@@ -22,5 +22,10 @@ void main() {
 		//}
 
 		gr_init_graphics();
-		gr_print_string(15, 15, "HELLO WORLD", 11);
+		//port_byte_out(0x3ce, 0x08);
+		//port_byte_out(0x3cf, 0xff);
+		//port_byte_out(0x3ce, 0x05);
+		//port_byte_out(0x3cf, 0x02);
+
+		gr_print_string(15, 15, "auxilus\nfont test");
 }
