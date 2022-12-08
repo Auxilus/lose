@@ -21,16 +21,27 @@ void main() {
 		//	}
 		//}
 
+		print_serial("\n\n");
+		print_serial("---------- kernel ----------\n");
+		print_serial("\nInitializing graphics\n");
+		init_serial();	
+
 		gr_init_graphics();
-		//port_byte_out(0x3ce, 0x08);
-		//port_byte_out(0x3cf, 0xff);
-		//port_byte_out(0x3ce, 0x05);
-		//port_byte_out(0x3cf, 0x02);
 
 		gr_print_string(5, 5, "auxilus\nfont test");
 		for(int i=0; i<128; i++) {
 			gr_print_character(i*8, 30, i);
-		}
+		}	
 
+		int x = 0, y = 0;
+		while (1) {
+			char ch = read_serial();
+			gr_print_character(x, y, ch);
+			x += 8;
+			if (x>GR_WIDTH-8) {
+				x = 0;
+				y += 8;
+			}
+		}
 
 }

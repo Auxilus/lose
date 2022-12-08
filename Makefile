@@ -23,7 +23,7 @@ kernel.elf: boot/kernel_entry.o ${OBJ}
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ 
 
 run: os-image.bin
-	qemu-system-i386 -d guest_errors -fda os-image.bin
+	qemu-system-i386 -d guest_errors -serial stdio -fda os-image.bin
 
 ng: os-image.bin
 	qemu-system-i386 -curses -nographic -d guest_errors -fda os-image.bin

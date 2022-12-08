@@ -1,9 +1,11 @@
 #include "graphics.h"
 #include "font8x8_basic.h"
 #include "../drivers/vga.h"
+#include "../drivers/ports.h"
 
 void gr_init_graphics(void)
 {
+	print_serial("    clearing framebuffer at address 0xA0000\n");
 	gr_clear_screen();
 }
 
