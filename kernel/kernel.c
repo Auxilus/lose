@@ -27,5 +27,10 @@ void main() {
 		//port_byte_out(0x3ce, 0x05);
 		//port_byte_out(0x3cf, 0x02);
 
-		gr_print_string(15, 15, "auxilus\nfont test");
+		gr_print_string(5, 5, "auxilus\nfont test");
+		for(int i=0; i<128; i++) {
+			gr_print_character(i*8, 30, i);
+		}
+
+
 }

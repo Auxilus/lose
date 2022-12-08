@@ -26,7 +26,7 @@ run: os-image.bin
 	qemu-system-i386 -d guest_errors -fda os-image.bin
 
 ng: os-image.bin
-	qemu-system-i386 -nographic -d guest_errors -fda os-image.bin
+	qemu-system-i386 -curses -nographic -d guest_errors -fda os-image.bin
 # Open the connection to qemu and load our kernel-object file with symbols
 debug: os-image.bin kernel.elf
 	qemu-system-i386 -s -S -fda os-image.bin &

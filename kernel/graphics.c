@@ -16,8 +16,10 @@ void gr_print_string(int x, int y, char* string)
 {
 	int cx = x;
 	for (int i = 0; i < strlen(string); i++) {
-		if (string[i] == 10) {
-			// new line, reset x and move cursor back to x
+
+
+		if (string[i] == 10 | cx > GR_WIDTH) {
+			// new line or wrap, reset x and move cursor back to x
 			y = y + 8;
 			cx = x;
 		}
