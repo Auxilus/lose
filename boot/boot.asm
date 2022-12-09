@@ -27,11 +27,20 @@ load_kernel:
     call print
     call print_nl
 
-		;; set graphics mode
+		;; set graphics mode 13h
+		;push ax
+		;mov ah, 0x00
+		;mov al, 0x13
+		;int 0x10
+		;pop ax
+
+		;; set graphics mode 12h
 		push ax
-		mov ah, 0x00
-		mov al, 0x13
+		push bx
+		mov ax, 0x4f02
+		mov bx, 0x12
 		int 0x10
+		pop bx
 		pop ax
 
     mov bx, KERNEL_OFFSET ; Read from disk and store in 0x1000

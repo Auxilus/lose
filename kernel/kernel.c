@@ -8,6 +8,7 @@
 void dummy_test_entrypoint() {
 }
 
+
 void main() {
     //char* video_memory = (char*) 0xa0000; // VGA,MCGA 320x200 256 colors
 
@@ -21,27 +22,28 @@ void main() {
 		//	}
 		//}
 
+		init_serial();
+
 		print_serial("\n\n");
 		print_serial("---------- kernel ----------\n");
 		print_serial("\nInitializing graphics\n");
-		init_serial();	
 
 		gr_init_graphics();
 
-		gr_print_string(5, 5, "auxilus\nfont test");
-		for(int i=0; i<128; i++) {
-			gr_print_character(i*8, 30, i);
-		}	
+		for (u16 i = 0; i < 100; i++)
+			vga_mode12h_pixel(RED, i, i);
 
-		int x = 0, y = 0;
-		while (1) {
-			char ch = read_serial();
-			gr_print_character(x, y, ch);
-			x += 8;
-			if (x>GR_WIDTH-8) {
-				x = 0;
-				y += 8;
-			}
-		}
+		for (u16 i = 100; i > 0; i--)
+			vga_mode12h_pixel(BLUE, i, 100-i);
 
+		for (u16 i = 0; i < 100; i++)
+			vga_mode12h_pixel(GREEN, i, 50);
+
+		while(1){}
+
+
+		//gr_print_string(5, 5, "auxilus\nfont test");
+		//for(int i=0; i<128; i++) {
+		//	gr_print_character(i*8, 30, i);
+		//}
 }

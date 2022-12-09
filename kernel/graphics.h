@@ -5,11 +5,26 @@
 #include "../utils/string.h"
 
 #define GR_START 0xa0000
-#define GR_WIDTH 320
-#define GR_HEIGHT 200
+#define GR_WIDTH 640
+#define GR_HEIGHT 480
 
-#define GR_COLOR_BG 0x10
-#define GR_COLOR_FG 0x5c
+#define TRANSPARENT		0xFF
+#define BLACK					0
+#define BLUE					1
+#define GREEN					2
+#define CYAN					3
+#define RED						4
+#define PURPLE				5
+#define BROWN					6
+#define LTGRAY				7
+#define DKGRAY				8
+#define LTBLUE				9
+#define LTGREEN				10
+#define LTCYAN				11
+#define LTRED					12
+#define LTPURPLE			13
+#define YELLOW				14
+#define WHITE					15
 
 void gr_init_graphics(void);
 void gr_clear_screen(void);
