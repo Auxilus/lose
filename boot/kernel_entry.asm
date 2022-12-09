@@ -4,8 +4,8 @@
 
 ; main exited
 
-		mov ebx, MAINEXIT
-		call print_string_pm
+		;mov ebx, MAINEXIT
+		;call print_string_pm
 
 		jmp $
 

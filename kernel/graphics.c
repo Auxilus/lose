@@ -14,7 +14,7 @@ void gr_clear_screen(void)
 	for(u8 p = 3; p < 4; p--)
 	{
 		set_plane(p);
-		memset(GR_START, 0, 64 * 1024);
+		memset(GR_START, BLACK, 64 * 1024);
 	}
 	return 0;
 }
@@ -51,7 +51,7 @@ void gr_print_character(int x, int y, int character)
 	for (cx=0; cx < 8; cx++) {
 		for (cy=0; cy < 8; cy++) {
 			set = bitmap[cx] & 1 << cy;
-			vga_set_pixel(x+cy, y+cx, set ? WHITE : DKGRAY);
+			vga_mode12h_pixel(set ? WHITE : BLACK, (u16)x+cy, (u16)y+cx);
 		}
 	}
 }

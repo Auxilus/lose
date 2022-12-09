@@ -39,11 +39,16 @@ void main() {
 		for (u16 i = 0; i < 100; i++)
 			vga_mode12h_pixel(GREEN, i, 50);
 
-		while(1){}
+		gr_print_string(200, 200, "VGA mode 0x12\nfont test\n640x480x16");
 
-
-		//gr_print_string(5, 5, "auxilus\nfont test");
-		//for(int i=0; i<128; i++) {
-		//	gr_print_character(i*8, 30, i);
-		//}
+		int x = 0, y = 0;
+		while (1) {
+			char ch = read_serial();
+			gr_print_character(x, y, ch);
+			x += 8;
+			if (x>GR_WIDTH-8) {
+				x = 0;
+				y += 8;
+			}
+		}
 }
