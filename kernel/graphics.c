@@ -2,10 +2,14 @@
 #include "font8x8_basic.h"
 #include "../drivers/vga.h"
 #include "../drivers/ports.h"
+#include "../drivers/serial.h"
+#include "../utils/string.h"
+
+int graphics_abs(int value) { return value < 0 ? 0 - value : value; }
 
 void gr_init_graphics(void)
 {
-	print_serial("    clearing framebuffer at address 0xA0000\n");
+	serial_print("clearing framebuffer at address 0xA0000\n");
 	gr_clear_screen();
 }
 
@@ -13,10 +17,9 @@ void gr_clear_screen(void)
 {
 	for(u8 p = 3; p < 4; p--)
 	{
-		set_plane(p);
-		memset(GR_START, BLACK, 64 * 1024);
+		vga_set_plane(p);
+		memset((u8*)GR_START, BLACK, 64 * 1024);
 	}
-	return 0;
 }
 
 void gr_print_string(int x, int y, char* string)
@@ -53,5 +56,60 @@ void gr_print_character(int x, int y, int character)
 			set = bitmap[cx] & 1 << cy;
 			vga_mode12h_pixel(set ? WHITE : BLACK, (u16)x+cy, (u16)y+cx);
 		}
+	}
+}
+
+void gr_draw_line(int x0, int y0, int x1, int y1, char color)
+{
+	int dx = x1 - x0;
+	int dy = y1 - y0;
+	int xsign, ysign;
+
+	if (dx > 0) {
+		xsign = 1;
+	}
+	else {
+		xsign = -1;
+	}
+
+	if (dy > 0) {
+		ysign = 1;
+	}
+	else {
+		ysign = -1;
+	}
+
+	dx = graphics_abs(dx);
+	dy = graphics_abs(dy);
+
+	int xx, xy, yx, yy;
+	if (dx > dy) {
+		xx = xsign;
+		xy = 0;
+		yx = 0;
+		yy = ysign;
+	}
+	else {
+		int tmp = dx;
+		dx = dy;
+		dy = tmp;
+		xx = 0;
+		xy = ysign;
+		yx = xsign;
+		yy = 0;
+	}
+
+	int D = 2*dy - dx;
+	int y = 0;
+
+	for (int x = 0; x < dx; x++) {
+		int pixel_x = x0 + x*xx + y*yx;
+		int pixel_y = y0 + x*xy + y*yy;
+		vga_mode12h_pixel(color, pixel_x, pixel_y);
+		if (D >= 0) {
+			y += 1;
+			D -= 2*dx;
+		}
+		D += 2*dy;
 	}
 }

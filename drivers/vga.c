@@ -16,13 +16,13 @@ int vga_mode12h_pixel(u8 color, u16 x, u16 y)
 	unsigned bit_no = x % 8;
 	for(u8 p = 3; p < 4; p--)
 	{
-		set_plane(p);
+		vga_set_plane(p);
 		bit_write(fb[offset], 1<<(7-bit_no), (bit_get(color, 1 << p)));
 	}
 	return 0;
 }
 
-void set_plane(u8 p)
+void vga_set_plane(u8 p)
 {
 	unsigned char pmask;
 

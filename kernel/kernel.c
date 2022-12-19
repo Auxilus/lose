@@ -2,6 +2,7 @@
 
 #include "../drivers/vga.h"
 #include "../drivers/ports.h"
+#include "../drivers/serial.h"
 #include "../utils/mem.h"
 #include "./graphics.h"
 
@@ -22,28 +23,20 @@ void main() {
 		//	}
 		//}
 
-		init_serial();
+		serial_init();
 
-		print_serial("\n\n");
-		print_serial("---------- kernel ----------\n");
-		print_serial("\nInitializing graphics\n");
+		serial_print("\n\n");
+		serial_print("-------------------------------------\n");
+		serial_print("Initializing graphics\n");
 
 		gr_init_graphics();
+		gr_draw_line(0, 0, 200, 200, WHITE);
 
-		for (u16 i = 0; i < 100; i++)
-			vga_mode12h_pixel(RED, i, i);
-
-		for (u16 i = 100; i > 0; i--)
-			vga_mode12h_pixel(BLUE, i, 100-i);
-
-		for (u16 i = 0; i < 100; i++)
-			vga_mode12h_pixel(GREEN, i, 50);
-
-		gr_print_string(200, 200, "VGA mode 0x12\nfont test\n640x480x16");
+		gr_print_string(520, 430, "VGA mode 0x12\nfont test\n640x480x16");
 
 		int x = 0, y = 0;
 		while (1) {
-			char ch = read_serial();
+			char ch = serial_read();
 			gr_print_character(x, y, ch);
 			x += 8;
 			if (x>GR_WIDTH-8) {
