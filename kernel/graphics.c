@@ -105,11 +105,25 @@ void gr_draw_line(int x0, int y0, int x1, int y1, char color)
 	for (int x = 0; x < dx; x++) {
 		int pixel_x = x0 + x*xx + y*yx;
 		int pixel_y = y0 + x*xy + y*yy;
+		if (pixel_x > 640) pixel_x = 640;
+		if (pixel_x < 0) pixel_x = 0;
+		if (pixel_y > 480) pixel_y = 480;
+		if (pixel_y < 0) pixel_y = 0;
+
 		vga_mode12h_pixel(color, pixel_x, pixel_y);
+
 		if (D >= 0) {
 			y += 1;
 			D -= 2*dx;
 		}
 		D += 2*dy;
 	}
+}
+
+void gr_draw_rect(int x0, int y0, int w, int h, char color)
+{
+	gr_draw_line(x0,		y0,		x0+w, y0,		color);
+	gr_draw_line(x0,		y0+h, x0+w, y0+h,	color);
+	gr_draw_line(x0+w,	y0,		x0+w, y0+h,	color);
+	gr_draw_line(x0,		y0,		x0,		y0+h,	color);
 }
