@@ -1,5 +1,5 @@
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c utils/*.c)
-HEADERS = $(wildcard kernel/*.h drivers/*.h)
+C_SOURCES = $(wildcard kernel/*.c drivers/*.c utils/*.c cpu/*.c)
+HEADERS = $(wildcard kernel/*.h drivers/*.h utils/*.h cpu/*.h)
 # Nice syntax for file extension replacement
 OBJ = ${C_SOURCES:.c=.o}
 
@@ -7,7 +7,7 @@ OBJ = ${C_SOURCES:.c=.o}
 CC = i386-elf-gcc
 GDB = i386-elf-gdb
 # -g: Use debugging symbols in gcc
-CFLAGS = -g
+CFLAGS = -g -Wall -fcommon
 
 # First rule is run by default
 os-image.bin: boot/boot.bin kernel.bin
@@ -15,7 +15,7 @@ os-image.bin: boot/boot.bin kernel.bin
 
 # '--oformat binary' deletes all symbols as a collateral, so we don't need
 # to 'strip' them manually on this case
-kernel.bin: boot/kernel_entry.o ${OBJ}
+kernel.bin: boot/kernel_entry.o ${OBJ} cpu/interrupt.o
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ --oformat binary
 
 # Used for debugging purposes

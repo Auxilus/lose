@@ -4,6 +4,7 @@
 #include "../drivers/ports.h"
 #include "../drivers/serial.h"
 #include "../utils/mem.h"
+#include "../cpu/isr.h"
 #include "./graphics.h"
 
 void dummy_test_entrypoint() {
@@ -14,6 +15,10 @@ void main() {
 
 	serial_init();
 
+	serial_print("Initializing interrupts\n");
+	isr_install();
+	irq_install();
+
 	serial_print("Initializing graphics\n");
 
 	gr_init_graphics();
@@ -21,7 +26,12 @@ void main() {
 	gr_draw_line(0, 0, 800, 500, WHITE);
 	gr_draw_rect(100, 80, 80, 100, WHITE);
 
+	serial_print("interrupt test\n");
+	asm("int $2");
+	asm("int $3");
+	serial_print("interrupt test complete\n");
 	gr_print_string(520, 430, "VGA mode 0x12\nfont test\n640x480x16");
+
 
 	//int x = 0, y = 0;
 	//while (1) {

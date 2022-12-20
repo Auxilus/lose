@@ -7,7 +7,7 @@
 		;mov ebx, MAINEXIT
 		;call print_string_pm
 
-		jmp $
+		;jmp $
 
 		%include "boot/32bit_print.asm"
 		
