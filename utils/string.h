@@ -3,5 +3,6 @@
 
 int		strlen(char *string);
 void	itoa(int n, char str[]);
+void	reverse(char s[]);
 
 #endif

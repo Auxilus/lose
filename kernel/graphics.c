@@ -28,7 +28,7 @@ void gr_print_string(int x, int y, char* string)
 	for (int i = 0; i < strlen(string); i++) {
 
 
-		if (string[i] == 10 | cx > GR_WIDTH) {
+		if ((string[i] == 10) | (cx > GR_WIDTH)) {
 			// new line or wrap, reset x and move cursor back to x
 			y = y + 8;
 			cx = x;
@@ -47,8 +47,7 @@ void gr_print_string(int x, int y, char* string)
 void gr_print_character(int x, int y, int character)
 {
 	int cx, cy;
-	int posx = x, posy = y;
-	int set, mask;
+	int set;
 	char *bitmap = font8x8_basic[character];
 
 	for (cx=0; cx < 8; cx++) {

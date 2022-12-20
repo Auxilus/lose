@@ -15,18 +15,18 @@ void main() {
 
 	serial_init();
 
-	serial_print("Initializing interrupts\n");
+	serial_print("initializing interrupts\n");
 	isr_install();
 	irq_install();
 
-	serial_print("Initializing graphics\n");
+	serial_print("initializing graphics\n");
 
 	gr_init_graphics();
 
 	gr_draw_line(0, 0, 800, 500, WHITE);
 	gr_draw_rect(100, 80, 80, 100, WHITE);
 
-	serial_print("interrupt test\n");
+	serial_print("testing interrupts\n");
 	asm("int $2");
 	asm("int $3");
 	serial_print("interrupt test complete\n");
