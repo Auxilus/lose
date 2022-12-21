@@ -21,6 +21,6 @@ void init_timer(u32 freq) {
 	port_byte_out(0x43, 0x36); /* Command port */
 	port_byte_out(0x40, low);
 	port_byte_out(0x40, high);
-	serial_print("TIMER: timer enabled [1000 Hz]");
+	serial_print("TIMER: timer enabled [1000 Hz]\n");
 }
 

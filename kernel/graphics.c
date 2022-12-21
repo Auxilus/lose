@@ -9,7 +9,7 @@ int graphics_abs(int value) { return value < 0 ? 0 - value : value; }
 
 void gr_init_graphics(void)
 {
-	serial_print("GRAPHICS: init graphics");
+	serial_print("GRAPHICS: init graphics\n");
 	gr_clear_screen();
 }
 
