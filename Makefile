@@ -1,7 +1,9 @@
 C_SOURCES = $(wildcard kernel/*.c drivers/*.c utils/*.c cpu/*.c)
+ASM_SOURCES = ${wildcard cpu/*.asm}
 HEADERS = $(wildcard kernel/*.h drivers/*.h utils/*.h cpu/*.h)
 # Nice syntax for file extension replacement
 OBJ = ${C_SOURCES:.c=.o}
+ASMOBJ = ${ASM_SOURCES:.asm=.o}
 
 # Change this if your cross-compiler is somewhere else
 CC = i386-elf-gcc
@@ -15,11 +17,11 @@ os-image.bin: boot/boot.bin kernel.bin
 
 # '--oformat binary' deletes all symbols as a collateral, so we don't need
 # to 'strip' them manually on this case
-kernel.bin: boot/kernel_entry.o ${OBJ} cpu/interrupt.o
+kernel.bin: boot/kernel_entry.o ${OBJ} ${ASMOBJ}
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ --oformat binary
 
 # Used for debugging purposes
-kernel.elf: boot/kernel_entry.o ${OBJ}
+kernel.elf: boot/kernel_entry.o ${OBJ} ${ASMOBJ}
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ 
 
 run: os-image.bin

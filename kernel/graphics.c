@@ -9,12 +9,15 @@ int graphics_abs(int value) { return value < 0 ? 0 - value : value; }
 
 void gr_init_graphics(void)
 {
-	serial_print("clearing framebuffer at address 0xA0000\n");
+	serial_print("GRAPHICS: init graphics");
 	gr_clear_screen();
 }
 
 void gr_clear_screen(void)
 {
+	serial_print("GRAPHICS: clearing plane framebuffer\n");
+
+	char s[1];
 	for(u8 p = 3; p < 4; p--)
 	{
 		vga_set_plane(p);

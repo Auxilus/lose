@@ -1,4 +1,5 @@
 #include "string.h"
+#include <stddef.h>
 
 #define true	1
 #define false 0
@@ -32,4 +33,31 @@ void reverse(char s[]) {
 		s[i] = s[j];
 		s[j] = c;
 	}
+}
+
+char*  strcat(char* destination, const char* source)
+{
+       // return if no memory is allocated to the destination
+       if (destination == NULL) {
+               return NULL;
+       }
+
+       // take a pointer pointing to the beginning of the destination string
+       char *ptr = destination;
+       destination += strlen(destination);
+
+       // copy the C-string pointed by source into the array
+       // pointed by destination
+       while (*source != '\0')
+       {
+               *destination = *source;
+               destination++;
+               source++;
+       }
+
+       // include the terminating null character
+       *destination = '\0';
+
+       // the destination is returned by standard `strcpy()`
+       return ptr;
 }

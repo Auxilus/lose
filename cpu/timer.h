@@ -4,6 +4,8 @@
 #include "../utils/string.h"
 #include "types.h"
 
+#define FREQ 1000
+
 void init_timer(u32 freq);
 
 #endif

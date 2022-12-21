@@ -21,7 +21,7 @@ int serial_init() {
 	// (not-loopback with IRQs enabled and OUT#1 and OUT#2 bits enabled)
 	port_byte_out(SERIAL_COM1 + 4, 0x0F);
 
-	serial_print("--------------------------------\n");
+	serial_print("SERIAL: serial port enabled [COM1] \n");
 
 	return 0;
 }
@@ -46,7 +46,7 @@ void serial_write(char a) {
 }
 
 void serial_color_on() {
-	char debug[6] = "[0;32m";
+	char debug[6] = "[0;96m";
 	int c = 0;
 	serial_write(0x1B);
 	while(c < 6) {
