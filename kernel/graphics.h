@@ -26,10 +26,18 @@
 #define YELLOW				14
 #define WHITE					15
 
+typedef struct {
+	int cursor_x;
+	int cursor_y;
+} winctx;
+
+static winctx *windowctx;
+
 void gr_init_graphics(void);
 void gr_clear_screen(void);
 void gr_print_character(int x, int y, int character);
 void gr_print_string(int x, int y, char* string);
+void gr_input(char character);
 
 void gr_draw_line(int x0, int y0, int x1, int y1, char color);
 void gr_draw_rect(int x0, int y0, int w, int l, char color);

@@ -1,6 +1,7 @@
 #include "isr.h"
 #include "idt.h"
 #include "../drivers/ports.h"
+#include "../drivers/keyboard.h"
 #include "../drivers/serial.h"
 #include "../utils/string.h"
 #include "timer.h"
@@ -154,5 +155,5 @@ void irq_install() {
 	/* IRQ0: timer */
 	init_timer(FREQ);
 	/* IRQ1: keyboard */
-	//init_keyboard();
+	init_keyboard();
 }

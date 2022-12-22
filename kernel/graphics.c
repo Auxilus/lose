@@ -11,6 +11,9 @@ void gr_init_graphics(void)
 {
 	serial_print("GRAPHICS: init graphics\n");
 	gr_clear_screen();
+	serial_print("GRAPHICS: init window context");
+	windowctx->cursor_x = 0;
+	windowctx->cursor_y = 0;
 }
 
 void gr_clear_screen(void)
@@ -128,4 +131,16 @@ void gr_draw_rect(int x0, int y0, int w, int h, char color)
 	gr_draw_line(x0,		y0+h, x0+w, y0+h,	color);
 	gr_draw_line(x0+w,	y0,		x0+w, y0+h,	color);
 	gr_draw_line(x0,		y0,		x0,		y0+h,	color);
+}
+
+void gr_input(char character)
+{
+	gr_print_character(windowctx->cursor_x, windowctx->cursor_y, character);
+	if ((windowctx->cursor_x + 8) > GR_WIDTH-8) {
+		windowctx->cursor_x = 0;
+		windowctx->cursor_y += 8;
+	}
+	else {
+		windowctx->cursor_x += 8;
+	}
 }

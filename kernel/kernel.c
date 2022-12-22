@@ -6,13 +6,18 @@
 #include "../utils/mem.h"
 #include "../cpu/isr.h"
 #include "./graphics.h"
+#include "../drivers/keyboard.h"
+#include "kernel.h"
 
 void dummy_test_entrypoint() {
 }
 
+void kernel_handle_key(char letter)
+{
+	gr_input(letter);
+}
 
 void main() {
-
 	serial_init();
 	isr_install();
 	irq_install();
@@ -26,16 +31,4 @@ void main() {
 	asm("int $3");
 	serial_print("KERNEL: interrupt test complete\n");
 	gr_print_string(520, 430, "VGA mode 0x12\nfont test\n640x480x16");
-
-
-	//int x = 0, y = 0;
-	//while (1) {
-	//	char ch = serial_read();
-	//	gr_print_character(x, y, ch);
-	//	x += 8;
-	//	if (x>GR_WIDTH-8) {
-	//		x = 0;
-	//		y += 8;
-	//	}
-	//}
 }
