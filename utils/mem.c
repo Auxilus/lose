@@ -6,6 +6,35 @@ void memcpy(u8 *source, u8 *dest, int nbytes) {
     }
 }
 
+void *memmove(void* dest, const void* src, unsigned int n)
+{
+	char *pDest = (char *)dest;
+    const char *pSrc =( const char*)src;
+    //allocate memory for tmp array
+		void* dummy_ptr;
+    char *tmp  = (char *)kmalloc(sizeof(char ) * n, 0, dummy_ptr);
+    if(tmp == 0)
+    {
+        return 0;
+    }
+    else
+    {
+        unsigned int i = 0;
+        // copy src to tmp array
+        for(i =0; i < n ; ++i)
+        {
+            *(tmp + i) = *(pSrc + i);
+        }
+        //copy tmp to dest
+        for(i =0 ; i < n ; ++i)
+        {
+            *(pDest + i) = *(tmp + i);
+        }
+        //free(tmp); //free allocated memory
+    }
+    return dest;
+}
+
 void memset(u8 *dest, u8 val, u32 len) {
     u8 *temp = (u8*)dest;
     for ( ; len != 0; len--) *temp++ = val;

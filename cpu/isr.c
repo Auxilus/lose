@@ -120,14 +120,9 @@ char *exception_messages[] = {
 };
 
 void isr_handler(registers_t *r) {
-	serial_print("INTERRUPT: received interrupt: ");
-	char s[3];
-	itoa(r->int_no, s);
-	serial_print(s);
-	serial_print((char*)" [");
-	serial_print(exception_messages[r->int_no]);
-	serial_print("]");
-	serial_print("\n");
+	char str[64];
+	sprintf(str, "INTERRUPT: received interrupt: %d [%s]\n", r->int_no, exception_messages[r->int_no]);
+	serial_print(str);
 	//r->eip++;
 }
 

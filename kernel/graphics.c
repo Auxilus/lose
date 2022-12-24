@@ -11,7 +11,7 @@ void gr_init_graphics(void)
 {
 	serial_print("GRAPHICS: init graphics\n");
 	gr_clear_screen();
-	serial_print("GRAPHICS: init window context");
+	serial_print("GRAPHICS: init window context\n");
 	windowctx->cursor_x = 0;
 	windowctx->cursor_y = 0;
 }
@@ -23,6 +23,9 @@ void gr_clear_screen(void)
 	char s[1];
 	for(u8 p = 3; p < 4; p--)
 	{
+		char str[24];
+		sprintf(str, "GRAPHICS: plane[%u]\n", p);
+		serial_print(str);
 		vga_set_plane(p);
 		memset((u8*)GR_START, BLACK, 64 * 1024);
 	}
@@ -133,7 +136,7 @@ void gr_draw_rect(int x0, int y0, int w, int h, char color)
 	gr_draw_line(x0,		y0,		x0,		y0+h,	color);
 }
 
-void gr_input(char character)
+void gr_print(char character)
 {
 	gr_print_character(windowctx->cursor_x, windowctx->cursor_y, character);
 	if ((windowctx->cursor_x + 8) > GR_WIDTH-8) {

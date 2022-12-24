@@ -4,6 +4,7 @@
 #include "../drivers/ports.h"
 #include "../drivers/serial.h"
 #include "../utils/mem.h"
+#include "../utils/string.h"
 #include "../cpu/isr.h"
 #include "./graphics.h"
 #include "../drivers/keyboard.h"
@@ -14,7 +15,10 @@ void dummy_test_entrypoint() {
 
 void kernel_handle_key(char letter)
 {
-	gr_input(letter);
+	char *message;
+	sprintf(message, "KERNEL: received keypress event: %c\n", letter);
+	serial_print(message);
+	gr_print(letter);
 }
 
 void main() {
@@ -30,5 +34,6 @@ void main() {
 	asm("int $2");
 	asm("int $3");
 	serial_print("KERNEL: interrupt test complete\n");
+
 	gr_print_string(520, 430, "VGA mode 0x12\nfont test\n640x480x16");
 }

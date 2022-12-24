@@ -1,6 +1,7 @@
 #include "keyboard.h"
 #include "../drivers/serial.h"
 #include "ports.h"
+#include "../utils/string.h"
 #include "../kernel/kernel.h"
 #include "../cpu/isr.h"
 
