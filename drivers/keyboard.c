@@ -49,7 +49,7 @@ char unshifted_key_map[0x80] = {
     '\'',
 		'\`',
     ' ', // 42 lshift
-    ' ', // backslash
+    '\\', // backslash
     'z',
     'x',
     'c',
@@ -102,23 +102,142 @@ char unshifted_key_map[0x80] = {
     ' ', //Key_Menu,
 };
 
+char shifted_key_map[0x100] = {
+    ' ', //Invalid,
+    ' ', //Escape,
+    '!', //ExclamationPoint,
+    '@', //AtSign,
+    '#', //Hashtag,
+    '$', //Dollar,
+    '%', //Percent,
+    '^', //Circumflex,
+    '&', //Ampersand,
+    '*', //Asterisk,
+    '(', //LeftParen,
+    ')', //RightParen,
+    '_', //Underscore,
+    '+', //Plus,
+    0x08, //Backspace,
+    '\t', //Tab,
+    'Q',
+    'W',
+    'E',
+    'R',
+    'T',
+    'Y',
+    'U',
+    'I',
+    'O',
+    'P',
+    '{', //LeftBrace,
+    '}', //RightBrace,
+    '\n', //Return,
+    ' ', //Control,
+    'A',
+    'S',
+    'D',
+    'F',
+    'G',
+    'H',
+    'J',
+    'K',
+    'L',
+    ':', //Colon,
+    '\"', //DoubleQuote,
+    '~', //Tilde,
+    ' ', // 42
+    '|', //Pipe,
+    'Z',
+    'X',
+    'C',
+    'V',
+    'B',
+    'N',
+    'M',
+    '<', //LessThan,
+    '>', //GreaterThan,
+    '?', //QuestionMark,
+    ' ', //RightShift, // 54
+    '*', //Asterisk,
+    ' ', //Alt,
+    ' ', //Space,    // 57
+    ' ', //CapsLock, // 58
+		' ', //F
+		' ', //F
+		' ', //F
+		' ', //F
+		' ', //F
+		' ', //F
+		' ', //F
+		' ', //F
+		' ', //F
+		' ', //F
+    ' ', //NumLock,
+    ' ', //Invalid, // 70
+    ' ', //Home,
+    ' ', //Up,
+    ' ', //PageUp,
+    ' ', //Minus,
+    ' ', //Left,
+    ' ', //Invalid,
+    ' ', //Right, // 77
+    ' ', //Plus,
+    ' ', //End,
+    ' ', //Down, // 80
+    ' ', //PageDown,
+    ' ', //Insert,
+    ' ', //Delete, // 83
+    ' ', //Invalid,
+    ' ', //Invalid,
+    ' ', //Pipe,
+    ' ', //F11,
+    ' ', //F12,
+    ' ', //Invalid,
+    ' ', //Invalid,
+    ' ', //Super,
+    ' ', //Invalid,
+    ' ', //Menu,
+};
+
+static int is_shift = 0;
+static int is_ctrl = 0;
+
 u8 scancode2char(int sc)
 {
 	// TODO: handle these conditions better
 	if(sc & (1 << 7)) { return 0; }
 	sc &= 0x7f;
 	if (sc >= 0x50) { return 0; }
-	return unshifted_key_map[sc];
+	return is_shift ? shifted_key_map[sc] : unshifted_key_map[sc];
 }
 
 void keyboard_callback(registers_t *regs)
 {
+	port_byte_out(0x20, 0x20);
 	u8 scancode = port_byte_in(0x60);
 	int sc = (int) scancode;
 
-	// TODO: handle keyrelease
-	if (sc < 0x50) {
-		kernel_handle_key(scancode2char(sc));
+	// TODO: verify release handler
+	if ((scancode & 128) == 128) {
+
+		// check for shift release L & R
+		// TODO: don't hardcode scancode values
+		if (sc == 170 || sc == 182) { is_shift = 0; }
+
+		char message[128];
+		sprintf(message, "KEYBOARD: key released [%d] [%x]\n", sc, scancode);
+		serial_print(message);
+	}
+	else {
+		// keypress handler
+		
+		// check for shift press L & R
+		// TODO: don't hardcode scancode values
+		if (sc == 42 || sc == 54) { is_shift = 1; return; }
+
+		if (sc < 0x50) {
+			kernel_handle_key(scancode2char(sc));
+		}
 	}
 }
 

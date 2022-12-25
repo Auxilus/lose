@@ -15,7 +15,7 @@ void dummy_test_entrypoint() {
 
 void kernel_handle_key(char letter)
 {
-	char *message;
+	char message[64];
 	sprintf(message, "KERNEL: received keypress event: %c\n", letter);
 	serial_print(message);
 	gr_print(letter);
