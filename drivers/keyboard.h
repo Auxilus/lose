@@ -36,6 +36,13 @@
 #define CH_SHIFT_SPACE	0x1F
 #define CH_SPACE				0x20
 
+typedef struct {
+	char letter;
+	int scancode;
+	int is_shift;
+	int is_ctrl;
+} key_event;
+
 u8 scancode2char(int sc);
 void	init_keyboard(void);
 

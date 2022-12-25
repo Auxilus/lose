@@ -7,18 +7,19 @@
 #include "../utils/string.h"
 #include "../cpu/isr.h"
 #include "./graphics.h"
-#include "../drivers/keyboard.h"
 #include "kernel.h"
 
 void dummy_test_entrypoint() {
 }
 
-void kernel_handle_key(char letter)
+void kernel_handle_key(key_event ke)
 {
-	char message[64];
-	sprintf(message, "KERNEL: received keypress event: %c\n", letter);
-	serial_print(message);
-	gr_print(letter);
+	if (ke.is_shift && ke.is_ctrl && ke.letter == 'C') {
+		// basic shutdown for qemu ctrl+shift+c
+		port_word_out(0x604, 0x2000);
+		return;
+	}
+	gr_print(ke.letter);
 }
 
 void main() {

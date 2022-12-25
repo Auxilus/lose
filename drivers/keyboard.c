@@ -223,6 +223,7 @@ void keyboard_callback(registers_t *regs)
 		// check for shift release L & R
 		// TODO: don't hardcode scancode values
 		if (sc == 170 || sc == 182) { is_shift = 0; }
+		if (sc == 157 || sc == 224) { is_ctrl = 0; }
 
 		char message[128];
 		sprintf(message, "KEYBOARD: key released [%d] [%x]\n", sc, scancode);
@@ -230,13 +231,22 @@ void keyboard_callback(registers_t *regs)
 	}
 	else {
 		// keypress handler
+		char message[128];
+		sprintf(message, "KEYBOARD: key pressed [%d] [%x]\n", sc, scancode);
+		serial_print(message);
 		
 		// check for shift press L & R
 		// TODO: don't hardcode scancode values
 		if (sc == 42 || sc == 54) { is_shift = 1; return; }
+		if (sc == 29) { is_ctrl = 1; return; }
 
 		if (sc < 0x50) {
-			kernel_handle_key(scancode2char(sc));
+			key_event ke;
+			ke.letter = scancode2char(sc);
+			ke.scancode = sc;
+			ke.is_shift = is_shift;
+			ke.is_ctrl = is_ctrl;
+			kernel_handle_key(ke);
 		}
 	}
 }
