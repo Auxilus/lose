@@ -225,15 +225,15 @@ void keyboard_callback(registers_t *regs)
 		if (sc == 170 || sc == 182) { is_shift = 0; }
 		if (sc == 157 || sc == 224) { is_ctrl = 0; }
 
-		char message[128];
-		sprintf(message, "KEYBOARD: key released [%d] [%x]\n", sc, scancode);
-		serial_print(message);
+		//char message[128];
+		//sprintf(message, "KEYBOARD: key released [%d] [%x]\n", sc, scancode);
+		//serial_print(message);
 	}
 	else {
 		// keypress handler
-		char message[128];
-		sprintf(message, "KEYBOARD: key pressed [%d] [%x]\n", sc, scancode);
-		serial_print(message);
+		//char message[128];
+		//sprintf(message, "KEYBOARD: key pressed [%d] [%x]\n", sc, scancode);
+		//serial_print(message);
 		
 		// check for shift press L & R
 		// TODO: don't hardcode scancode values
