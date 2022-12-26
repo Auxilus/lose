@@ -24,7 +24,21 @@ kernel.bin: boot/kernel_entry.o ${OBJ} ${ASMOBJ}
 kernel.elf: boot/kernel_entry.o ${OBJ} ${ASMOBJ}
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ 
 
-run: os-image.bin
+lose.iso: os-image.bin
+	dd if=/dev/zero of=floppy.img bs=1024 count=1440
+	dd if=$< of=floppy.img seek=0 conv=notrunc
+	mkdir iso
+	cp floppy.img iso/
+	genisoimage -quiet -V 'LOSE' \
+		-input-charset iso8859-1 \
+		-o lose.iso \
+		-b floppy.img \
+		-hide floppy.img iso/
+
+run: lose.iso
+	qemu-system-i386 -d cpu_reset,guest_errors -serial stdio -cdrom $<
+
+run-bin: os-image.bin
 	qemu-system-i386 -d cpu_reset,guest_errors -serial stdio -fda os-image.bin
 
 ng: os-image.bin
@@ -46,5 +60,5 @@ debug: os-image.bin kernel.elf
 	nasm $< -f bin -o $@
 
 clean:
-	rm -rf *.bin *.dis *.o os-image.bin *.elf
+	rm -rf *.bin *.dis *.o os-image.bin *.elf *.iso iso/ *.img
 	rm -rf **/*.o boot/*.bin drivers/*.o boot/*.o

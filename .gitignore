@@ -3,3 +3,6 @@
 **/*.o
 *.o
 *.swp
+iso
+*.img
+*.iso
