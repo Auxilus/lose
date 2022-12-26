@@ -5,6 +5,11 @@
 u32 tick = 0;
 
 static void timer_callback(registers_t regs) {
+	//char stick[256];
+	//itoa(tick, stick);
+	//serial_print("tick ");
+	//serial_print(stick);
+	//serial_print("\n");
 	tick++;
 }
 
