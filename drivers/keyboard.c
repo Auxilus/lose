@@ -20,7 +20,7 @@ char unshifted_key_map[0x80] = {
     '0',
     '-',
     '=',
-    ' ', // backspace
+    0x08, // backspace
     '\t', // 15
     'q',
     'w',

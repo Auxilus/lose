@@ -17,13 +17,30 @@ void kernel_handle_key(key_event ke)
 {
 	if (ke.is_shift && ke.is_ctrl && ke.letter == 'C') {
 		// basic shutdown for qemu ctrl+shift+c
+		serial_print("KERNEL: kernel shutdown initiated\n");
 		gr_clear_screen();
-		gr_print_string(10, 10, "shutting down in 10 seconds");
-		timer_sleep(10);
+		gr_print_string(10, 10, "shutting down in 5 seconds");
+		timer_sleep(5);
 		port_word_out(0x604, 0x2000);
 		return;
 	}
-	gr_print(ke.letter);
+
+	switch (ke.letter) {
+		case '\n':
+			windowctx->cursor_x = 0;
+			windowctx->cursor_y += 8;
+			break;
+		case 0x08:
+			if (windowctx->cursor_x > 8) {
+				windowctx->cursor_x -= 8;
+			} else {
+				windowctx->cursor_x = 0;
+			}
+			gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ');
+			break;
+		default:
+			gr_print(ke.letter);
+	}
 }
 
 void main() {
