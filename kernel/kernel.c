@@ -6,6 +6,7 @@
 #include "../utils/mem.h"
 #include "../utils/string.h"
 #include "../cpu/isr.h"
+#include "../cpu/timer.h"
 #include "./graphics.h"
 #include "kernel.h"
 
@@ -16,6 +17,9 @@ void kernel_handle_key(key_event ke)
 {
 	if (ke.is_shift && ke.is_ctrl && ke.letter == 'C') {
 		// basic shutdown for qemu ctrl+shift+c
+		gr_clear_screen();
+		gr_print_string(10, 10, "shutting down in 10 seconds");
+		timer_sleep(10);
 		port_word_out(0x604, 0x2000);
 		return;
 	}

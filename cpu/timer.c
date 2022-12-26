@@ -2,15 +2,16 @@
 #include "../drivers/serial.h"
 #include "isr.h"
 
-u32 tick = 0;
+volatile u32 tick = 0;
 
 static void timer_callback(registers_t regs) {
 	//char stick[256];
-	//itoa(tick, stick);
+	//itoa(tick /FREQ/ 100, stick);
 	//serial_print("tick ");
 	//serial_print(stick);
 	//serial_print("\n");
 	tick++;
+	return;
 }
 
 void init_timer(u32 freq) {
@@ -31,3 +32,11 @@ void init_timer(u32 freq) {
 	serial_print(str);
 }
 
+void timer_sleep(int seconds)
+{
+	int total = ((tick / 100) + (seconds*FREQ)) * 100;
+	// FIXME: figure out why we need enable interrupts again to get the ticks working
+	asm volatile("sti");
+	while (tick < total);
+	return;
+}
