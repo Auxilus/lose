@@ -29,7 +29,7 @@ kernel.elf: boot/kernel_entry.o ${OBJ} ${ASMOBJ}
 lose.iso: os-image.bin
 	dd if=/dev/zero of=floppy.img bs=1024 count=1440
 	dd if=$< of=floppy.img seek=0 conv=notrunc
-	mkdir iso
+	mkdir -p iso
 	cp floppy.img iso/
 	genisoimage -quiet -V 'LOSE' \
 		-input-charset iso8859-1 \

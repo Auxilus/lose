@@ -15,13 +15,21 @@ void dummy_test_entrypoint() {
 
 void kernel_handle_key(key_event ke)
 {
+	if (ke.is_shift && ke.is_ctrl && ke.letter == 'Z') {
+		// basic shutdown for qemu ctrl+shift+c
+		serial_print("kernel: kernel shutdown initiated\n");
+		gr_clear_screen();
+		gr_print_string(10, 10, "shutting down...");
+		timer_sleep(2);
+		port_word_out(0x604, 0x2000);
+		return;
+	}
+
 	if (ke.is_shift && ke.is_ctrl && ke.letter == 'C') {
 		// basic shutdown for qemu ctrl+shift+c
-		serial_print("KERNEL: kernel shutdown initiated\n");
 		gr_clear_screen();
-		gr_print_string(10, 10, "shutting down in 5 seconds");
-		timer_sleep(5);
-		port_word_out(0x604, 0x2000);
+		windowctx->cursor_x = 0;
+		windowctx->cursor_y = 0;
 		return;
 	}
 
@@ -49,8 +57,8 @@ void main() {
 	irq_install();
 	gr_init_graphics();
 
-	gr_draw_line(0, 0, 800, 500, WHITE);
-	gr_draw_rect(100, 80, 80, 100, WHITE);
+	//gr_draw_line(0, 0, 800, 500, WHITE);
+	//gr_draw_rect(100, 80, 80, 100, WHITE);
 
 	serial_print("KERNEL: testing interrupts\n");
 	asm("int $2");
