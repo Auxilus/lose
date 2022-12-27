@@ -46,8 +46,8 @@ run-bin: os-image.bin
 ng: os-image.bin
 	qemu-system-i386 -curses -nographic -d guest_errors -fda os-image.bin
 # Open the connection to qemu and load our kernel-object file with symbols
-debug: os-image.bin kernel.elf
-	qemu-system-i386 -s -S -fda os-image.bin &
+debug: lose.iso kernel.elf
+	qemu-system-i386 -s -S -cdrom lose.iso & #-fda os-image.bin &
 	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
 
 # Generic rules for wildcards
@@ -62,5 +62,5 @@ debug: os-image.bin kernel.elf
 	nasm $< -f bin -o $@
 
 clean:
-	rm -rf *.bin *.dis *.o os-image.bin *.elf *.iso iso/ *.img
+	rm -rf iso/  *.bin *.dis *.o os-image.bin *.elf *.iso *.img
 	rm -rf **/*.o boot/*.bin drivers/*.o boot/*.o
