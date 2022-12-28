@@ -31,6 +31,7 @@ lose.iso: os-image.bin
 	dd if=$< of=floppy.img seek=0 conv=notrunc
 	mkdir -p iso
 	cp floppy.img iso/
+	echo "ISO TEST FILE" >> iso/test.txt
 	genisoimage -quiet -V 'LOSE' \
 		-input-charset iso8859-1 \
 		-o lose.iso \
