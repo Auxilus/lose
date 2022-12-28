@@ -55,15 +55,26 @@ void main() {
 	serial_init();
 	isr_install();
 	irq_install();
-	gr_init_graphics();
-
-	//gr_draw_line(0, 0, 800, 500, WHITE);
-	//gr_draw_rect(100, 80, 80, 100, WHITE);
 
 	serial_print("KERNEL: testing interrupts\n");
 	asm("int $2");
 	asm("int $3");
 	serial_print("KERNEL: interrupt test complete\n");
+	
+	serial_print("KERNEL: testing malloc\n");
+	int *a = (int*)malloc(sizeof(int) * 5);
+	char *s = (char*)malloc(64);
+
+	char message1[64];
+	sprintf(message1, "KERNEL: int[5]   0x%p\n", a);
+	char message2[64];
+	sprintf(message2, "KERNEL: char[64] 0x%p\n", s);
+
+	serial_print(message1);
+	serial_print(message2);
+
+	gr_init_graphics();
+
 
 	gr_print_string(520, 430, "VGA mode 0x12\nfont test\n640x480x16");
 }

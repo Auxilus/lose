@@ -11,7 +11,7 @@ GDB = i386-elf-gdb
 # -g: Use debugging symbols in gcc
 CFLAGS = -g -Wall -fcommon
 
-all: lose.iso
+all: run
 
 # First rule is run by default
 os-image.bin: boot/boot.bin kernel.bin
@@ -38,8 +38,8 @@ lose.iso: os-image.bin
 		-b floppy.img \
 		-hide floppy.img iso/
 
-run: lose.iso
-	qemu-system-i386 -d cpu_reset,guest_errors -serial stdio -cdrom $<
+run: os-image.bin
+	qemu-system-i386 -d cpu_reset,guest_errors -serial stdio -fda $<
 
 run-bin: os-image.bin
 	qemu-system-i386 -d cpu_reset,guest_errors -serial stdio -fda os-image.bin

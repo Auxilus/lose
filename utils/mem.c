@@ -43,7 +43,6 @@ void memset(u8 *dest, u8 val, u32 len) {
 /* This should be computed at link time, but a hardcoded
  * value is fine for now. Remember that our kernel starts
  * at 0x1000 as defined on the Makefile */
-u32 free_mem_addr = 0x10000;
 /* Implementation is just a pointer to some free memory which
  * keeps growing */
 u32 kmalloc(int size, int align, u32 *phys_addr) {
@@ -58,4 +57,11 @@ u32 kmalloc(int size, int align, u32 *phys_addr) {
     u32 ret = free_mem_addr;
     free_mem_addr += size; /* Remember to increment the pointer */
     return ret;
+}
+
+void *malloc(int size)
+{
+	void *ret = free_mem_addr;
+	free_mem_addr += size + 1;
+	return ret;
 }
