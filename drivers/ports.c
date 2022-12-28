@@ -33,3 +33,14 @@ void port_word_out (u16 port, u16 data) {
 	__asm__("out %%ax, %%dx" : : "a" (data), "d" (port));
 }
 
+void outportl(u16 portid, u32 value)
+{
+	asm volatile("outl %%eax, %%dx": :"d" (portid), "a" (value));
+}
+
+u32 inportl(u16 portid)
+{
+	u32 ret;
+	asm volatile("inl %%dx, %%eax":"=a"(ret):"d"(portid));
+	return ret;
+}

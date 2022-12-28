@@ -1,6 +1,7 @@
 /* This will force us to create a kernel entry function instead of jumping to kernel.c:0x00 */
 
 #include "../drivers/vga.h"
+#include "../drivers/pci.h"
 #include "../drivers/ports.h"
 #include "../drivers/serial.h"
 #include "../utils/mem.h"
