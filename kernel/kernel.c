@@ -36,16 +36,23 @@ void kernel_handle_key(key_event ke)
 
 	switch (ke.letter) {
 		case '\n':
+			gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ');
 			windowctx->cursor_x = 0;
 			windowctx->cursor_y += 8;
+			gr_print_character(windowctx->cursor_x, windowctx->cursor_y, '_');
+			break;
+		case '\t':
+			gr_print(' ');
+			gr_print(' ');
 			break;
 		case 0x08:
+			gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ');
 			if (windowctx->cursor_x > 8) {
 				windowctx->cursor_x -= 8;
 			} else {
 				windowctx->cursor_x = 0;
 			}
-			gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ');
+			gr_print_character(windowctx->cursor_x, windowctx->cursor_y, '_');
 			break;
 		default:
 			gr_print(ke.letter);

@@ -11,7 +11,7 @@ GDB = i386-elf-gdb
 # -g: Use debugging symbols in gcc
 CFLAGS = -g -Wall -fcommon
 
-all: run
+all: os-image.bin
 
 # First rule is run by default
 os-image.bin: boot/boot.bin kernel.bin

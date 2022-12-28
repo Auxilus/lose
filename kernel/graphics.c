@@ -14,6 +14,7 @@ void gr_init_graphics(void)
 	serial_print("GRAPHICS: init window context\n");
 	windowctx->cursor_x = 0;
 	windowctx->cursor_y = 0;
+	gr_print_character(0, 0, '_');
 }
 
 void gr_clear_screen(void)
@@ -146,4 +147,6 @@ void gr_print(char character)
 	else {
 		windowctx->cursor_x += 8;
 	}
+
+	gr_print_character(windowctx->cursor_x, windowctx->cursor_y, '_');
 }
