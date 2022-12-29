@@ -9,7 +9,7 @@ ASMOBJ = ${ASM_SOURCES:.asm=.o}
 CC = i386-elf-gcc
 GDB = i386-elf-gdb
 # -g: Use debugging symbols in gcc
-CFLAGS = -g -Wall -fcommon
+CFLAGS = -g -fcommon
 
 all: os-image.bin
 

@@ -81,11 +81,12 @@ void main() {
 
 	serial_print(message1);
 	serial_print(message2);
-	pci_init();
 	acpi_locate_rsdp();
+	pci_init();
 
 	gr_init_graphics();
 
 
 	gr_print_string(520, 430, "VGA mode 0x12\nfont test\n640x480x16");
+	while(1);
 }

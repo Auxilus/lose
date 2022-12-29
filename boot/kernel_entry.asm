@@ -11,6 +11,7 @@
 
 		;jmp $
 
+
 		%include "boot/32bit_print.asm"
 		
 MAINEXIT: db "kernel exited"

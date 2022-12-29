@@ -3,6 +3,8 @@
 
 #include "../cpu/types.h"
 
+extern char *kernel_end;
+
 typedef struct {
 	char Signature[8];
 	uint8_t Checksum;

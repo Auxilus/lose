@@ -46,7 +46,7 @@ void serial_write(char a) {
 }
 
 void serial_color_on() {
-	char debug[6] = "[0;96m";
+	char debug[6] = "[0;93m";
 	int c = 0;
 	serial_write(0x1B);
 	while(c < 6) {
