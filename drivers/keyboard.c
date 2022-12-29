@@ -47,7 +47,7 @@ char unshifted_key_map[0x80] = {
     'l',
     ';',
     '\'',
-		'\`',
+		'`',
     ' ', // 42 lshift
     '\\', // backslash
     'z',

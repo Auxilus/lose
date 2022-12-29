@@ -56,8 +56,8 @@ void reverse(char s[]) {
 }
 
 int strcmp(const char* str1, const char* str2) {
-	unsigned int len1 = strlen(str1);
-	unsigned int len2 = strlen(str2);
+	unsigned int len1 = strlen((char*)str1);
+	unsigned int len2 = strlen((char*)str2);
 
 	int cmpResult = memcmp(str1, str2, (len1 < len2) ? len1 : len2);
 	if (cmpResult != 0)

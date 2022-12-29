@@ -61,7 +61,7 @@ u32 kmalloc(int size, int align, u32 *phys_addr) {
 
 void *malloc(int size)
 {
-	void *ret = free_mem_addr;
+	void *ret = (void*)free_mem_addr;
 	free_mem_addr += size + 1;
 	return ret;
 }

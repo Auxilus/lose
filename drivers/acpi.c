@@ -3,10 +3,12 @@
 #include "../utils/mem.h"
 #include "../utils/string.h"
 
+int sigcmp(char* ptr1, char* ptr2);
+
 RSDPDescriptor20 *acpi_locate_rsdp(void)
 {
-	char *mem_start = 0x10000; //kernel start; maybe we should figure out kernel_end at some point for this
-	char *mem_end	 = 0x100000;
+	char *mem_start = (char*)0x10000; //kernel start; maybe we should figure out kernel_end at some point for this
+	char *mem_end	 = (char*)0x100000;
 
 	while (mem_start < mem_end) {
 		char memstr[8];
@@ -18,7 +20,7 @@ RSDPDescriptor20 *acpi_locate_rsdp(void)
 	}
 
 	RSDPDescriptor20 *d = (RSDPDescriptor20*)malloc(sizeof(RSDPDescriptor20));
-	memcpy(mem_start, d, sizeof(RSDPDescriptor20));
+	memcpy(mem_start, (u8*)d, sizeof(RSDPDescriptor20));
 	char *message = (char*)malloc(64);
 	sprintf(message, "ACPI: RSDP revision %u found at 0x%x\n", d->firstPart.Revision, (u32)mem_start);
 	serial_print(message);
@@ -37,7 +39,7 @@ void acpi_init()
 	for (int i = 0; i < entries; i++) {
 		SDTHeader *new = (SDTHeader*)*(uint32_t*)((uint32_t)xsdt + sizeof(SDTHeader) + (i * 8));
 		char sig[5];
-		memcpy(&new->Signature, sig, 4);
+		memcpy((u8*)&new->Signature, sig, 4);
 		sig[4] = '\0';
 		serial_print(sig);
 		serial_print(" ");

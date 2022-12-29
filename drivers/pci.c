@@ -1,6 +1,7 @@
 /** @author Levente Kurusa <levex@linux.com> **/
 #include "../utils/mem.h"
 #include "../utils/string.h"
+#include "serial.h"
 #include "pci.h"
 #include "ports.h"
 

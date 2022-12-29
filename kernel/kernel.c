@@ -22,7 +22,7 @@ void kernel_handle_key(key_event ke)
 		serial_print("kernel: kernel shutdown initiated\n");
 		gr_clear_screen();
 		gr_print_string(10, 10, "shutting down...");
-		timer_sleep(2);
+		timer_sleep(1);
 		port_word_out(0x604, 0x2000);
 		return;
 	}

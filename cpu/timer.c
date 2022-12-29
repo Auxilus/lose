@@ -4,7 +4,7 @@
 
 volatile u32 tick = 0;
 
-static void timer_callback(registers_t regs) {
+static void timer_callback(registers_t *regs) {
 	//char stick[256];
 	//itoa(tick /FREQ/ 100, stick);
 	//serial_print("tick ");
