@@ -102,7 +102,7 @@ void pci_init()
 	pci_drivers = (pci_driver **)malloc(32 * sizeof(pci_driver));
 	pci_probe();
 	char *message = (char*)malloc(64);
-	sprintf(message, "PCI: %u devices and %u drivers found\n", devs, drivs);
+	sprintf(message, "PCI: found %u devices and %u drivers\n", devs, drivs);
 	serial_print(message);
 }
 

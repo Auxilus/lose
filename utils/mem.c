@@ -6,6 +6,17 @@ void memcpy(u8 *source, u8 *dest, int nbytes) {
     }
 }
 
+int memcmp(const void* ptr1, const void* ptr2, int num) {
+	const unsigned char* vptr1 = (const unsigned char*)ptr1;
+	const unsigned char* vptr2 = (const unsigned char*)ptr2;
+	while (num) {
+		if (*vptr1 > *vptr2) return 1;
+		else if (*vptr1 < *vptr2) return -1;
+		vptr1++; vptr2++; num--;
+	}
+	return 0;
+}
+
 void *memmove(void* dest, const void* src, unsigned int n)
 {
 	const unsigned char* sp;

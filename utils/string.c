@@ -55,6 +55,22 @@ void reverse(char s[]) {
 	}
 }
 
+int strcmp(const char* str1, const char* str2) {
+	unsigned int len1 = strlen(str1);
+	unsigned int len2 = strlen(str2);
+
+	int cmpResult = memcmp(str1, str2, (len1 < len2) ? len1 : len2);
+	if (cmpResult != 0)
+		return cmpResult;
+
+	if (len1 > len2)
+		return 1;
+	else if (len1 < len2)
+		return -1;
+
+	return 0;
+}
+
 char*  strcat(char* destination, const char* source)
 {
 	// return if no memory is allocated to the destination

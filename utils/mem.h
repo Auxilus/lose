@@ -6,6 +6,7 @@
 static volatile u32 free_mem_addr = 0x10000;
 
 void memcpy(u8 *source, u8 *dest, int nbytes);
+int memcmp(const void* ptr1, const void* ptr2, int num);
 void memset(u8 *dest, u8 val, u32 len);
 
 /* At this stage there is no 'free' implemented. */

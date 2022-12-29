@@ -6,6 +6,7 @@
 
 int		strlen(char *string);
 char*	strcat(char* destination, const char* source);
+int		strcmp(const char *str1, const char *str2);
 void	itoa(int n, char str[]);
 long	atoi(const char *s);
 void	reverse(char s[]);

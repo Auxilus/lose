@@ -2,6 +2,7 @@
 
 #include "../drivers/vga.h"
 #include "../drivers/pci.h"
+#include "../drivers/acpi.h"
 #include "../drivers/ports.h"
 #include "../drivers/serial.h"
 #include "../utils/mem.h"
@@ -81,6 +82,7 @@ void main() {
 	serial_print(message1);
 	serial_print(message2);
 	pci_init();
+	acpi_locate_rsdp();
 
 	gr_init_graphics();
 
