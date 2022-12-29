@@ -81,7 +81,7 @@ void main() {
 
 	serial_print(message1);
 	serial_print(message2);
-	acpi_locate_rsdp();
+	acpi_init();
 	pci_init();
 
 	gr_init_graphics();
