@@ -39,7 +39,7 @@ lose.iso: os-image.bin
 		-hide floppy.img iso/
 
 run: os-image.bin
-	qemu-system-i386 -d cpu_reset,guest_errors -serial stdio -fda $<
+	qemu-system-i386 -d cpu_reset,guest_errors -no-reboot -serial stdio -fda $<
 
 run-bin: os-image.bin
 	qemu-system-i386 -d cpu_reset,guest_errors -serial stdio -fda os-image.bin

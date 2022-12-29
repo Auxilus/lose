@@ -69,7 +69,9 @@ void pci_probe()
 				uint16_t vendor = getVendorID(bus, slot, function);
 				if(vendor == 0xffff) continue;
 				uint16_t device = getDeviceID(bus, slot, function);
-				//serial_printf("PCI: - %u    %u\n", vendor, device);
+				char *message = (char*)malloc(64);
+				sprintf(message, "PCI: vendor 0x%x device 0x%x\n", vendor, device);
+				serial_print(message);
 				pci_device *pdev = (pci_device *)malloc(sizeof(pci_device));
 				pdev->vendor = vendor;
 				pdev->device = device;
@@ -95,11 +97,13 @@ uint16_t pciCheckVendor(uint16_t bus, uint16_t slot)
 void pci_init()
 {
 	devs = drivs = 0;
-	serial_print("PCI: probe\n");
+	serial_print("PCI: probe started\n");
 	pci_devices = (pci_device **)malloc(32 * sizeof(pci_device));
 	pci_drivers = (pci_driver **)malloc(32 * sizeof(pci_driver));
 	pci_probe();
-	serial_print("PCI: driver support loaded\n");
+	char *message = (char*)malloc(64);
+	sprintf(message, "PCI: %u devices and %u drivers found\n", devs, drivs);
+	serial_print(message);
 }
 
 void pci_register_driver(pci_driver *driv)

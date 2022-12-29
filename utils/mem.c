@@ -8,36 +8,25 @@ void memcpy(u8 *source, u8 *dest, int nbytes) {
 
 void *memmove(void* dest, const void* src, unsigned int n)
 {
-	char *pDest = (char *)dest;
-    const char *pSrc =( const char*)src;
-    //allocate memory for tmp array
-		void* dummy_ptr;
-    char *tmp  = (char *)kmalloc(sizeof(char ) * n, 0, dummy_ptr);
-    if(tmp == 0)
-    {
-        return 0;
-    }
-    else
-    {
-        unsigned int i = 0;
-        // copy src to tmp array
-        for(i =0; i < n ; ++i)
-        {
-            *(tmp + i) = *(pSrc + i);
-        }
-        //copy tmp to dest
-        for(i =0 ; i < n ; ++i)
-        {
-            *(pDest + i) = *(tmp + i);
-        }
-        //free(tmp); //free allocated memory
-    }
-    return dest;
+	const unsigned char* sp;
+	unsigned char* dp;
+	if (dest < src) {
+		sp = (const unsigned char*)src; dp = (unsigned char*)dest;
+		while (n) { *dp = *sp; dp++; sp++; n--; }
+	} else {
+		while (n) {
+			sp = (unsigned char*)src + n - 1;
+			dp = (unsigned char*)dest + n - 1;
+			*dp = *sp;
+			n--;
+		}
+	}
+	return dest;
 }
 
 void memset(u8 *dest, u8 val, u32 len) {
-    u8 *temp = (u8*)dest;
-    for ( ; len != 0; len--) *temp++ = val;
+	u8 *temp = (u8*)dest;
+	for ( ; len != 0; len--) *temp++ = val;
 }
 
 /* This should be computed at link time, but a hardcoded
@@ -46,17 +35,17 @@ void memset(u8 *dest, u8 val, u32 len) {
 /* Implementation is just a pointer to some free memory which
  * keeps growing */
 u32 kmalloc(int size, int align, u32 *phys_addr) {
-    /* Pages are aligned to 4K, or 0x1000 */
-    if (align == 1 && (free_mem_addr & 0xFFFFF000)) {
-        free_mem_addr &= 0xFFFFF000;
-        free_mem_addr += 0x1000;
-    }
-    /* Save also the physical address */
-    if (phys_addr) *phys_addr = free_mem_addr;
+	/* Pages are aligned to 4K, or 0x1000 */
+	if (align == 1 && (free_mem_addr & 0xFFFFF000)) {
+		free_mem_addr &= 0xFFFFF000;
+		free_mem_addr += 0x1000;
+	}
+	/* Save also the physical address */
+	if (phys_addr) *phys_addr = free_mem_addr;
 
-    u32 ret = free_mem_addr;
-    free_mem_addr += size; /* Remember to increment the pointer */
-    return ret;
+	u32 ret = free_mem_addr;
+	free_mem_addr += size; /* Remember to increment the pointer */
+	return ret;
 }
 
 void *malloc(int size)

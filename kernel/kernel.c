@@ -73,13 +73,14 @@ void main() {
 	int *a = (int*)malloc(sizeof(int) * 5);
 	char *s = (char*)malloc(64);
 
-	char message1[64];
+	char message1[128];
 	sprintf(message1, "KERNEL: int[5]   0x%p\n", a);
-	char message2[64];
+	char message2[128];
 	sprintf(message2, "KERNEL: char[64] 0x%p\n", s);
 
 	serial_print(message1);
 	serial_print(message2);
+	pci_init();
 
 	gr_init_graphics();
 
