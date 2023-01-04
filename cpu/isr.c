@@ -59,7 +59,7 @@ void isr_install() {
 	port_byte_out(0xA1, 0x0); 
 
 	// Install the IRQs
-	serial_print("INTERRUPT: installing ISQs\n");
+	serial_print("INTERRUPT: installing IRQs\n");
 	set_idt_gate(32, (u32)irq0);
 	set_idt_gate(33, (u32)irq1);
 	set_idt_gate(34, (u32)irq2);
