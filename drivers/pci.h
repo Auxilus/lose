@@ -8,7 +8,12 @@ struct __pci_driver;
 typedef struct {
 	uint32_t vendor;
 	uint32_t device;
-	uint32_t func;
+	uint32_t function;
+	uint32_t slot;
+	uint32_t bus;
+	uint32_t headerType;
+	uint32_t classId;
+	uint32_t subClassId;
 	struct __pci_driver *driver;
 } pci_device;
 
@@ -27,6 +32,6 @@ typedef struct __pci_driver {
 } pci_driver;
 
 extern void pci_init();
-extern void pci_proc_dump(uint8_t *buffer);
+extern void pci_proc_dump();
 
 #endif

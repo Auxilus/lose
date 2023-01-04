@@ -68,9 +68,6 @@ void pci_probe()
 {
 	free_mem_addr = 0x10000;
 
-	serial_print("PCI: -----------------------------------\n");
-	serial_print("PCI: bb:ss.f  cls scls 0xvvvv 0xdddd 0xh\n");
-	serial_print("PCI: -----------------------------------\n");
 	for(uint32_t bus = 0; bus < 256; bus++)
 	{
 		for(uint32_t slot = 0; slot < 32; slot++)
@@ -81,31 +78,23 @@ void pci_probe()
 				if(vendor == 0xffff) continue;
 				uint16_t device = getDeviceID(bus, slot, function);
 				uint16_t header = getHeaderType(bus, slot, function);
-				char *message = (char*)malloc(64);
-				sprintf(message, "PCI: %02u:%02u.%u 0x%02x 0x%02x 0x%x 0x%x 0x%x\n", bus, slot, function,
-						getClassId(bus, slot, function), getSubClassId(bus, slot, function), vendor, device, header);
-				serial_print(message);
+
 				pci_device *pdev = (pci_device *)malloc(sizeof(pci_device));
 				pdev->vendor = vendor;
 				pdev->device = device;
-				pdev->func = function;
+				pdev->function = function;
+				pdev->slot = slot;
+				pdev->bus = bus;
+				pdev->classId = getClassId(bus, slot, function);
+				pdev->subClassId = getSubClassId(bus, slot, function);
+				pdev->headerType = header;
 				pdev->driver = 0;
+
 				add_pci_device(pdev);
 			}
 		}
 	}
 }
-
-uint16_t pciCheckVendor(uint16_t bus, uint16_t slot)
-{
-	uint16_t vendor,device;
-	/* check if device is valid */
-	if ((vendor = pci_read_word(bus,slot,0,0)) != 0xFFFF) {
-		device = pci_read_word(bus,slot,0,2);
-		/* valid device */
-	} return (vendor);
-}
-
 
 void pci_init()
 {
@@ -114,9 +103,7 @@ void pci_init()
 	pci_devices = (pci_device **)malloc(32 * sizeof(pci_device));
 	pci_drivers = (pci_driver **)malloc(32 * sizeof(pci_driver));
 	pci_probe();
-	char *message = (char*)malloc(64);
-	sprintf(message, "PCI: found %u devices and %u drivers\n", devs, drivs);
-	serial_print(message);
+	pci_proc_dump();
 }
 
 void pci_register_driver(pci_driver *driv)
@@ -126,17 +113,29 @@ void pci_register_driver(pci_driver *driv)
 	return;
 }
 
-void pci_proc_dump(uint8_t *buffer)
+void pci_proc_dump()
 {
-	char messages[devs][100];
+	serial_print("PCI: -----------------------------------\n");
+	serial_print("PCI: bb:ss.f  cls scls 0xvvvv 0xdddd 0xh\n");
+	serial_print("PCI: ===================================\n");
 	for(int i = 0; i < devs; i++)
 	{
 		pci_device *pci_dev = pci_devices[i];
-		if(pci_dev->driver)
-			sprintf(messages[i], "[%x:%x:%x] => %s\n", pci_dev->vendor, pci_dev->device, pci_dev->func, pci_dev->driver->name);
-		else
-			sprintf(messages[i], "[%x:%x:%x]\n", pci_dev->vendor, pci_dev->device, pci_dev->func);
+		char *message = (char*)malloc(64);
 
-		serial_print(messages[i]);
+		if(pci_dev->driver) {
+			sprintf(message, "[%x:%x:%x] => %s\n", pci_dev->vendor, pci_dev->device, pci_dev->function, pci_dev->driver->name);
+		}
+		else {
+			sprintf(message, "PCI: %02u:%02u.%u 0x%02x 0x%02x 0x%x 0x%x 0x%x\n", pci_dev->bus, pci_dev->slot, pci_dev->function,
+					pci_dev->classId, pci_dev->subClassId, pci_dev->vendor, pci_dev->device, pci_dev->headerType);
+		}
+
+		serial_print(message);
 	}
+
+	serial_print("PCI: -----------------------------------\n");
+	char *message = (char*)malloc(64);
+	sprintf(message, "PCI: found %u devices and %u drivers\n", devs, drivs);
+	serial_print(message);
 }
