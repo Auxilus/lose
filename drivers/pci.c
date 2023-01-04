@@ -3,6 +3,7 @@
 #include "../utils/string.h"
 #include "serial.h"
 #include "pci.h"
+#include "pci_lookup.h"
 #include "ports.h"
 
 
@@ -116,19 +117,24 @@ void pci_register_driver(pci_driver *driv)
 void pci_proc_dump()
 {
 	serial_print("PCI: -----------------------------------\n");
-	serial_print("PCI: bb:ss.f  cls scls 0xvvvv 0xdddd 0xh\n");
-	serial_print("PCI: ===================================\n");
 	for(int i = 0; i < devs; i++)
 	{
 		pci_device *pci_dev = pci_devices[i];
-		char *message = (char*)malloc(64);
+		char *message = (char*)malloc(512);
 
 		if(pci_dev->driver) {
 			sprintf(message, "[%x:%x:%x] => %s\n", pci_dev->vendor, pci_dev->device, pci_dev->function, pci_dev->driver->name);
 		}
 		else {
-			sprintf(message, "PCI: %02u:%02u.%u 0x%02x 0x%02x 0x%x 0x%x 0x%x\n", pci_dev->bus, pci_dev->slot, pci_dev->function,
-					pci_dev->classId, pci_dev->subClassId, pci_dev->vendor, pci_dev->device, pci_dev->headerType);
+			sprintf(message, "PCI: %02u:%02u.%u [%-23s] [%-25s] [%-10s] [%s] 0x%x\n",
+					pci_dev->bus,
+					pci_dev->slot,
+					pci_dev->function,
+					device_classes[pci_dev->classId],
+					get_subclass_name(pci_dev->classId, pci_dev->subClassId),
+					get_vendor_name(pci_dev->vendor),
+					get_device_name(pci_dev->vendor, pci_dev->device),
+					pci_dev->headerType);
 		}
 
 		serial_print(message);
