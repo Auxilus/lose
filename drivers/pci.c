@@ -40,6 +40,12 @@ uint16_t getVendorID(uint16_t bus, uint16_t device, uint16_t function)
 	return r0;
 }
 
+uint16_t getHeaderType(uint16_t bus, uint16_t device, uint16_t function)
+{
+	uint32_t r0 = pci_read_word(bus,device,function,0xd);
+	return (r0 & ~0xFF00);
+}
+
 uint16_t getDeviceID(uint16_t bus, uint16_t device, uint16_t function)
 {
 	uint32_t r0 = pci_read_word(bus,device,function,2);
@@ -61,6 +67,10 @@ uint16_t getSubClassId(uint16_t bus, uint16_t device, uint16_t function)
 void pci_probe()
 {
 	free_mem_addr = 0x10000;
+
+	serial_print("PCI: -----------------------------------\n");
+	serial_print("PCI: bb:ss.f  cls scls 0xvvvv 0xdddd 0xh\n");
+	serial_print("PCI: -----------------------------------\n");
 	for(uint32_t bus = 0; bus < 256; bus++)
 	{
 		for(uint32_t slot = 0; slot < 32; slot++)
@@ -70,8 +80,10 @@ void pci_probe()
 				uint16_t vendor = getVendorID(bus, slot, function);
 				if(vendor == 0xffff) continue;
 				uint16_t device = getDeviceID(bus, slot, function);
+				uint16_t header = getHeaderType(bus, slot, function);
 				char *message = (char*)malloc(64);
-				sprintf(message, "PCI: vendor 0x%x device 0x%x\n", vendor, device);
+				sprintf(message, "PCI: %02u:%02u.%u 0x%02x 0x%02x 0x%x 0x%x 0x%x\n", bus, slot, function,
+						getClassId(bus, slot, function), getSubClassId(bus, slot, function), vendor, device, header);
 				serial_print(message);
 				pci_device *pdev = (pci_device *)malloc(sizeof(pci_device));
 				pdev->vendor = vendor;
