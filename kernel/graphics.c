@@ -150,3 +150,10 @@ void gr_print(char character)
 
 	gr_print_character(windowctx->cursor_x, windowctx->cursor_y, '_');
 }
+
+void gr_window_print(const char *string)
+{
+	for (int i = 0; i < strlen((char *)string); i++) {
+		gr_print(string[i]);
+	}
+}
