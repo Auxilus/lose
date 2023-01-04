@@ -5,6 +5,7 @@
 #include "../drivers/acpi.h"
 #include "../drivers/ports.h"
 #include "../drivers/serial.h"
+#include "../drivers/memory.h"
 #include "../utils/mem.h"
 #include "../utils/string.h"
 #include "../cpu/isr.h"
@@ -81,6 +82,7 @@ void main() {
 
 	serial_print(message1);
 	serial_print(message2);
+	pmm_dump();
 	acpi_init();
 	pci_init();
 

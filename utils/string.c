@@ -154,7 +154,7 @@ int vsnprintf(char* str, size_t size, const char* format, va_list ap) {
 		bool alignLeft = false;
 		bool alwaysSign = false;
 		bool noSign = false;
-		bool padding = ' ';
+		char padding = ' ';
 		int minimumWidth = 0;
 		int precision = 1;
 		bool numberMustBeShort = false;
