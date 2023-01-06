@@ -4,7 +4,7 @@
 char *to_hstring(uint16_t val) {
 	char *ret = (char*)malloc(8);
 	sprintf(ret, "%02x", val);
-	return (const char*)ret;
+	return ret;
 }
 
 const char* device_classes[20] = {
