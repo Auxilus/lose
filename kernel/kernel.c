@@ -27,6 +27,13 @@ void kernel_handle_key(key_event ke)
 		port_word_out(0x604, 0x2000);
 		return;
 	}
+	if (ke.is_shift && ke.is_ctrl && ke.letter == 'T') {
+		// basic shutdown for qemu ctrl+shift+c
+		serial_print("KERNEL: testing scroll\n");
+		gr_window_scroll();
+		serial_print("KERNEL: testing scroll done\n");
+		return;
+	}
 
 	if (ke.is_shift && ke.is_ctrl && ke.letter == 'C') {
 		// basic shutdown for qemu ctrl+shift+c
