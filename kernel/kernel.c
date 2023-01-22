@@ -13,12 +13,14 @@
 #include "./graphics.h"
 #include "kernel.h"
 
-void dummy_test_entrypoint() {
+void dummy_test_entrypoint()
+{
 }
 
 void kernel_handle_key(key_event ke)
 {
-	if (ke.is_shift && ke.is_ctrl && ke.letter == 'Z') {
+	if (ke.is_shift && ke.is_ctrl && ke.letter == 'Z')
+	{
 		// basic shutdown for qemu ctrl+shift+c
 		serial_print("kernel: kernel shutdown initiated\n");
 		gr_clear_screen();
@@ -27,7 +29,8 @@ void kernel_handle_key(key_event ke)
 		port_word_out(0x604, 0x2000);
 		return;
 	}
-	if (ke.is_shift && ke.is_ctrl && ke.letter == 'T') {
+	if (ke.is_shift && ke.is_ctrl && ke.letter == 'T')
+	{
 		// basic shutdown for qemu ctrl+shift+c
 		serial_print("KERNEL: testing scroll\n");
 		gr_window_scroll();
@@ -35,7 +38,8 @@ void kernel_handle_key(key_event ke)
 		return;
 	}
 
-	if (ke.is_shift && ke.is_ctrl && ke.letter == 'C') {
+	if (ke.is_shift && ke.is_ctrl && ke.letter == 'C')
+	{
 		// basic shutdown for qemu ctrl+shift+c
 		gr_clear_screen();
 		windowctx->cursor_x = 0;
@@ -43,32 +47,11 @@ void kernel_handle_key(key_event ke)
 		return;
 	}
 
-	switch (ke.letter) {
-		case '\n':
-			gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ');
-			windowctx->cursor_x = 0;
-			windowctx->cursor_y += 8;
-			gr_print_character(windowctx->cursor_x, windowctx->cursor_y, '_');
-			break;
-		case '\t':
-			gr_print(' ');
-			gr_print(' ');
-			break;
-		case 0x08:
-			gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ');
-			if (windowctx->cursor_x > 8) {
-				windowctx->cursor_x -= 8;
-			} else {
-				windowctx->cursor_x = 0;
-			}
-			gr_print_character(windowctx->cursor_x, windowctx->cursor_y, '_');
-			break;
-		default:
-			gr_print(ke.letter);
-	}
+	gr_print(ke.letter);
 }
 
-void main() {
+void main()
+{
 	serial_init();
 	isr_install();
 	irq_install();
@@ -77,10 +60,10 @@ void main() {
 	asm("int $2");
 	asm("int $3");
 	serial_print("KERNEL: interrupt test complete\n");
-	
+
 	serial_print("KERNEL: testing malloc\n");
-	int *a = (int*)malloc(sizeof(int) * 5);
-	char *s = (char*)malloc(64);
+	int *a = (int *)malloc(sizeof(int) * 5);
+	char *s = (char *)malloc(64);
 
 	char message1[128];
 	sprintf(message1, "KERNEL: int[5]   0x%p\n", a);
@@ -95,7 +78,7 @@ void main() {
 
 	gr_init_graphics();
 
-
 	// gr_print_string(520, 430, "VGA mode 0x12\nfont test\n640x480x16");
-	while(1);
+	while (1)
+		;
 }

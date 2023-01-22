@@ -16,7 +16,7 @@ void gr_init_graphics(void)
 	windowctx->cursor_y = 0;
 	windowctx->charbuf = (char *)malloc((GR_HEIGHT / 8) * (GR_WIDTH / 8));
 	memset(windowctx->charbuf, 0, (GR_HEIGHT / 8) * (GR_WIDTH / 8));
-	gr_print_character(0, 0, '_');
+	gr_print_character(0, 0, '_', 1);
 	serial_print("GRAPHICSL: init done\n");
 }
 
@@ -55,29 +55,40 @@ void gr_print_string(int x, int y, char *string)
 		else
 		{
 			int character = string[i];
-			gr_print_character(cx, y, character);
+			gr_print_character(cx, y, character, 0);
 			cx = cx + 8;
 		}
 	}
 }
 
-void gr_print_character(int x, int y, int character)
+void gr_print_character(int x, int y, int character, int skipAdvance)
 {
 	int cx, cy;
 	int set;
 	char *bitmap = font8x8_basic[character];
 
-	// char msg[64];
-	// sprintf(msg, "x %d y %d buffer idx %u\n", x, y, gr_window_get_buffer_idx(x, y));
-	// serial_print(msg);
-	if ((windowctx->cursor_y + 8) > GR_HEIGHT - 8)
+	if ((y + 8) > GR_HEIGHT)
 	{
 		gr_window_scroll();
+		x = windowctx->cursor_x;
+		y = windowctx->cursor_y;
+	}
+
+	if ((x + 8) > GR_WIDTH)
+	{
+		x = 0;
+		y += 8;
+		windowctx->cursor_x = x;
+		windowctx->cursor_y = y;
 	}
 
 	int winbuf_idx = gr_window_get_buffer_idx(x, y);
 	windowctx->charbuf[winbuf_idx] = (char)character;
 
+	if (!skipAdvance)
+	{
+		windowctx->cursor_x += 8;
+	}
 	for (cx = 0; cx < 8; cx++)
 	{
 		for (cy = 0; cy < 8; cy++)
@@ -171,22 +182,29 @@ void gr_draw_rect(int x0, int y0, int w, int h, char color)
 
 void gr_print(char character)
 {
-	if ((windowctx->cursor_y + 8) > GR_HEIGHT - 8)
+
+	switch (character)
 	{
-		gr_window_scroll();
-	}
-	gr_print_character(windowctx->cursor_x, windowctx->cursor_y, character);
-	if ((windowctx->cursor_x + 8) > GR_WIDTH - 8)
-	{
+	case '\n':
+		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ', 1);
 		windowctx->cursor_x = 0;
 		windowctx->cursor_y += 8;
+		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, '_', 1);
+		break;
+	case '\t':
+		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ', 0);
+		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ', 0);
+		break;
+	case 0x08:
+		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ', 1);
+		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, '_', 1);
+		break;
+	default:
+		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ', 1);
+		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, character, 0);
+		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, '_', 1);
+		break;
 	}
-	else
-	{
-		windowctx->cursor_x += 8;
-	}
-
-	gr_print_character(windowctx->cursor_x, windowctx->cursor_y, '_');
 }
 
 void gr_window_print(const char *string)
