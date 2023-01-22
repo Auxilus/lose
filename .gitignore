@@ -7,3 +7,4 @@ iso
 *.img
 *.iso
 .vscode/settings.json
+kernel.elf
