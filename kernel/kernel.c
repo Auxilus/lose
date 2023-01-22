@@ -96,6 +96,6 @@ void main() {
 	gr_init_graphics();
 
 
-	gr_print_string(520, 430, "VGA mode 0x12\nfont test\n640x480x16");
+	// gr_print_string(520, 430, "VGA mode 0x12\nfont test\n640x480x16");
 	while(1);
 }

@@ -60,6 +60,7 @@ void gr_print_string(int x, int y, char *string)
 		}
 	}
 }
+
 void gr_print_character(int x, int y, int character)
 {
 	int cx, cy;
@@ -69,6 +70,10 @@ void gr_print_character(int x, int y, int character)
 	// char msg[64];
 	// sprintf(msg, "x %d y %d buffer idx %u\n", x, y, gr_window_get_buffer_idx(x, y));
 	// serial_print(msg);
+	if ((windowctx->cursor_y + 8) > GR_HEIGHT - 8)
+	{
+		gr_window_scroll();
+	}
 
 	int winbuf_idx = gr_window_get_buffer_idx(x, y);
 	windowctx->charbuf[winbuf_idx] = (char)character;
@@ -166,6 +171,10 @@ void gr_draw_rect(int x0, int y0, int w, int h, char color)
 
 void gr_print(char character)
 {
+	if ((windowctx->cursor_y + 8) > GR_HEIGHT - 8)
+	{
+		gr_window_scroll();
+	}
 	gr_print_character(windowctx->cursor_x, windowctx->cursor_y, character);
 	if ((windowctx->cursor_x + 8) > GR_WIDTH - 8)
 	{
@@ -193,10 +202,19 @@ void gr_window_scroll(void)
 	/*
 	/ read 1nd character line in first[GR_WIDTH / 8]
 	/ read 2nd character line in second[GR_WIDTH / 8]
+	/ skip if both first and second are empty
 	/ read each character from first and second array
 	/ check if pixel needs to be set or cleared
-	/ clear last character row
+	/ remap the window character buffer
 	*/
+
+	if (windowctx->cursor_y < 8)
+	{
+		return;
+	}
+
+	char *tmp = (char *)malloc((GR_HEIGHT / 8) * (GR_WIDTH / 8));
+	memcpy(&windowctx->charbuf[GR_WIDTH / 8], tmp, ((GR_HEIGHT / 8) * (GR_WIDTH / 8)) - (GR_WIDTH / 8));
 
 	for (int row = 0; row < (GR_HEIGHT / 8) - 1; row++)
 	{
@@ -210,14 +228,17 @@ void gr_window_scroll(void)
 		{
 			char a = first[col];
 			char b = second[col];
-			if (a == 0 && b == 0) { continue; }
+			if (a == 0 && b == 0)
+			{
+				continue;
+			}
 
 			char *bitmapa = font8x8_basic[(int)a];
 			char *bitmapb = font8x8_basic[(int)b];
 
 			int cx, cy;
-			int x = gr_window_get_x(col + (row*(GR_WIDTH) / 8));
-			int y = gr_window_get_y(col + (row*(GR_WIDTH) / 8));
+			int x = gr_window_get_x(col + (row * (GR_WIDTH) / 8));
+			int y = gr_window_get_y(col + (row * (GR_WIDTH) / 8));
 			for (cx = 0; cx < 8; cx++)
 			{
 				for (cy = 0; cy < 8; cy++)
@@ -233,6 +254,9 @@ void gr_window_scroll(void)
 			}
 		}
 	}
+
+	windowctx->charbuf = tmp;
+	windowctx->cursor_y -= 8;
 }
 
 int gr_window_get_buffer_idx(int x, int y)
