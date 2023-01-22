@@ -226,23 +226,26 @@ void gr_window_scroll(void)
 	/ remap the window character buffer
 	*/
 
+	int nW = (GR_WIDTH / 8);
+	int nH = (GR_HEIGHT / 8);
+
 	if (windowctx->cursor_y < 8)
 	{
 		return;
 	}
 
-	char *tmp = (char *)malloc((GR_HEIGHT / 8) * (GR_WIDTH / 8));
-	memcpy(&windowctx->charbuf[GR_WIDTH / 8], tmp, ((GR_HEIGHT / 8) * (GR_WIDTH / 8)) - (GR_WIDTH / 8));
+	char *tmp = (char *)malloc((nH) * (nW));
+	memcpy(&windowctx->charbuf[nW], tmp, ((nH) * (nW)) - (nW));
 
-	for (int row = 0; row < (GR_HEIGHT / 8) - 1; row++)
+	for (int row = 0; row < (nH) - 1; row++)
 	{
-		char *first = (char *)malloc(GR_WIDTH / 8);
-		char *second = (char *)malloc(GR_WIDTH / 8);
+		char *first = (char *)malloc(nW);
+		char *second = (char *)malloc(nW);
 
-		memcpy(&windowctx->charbuf[row * GR_WIDTH / 8], first, GR_WIDTH / 8);
-		memcpy(&windowctx->charbuf[(row + 1) * GR_WIDTH / 8], second, GR_WIDTH / 8);
+		memcpy(&windowctx->charbuf[row * nW], first, nW);
+		memcpy(&windowctx->charbuf[(row + 1) * nW], second, nW);
 
-		for (int col = 0; col < GR_WIDTH / 8; col++)
+		for (int col = 0; col < nW; col++)
 		{
 			char a = first[col];
 			char b = second[col];
@@ -267,6 +270,37 @@ void gr_window_scroll(void)
 					if (seta != setb)
 					{
 						vga_mode12h_pixel((setb && !seta) ? WHITE : BLACK, (u16)x + cy, (u16)y + cx);
+					}
+				}
+			}
+		}
+	}
+
+	char *last = (char *)malloc(nW);
+	memcpy(&windowctx->charbuf[((nH) - 1) * nW], last, nW);
+
+	if (last != "")
+	{
+		for (int last_col = 0; last_col < nW; last_col++)
+		{
+			char a = last[last_col];
+			if (last_col == '\0')
+			{
+				continue;
+			}
+
+			int cx, cy;
+			char *bitmapa = font8x8_basic[(int)a];
+			int x = gr_window_get_x(last_col + (((nH) - 1) * (GR_WIDTH) / 8));
+			int y = gr_window_get_y(last_col + (((nH) - 1) * (GR_WIDTH) / 8));
+			for (cx = 0; cx < 8; cx++)
+			{
+				for (cy = 0; cy < 8; cy++)
+				{
+					int seta = bitmapa[cx] & 1 << cy;
+					if (seta)
+					{
+						vga_mode12h_pixel(BLACK, (u16)x + cy, (u16)y + cx);
 					}
 				}
 			}
