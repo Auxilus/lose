@@ -1,7 +1,8 @@
 #include "keyboard.h"
-#include "../drivers/serial.h"
 #include "ports.h"
+#include "../drivers/serial.h"
 #include "../utils/string.h"
+#include "../utils/console.h"
 #include "../kernel/kernel.h"
 #include "../cpu/isr.h"
 
@@ -227,13 +228,13 @@ void keyboard_callback(registers_t *regs)
 
 		//char message[128];
 		//sprintf(message, "KEYBOARD: key released [%d] [%x]\n", sc, scancode);
-		//serial_print(message);
+		//console_pre_print(message);
 	}
 	else {
 		// keypress handler
 		//char message[128];
 		//sprintf(message, "KEYBOARD: key pressed [%d] [%x]\n", sc, scancode);
-		//serial_print(message);
+		//console_pre_print(message);
 		
 		// check for shift press L & R
 		// TODO: don't hardcode scancode values

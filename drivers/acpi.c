@@ -2,6 +2,7 @@
 #include "serial.h"
 #include "../utils/mem.h"
 #include "../utils/string.h"
+#include "../utils/console.h"
 
 int sigcmp(char* ptr1, char* ptr2);
 
@@ -23,7 +24,7 @@ RSDPDescriptor20 *acpi_locate_rsdp(void)
 	memcpy(mem_start, (u8*)d, sizeof(RSDPDescriptor20));
 	char *message = (char*)malloc(64);
 	sprintf(message, "ACPI: RSDP revision %u found at 0x%x\n", d->firstPart.Revision, (u32)mem_start);
-	serial_print(message);
+	console_pre_print(message);
 
 	return d;
 }
@@ -35,16 +36,16 @@ void acpi_init()
 
 	int entries = (xsdt->Length - sizeof(SDTHeader)) / 8;
 
-	serial_print("ACPI: XSDT tables - ");
+	console_pre_print("ACPI: XSDT tables - ");
 	for (int i = 0; i < entries; i++) {
 		SDTHeader *new = (SDTHeader*)*(uint32_t*)((uint32_t)xsdt + sizeof(SDTHeader) + (i * 8));
 		char sig[5];
 		memcpy((u8*)&new->Signature, sig, 4);
 		sig[4] = '\0';
-		serial_print(sig);
-		serial_print(" ");
+		console_pre_print(sig);
+		console_pre_print(" ");
 	}
-	serial_print("\n");
+	console_pre_print("\n");
 }
 
 int sigcmp(char* ptr1, char* ptr2)

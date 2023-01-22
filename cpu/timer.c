@@ -1,21 +1,22 @@
 #include "timer.h"
 #include "../drivers/serial.h"
 #include "isr.h"
+#include "../utils/console.h"
 
 volatile u32 tick = 0;
 
 static void timer_callback(registers_t *regs) {
 	//char stick[256];
 	//itoa(tick /FREQ/ 100, stick);
-	//serial_print("tick ");
-	//serial_print(stick);
-	//serial_print("\n");
+	//console_pre_print("tick ");
+	//console_pre_print(stick);
+	//console_pre_print("\n");
 	tick++;
 	return;
 }
 
 void init_timer(u32 freq) {
-	serial_print("TIMER: registering IRQ0/timer_callback\n");
+	console_pre_print("TIMER: registering IRQ0/timer_callback\n");
 	/* Install the function we just wrote */
 	register_interrupt_handler(IRQ0, timer_callback);
 
@@ -29,7 +30,7 @@ void init_timer(u32 freq) {
 	port_byte_out(0x40, high);
 	char str[64];
 	sprintf(str, "TIMER: timer enabled [%d Hz]\n", 1000);
-	serial_print(str);
+	console_pre_print(str);
 }
 
 void timer_sleep(int seconds)

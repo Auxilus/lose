@@ -13,5 +13,6 @@ void *memmove(void* dest, const void* src, unsigned int n);
 /* At this stage there is no 'free' implemented. */
 u32 kmalloc(int size, int align, u32 *phys_addr);
 void *malloc(int size);
+void free(int size);
 
 #endif

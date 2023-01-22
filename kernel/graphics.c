@@ -3,7 +3,9 @@
 #include "../drivers/vga.h"
 #include "../drivers/ports.h"
 #include "../drivers/serial.h"
+#include "../utils/console.h"
 #include "../utils/string.h"
+#include "../utils/console.h"
 
 int graphics_abs(int value) { return value < 0 ? 0 - value : value; }
 

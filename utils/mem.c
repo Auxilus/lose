@@ -94,3 +94,8 @@ void *malloc(int size)
 	free_mem_addr += size + 1;
 	return ret;
 }
+
+void free(int size)
+{
+	free_mem_addr -= size;
+}

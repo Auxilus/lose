@@ -4,6 +4,7 @@
 #include "../drivers/keyboard.h"
 #include "../drivers/serial.h"
 #include "../utils/string.h"
+#include "../utils/console.h"
 #include "timer.h"
 
 isr_t interrupt_handlers[256];
@@ -11,7 +12,7 @@ isr_t interrupt_handlers[256];
 /* Can't do this with a loop because we need the address
  * of the function names */
 void isr_install() {
-	serial_print("INTERRUPT: installing ISRs\n");
+	console_pre_print("INTERRUPT: installing ISRs\n");
 	set_idt_gate(0, (u32)isr0);
 	set_idt_gate(1, (u32)isr1);
 	set_idt_gate(2, (u32)isr2);
@@ -46,7 +47,7 @@ void isr_install() {
 	set_idt_gate(31, (u32)isr31);
 
 	// Remap the PIC
-	serial_print("INTERRUPT: remapping PIC\n");
+	console_pre_print("INTERRUPT: remapping PIC\n");
 	port_byte_out(0x20, 0x11);
 	port_byte_out(0xA0, 0x11);
 	port_byte_out(0x21, 0x20);
@@ -59,7 +60,7 @@ void isr_install() {
 	port_byte_out(0xA1, 0x0); 
 
 	// Install the IRQs
-	serial_print("INTERRUPT: installing IRQs\n");
+	console_pre_print("INTERRUPT: installing IRQs\n");
 	set_idt_gate(32, (u32)irq0);
 	set_idt_gate(33, (u32)irq1);
 	set_idt_gate(34, (u32)irq2);
@@ -122,7 +123,7 @@ char *exception_messages[] = {
 void isr_handler(registers_t *r) {
 	char str[64];
 	sprintf(str, "INTERRUPT: received interrupt: %d [%s]\n", r->int_no, exception_messages[r->int_no]);
-	serial_print(str);
+	console_pre_print(str);
 	//r->eip++;
 }
 
@@ -145,7 +146,7 @@ void irq_handler(registers_t *r) {
 
 void irq_install() {
 	/* Enable interruptions */
-	serial_print("INTERRUPT: enabling interrupts\n");
+	console_pre_print("INTERRUPT: enabling interrupts\n");
 	asm volatile("sti");
 	/* IRQ0: timer */
 	init_timer(FREQ);
