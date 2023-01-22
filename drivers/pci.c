@@ -128,16 +128,17 @@ void pci_proc_dump()
 		}
 		else
 		{
-			sprintf(message, "PCI: %02u:%02u.%u [0x%04x] [0x%04x:0x%04x] [0x%04x] [0x%04x] 0x%x\n",
-							pci_dev->bus,
-							pci_dev->slot,
-							pci_dev->function,
-							pci_dev->classId,
+			const char *device_class = device_classes[pci_dev->classId];
+			const char *device_subclass = get_subclass_name(pci_dev->classId, pci_dev->subClassId);
+			const char *vendor = get_vendor_name(pci_dev->vendor);
+			// sprintf(message, "PCI: %02u:%02u.%u 0x%04x:0x%04x 0x%04x 0x%04x %s (%s)\n",
+			sprintf(message, "PCI: 0x%04x:0x%04x 0x%04x 0x%04x %s (%s)\n",
 							pci_dev->classId,
 							pci_dev->subClassId,
 							pci_dev->vendor,
 							pci_dev->device,
-							pci_dev->headerType);
+							device_class,
+							device_subclass);
 			// sprintf(message, "PCI: %02u:%02u.%u [%-23s] [%-25s] [%-10s] [%s] 0x%x\n",
 			// 				pci_dev->bus,
 			// 				pci_dev->slot,

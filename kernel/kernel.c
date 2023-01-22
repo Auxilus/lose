@@ -32,10 +32,8 @@ void kernel_handle_key(key_event ke)
 	}
 	if (ke.is_shift && ke.is_ctrl && ke.letter == 'T')
 	{
-		// basic shutdown for qemu ctrl+shift+c
-		console_pre_print("KERNEL: testing scroll\n");
+		// scroll test
 		gr_window_scroll();
-		console_pre_print("KERNEL: testing scroll done\n");
 		return;
 	}
 
@@ -53,20 +51,17 @@ void kernel_handle_key(key_event ke)
 
 void main()
 {
-	enable_gr_print = 0;
+	console_set_enable_gr_print(0);
 	serial_init();
-	console_pre_init();
 	gr_init_graphics();
-	enable_gr_print = 1;
+	console_set_enable_gr_print(1);
 	isr_install();
 	irq_install();
 
 	console_pre_print("KERNEL: testing interrupts\n");
-	gr_window_print("KERNEL: testing interrupts\n");
 	asm("int $2");
 	asm("int $3");
 	console_pre_print("KERNEL: interrupt test complete\n");
-	gr_window_print("KERNEL: interrupt test complete\n");
 
 	console_pre_print("KERNEL: testing malloc\n");
 	int *a = (int *)malloc(sizeof(int) * 5);

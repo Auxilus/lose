@@ -17,10 +17,10 @@ void pmm_dump(void)
 
 		switch(smaps->Type) {
 			case 1:
-				type = "Free memory";
+				type = "Free";
 				break;
 			case 2:
-				type = "Reserved memory";
+				type = "Reserved";
 				break;
 			default:
 				break;
