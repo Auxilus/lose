@@ -53,7 +53,7 @@ void main()
 {
 	console_set_enable_gr_print(0);
 	serial_init();
-	vga_write_registers();
+	vga_init();
 	gr_init_graphics();
 	console_set_enable_gr_print(1);
 	isr_install();
@@ -78,6 +78,8 @@ void main()
 	pmm_dump();
 	acpi_init();
 	pci_init();
+	
+	// vga_swap_buffers();
 
 
 	// gr_print_string(520, 430, "VGA mode 0x12\nfont test\n640x480x16");

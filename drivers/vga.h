@@ -37,6 +37,24 @@ unsigned static const char g_640x480x16[] = {
 #define attributeControllerWritePort 0x3c0
 #define attributeControllerResetPort 0x3da
 
+#define TRANSPARENT		0xFF
+#define BLACK					0
+#define BLUE					1
+#define GREEN					2
+#define CYAN					3
+#define RED						4
+#define PURPLE				5
+#define BROWN					6
+#define LTGRAY				7
+#define DKGRAY				8
+#define LTBLUE				9
+#define LTGREEN				10
+#define LTCYAN				11
+#define LTRED					12
+#define LTPURPLE			13
+#define YELLOW				14
+#define WHITE					15
+
 #define bit_get(p, m) ((p) & (m))
 #define bit_set(p, m) ((p) |= (m))
 #define bit_clear(p, m) ((p) &= ~(m))
@@ -50,11 +68,19 @@ unsigned static const char g_640x480x16[] = {
 // VGA sequencer ports
 #define VGA_SC_IDX 0x3c4
 #define VGA_SC_DATA 0x3c5
+#define NULL '\0'
 
+static char *vga_back_buffer[] = {NULL, NULL, NULL, NULL};
+static uint8_t m_cval[256];
+static uint8_t m_cmap[256];
+
+void vga_init(void);
 void vga_write_registers(void);
-
 void vga_set_pixel(int pos_x, int pos_y, u8 VGA_COLOR);
 int vga_mode12h_pixel(u8 color, u16 x, u16 y);
+void vga_swap_buffers(void);
+int vga_buffered_mode12h_pixel(u8 color, u16 x, u16 y);
 void vga_set_plane(u8 p);
+uint8_t vga_get_color(uint8_t cname);
 
 #endif
