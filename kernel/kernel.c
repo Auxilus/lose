@@ -53,6 +53,7 @@ void main()
 {
 	console_set_enable_gr_print(0);
 	serial_init();
+	vga_write_registers();
 	gr_init_graphics();
 	console_set_enable_gr_print(1);
 	isr_install();
