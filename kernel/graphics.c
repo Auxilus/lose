@@ -27,8 +27,8 @@ void gr_clear_screen(void)
 	serial_print("GRAPHICS: clearing plane framebuffer\n");
 
 	char s[1];
-	port_word_out(sequencerIndexPort, 0x02);
-	port_byte_out(sequencerDataPort, 0xff);
+	port_word_out(VGA_SEQ_IDX, 0x02);
+	port_byte_out(VGA_SEQ_DATA, 0xff);
 	memset((u8 *)GR_START, BLACK, 64 * 1024);
 }
 
@@ -180,27 +180,24 @@ void gr_draw_rect(int x0, int y0, int w, int h, char color)
 void gr_print(char character)
 {
 
-	switch (character)
+	if (character == '\n')
 	{
-	case '\n':
-		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ', 1);
+
 		windowctx->cursor_x = 0;
 		windowctx->cursor_y += 8;
-		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, '_', 1);
-		break;
-	case '\t':
-		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ', 0);
-		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ', 0);
-		break;
-	case 0x08:
-		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ', 1);
-		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, '_', 1);
-		break;
-	default:
-		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ', 1);
+	}
+	else if (character == 0x08)
+	{
+		if (windowctx->cursor_x > 8)
+		{
+			windowctx->cursor_x -= 8;
+			gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ', 1);
+		}
+	}
+
+	else
+	{
 		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, character, 0);
-		gr_print_character(windowctx->cursor_x, windowctx->cursor_y, '_', 1);
-		break;
 	}
 }
 

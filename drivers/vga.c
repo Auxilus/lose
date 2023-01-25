@@ -11,8 +11,8 @@ int vga_mode12h_pixel(u8 color, u16 x, u16 y)
 {
 	if ((x >= 640) || (y >= 480))
 		return -1;
-	port_word_out(sequencerIndexPort, 0x02);
-	port_byte_out(sequencerDataPort, 0xff);
+	port_word_out(VGA_SEQ_IDX, 0x02);
+	port_byte_out(VGA_SEQ_DATA, 0xff);
 	unsigned char *fb = (unsigned char *)0xA0000;
 	unsigned int offset = (y * 640 + x) / 8;
 	unsigned bit_no = x % 8;
@@ -44,8 +44,8 @@ void vga_write_registers(void)
 
 	for (uint8_t i = 0; i < 5; i++)
 	{
-		port_byte_out(sequencerIndexPort, i);
-		port_byte_out(sequencerDataPort, *(registers));
+		port_byte_out(VGA_SEQ_IDX, i);
+		port_byte_out(VGA_SEQ_DATA, *(registers));
 		registers++;
 	}
 

@@ -1,4 +1,4 @@
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c utils/*.c cpu/*.c)
+C_SOURCES = $(wildcard kernel/*.c kernel/shell/*.c drivers/*.c utils/*.c cpu/*.c)
 ASM_SOURCES = ${wildcard cpu/*.asm}
 HEADERS = $(wildcard kernel/*.h drivers/*.h utils/*.h cpu/*.h)
 # Nice syntax for file extension replacement

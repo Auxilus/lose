@@ -13,6 +13,7 @@
 #include "../cpu/timer.h"
 #include "./graphics.h"
 #include "kernel.h"
+#include "shell/shell.h"
 
 void dummy_test_entrypoint()
 {
@@ -20,33 +21,33 @@ void dummy_test_entrypoint()
 
 void kernel_handle_key(key_event ke)
 {
-	if (ke.is_shift && ke.is_ctrl && ke.letter == 'Z')
-	{
-		// basic shutdown for qemu ctrl+shift+c
-		console_pre_print("kernel: kernel shutdown initiated\n");
-		gr_clear_screen();
-		gr_print_string(10, 10, "shutting down...");
-		timer_sleep(1);
-		port_word_out(0x604, 0x2000);
-		return;
-	}
-	if (ke.is_shift && ke.is_ctrl && ke.letter == 'T')
-	{
-		// scroll test
-		gr_window_scroll();
-		return;
-	}
+	// if (ke.is_shift && ke.is_ctrl && ke.letter == 'Z')
+	// {
+	// 	// basic shutdown for qemu ctrl+shift+c
+	// 	console_pre_print("kernel: kernel shutdown initiated\n");
+	// 	gr_clear_screen();
+	// 	gr_print_string(10, 10, "shutting down...");
+	// 	timer_sleep(1);
+	// 	port_word_out(0x604, 0x2000);
+	// 	return;
+	// }
+	// if (ke.is_shift && ke.is_ctrl && ke.letter == 'T')
+	// {
+	// 	// scroll test
+	// 	gr_window_scroll();
+	// 	return;
+	// }
 
-	if (ke.is_shift && ke.is_ctrl && ke.letter == 'C')
-	{
-		// basic shutdown for qemu ctrl+shift+c
-		gr_clear_screen();
-		windowctx->cursor_x = 0;
-		windowctx->cursor_y = 0;
-		return;
-	}
+	// if (ke.is_shift && ke.is_ctrl && ke.letter == 'C')
+	// {
+	// 	// basic shutdown for qemu ctrl+shift+c
+	// 	gr_clear_screen();
+	// 	windowctx->cursor_x = 0;
+	// 	windowctx->cursor_y = 0;
+	// 	return;
+	// }
 
-	gr_print(ke.letter);
+	shell_keypress(ke);
 }
 
 void main()
@@ -78,7 +79,7 @@ void main()
 	pmm_dump();
 	acpi_init();
 	pci_init();
-
+	shell_init();
 
 	// gr_print_string(520, 430, "VGA mode 0x12\nfont test\n640x480x16");
 	while (1)

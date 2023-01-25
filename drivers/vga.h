@@ -28,8 +28,8 @@ unsigned static const char g_640x480x16[] = {
 #define crtcDataPort 0x3d5
 #define crtcIndexPortText 0x3b4
 #define crtcDataPortText 0x3b5
-#define sequencerIndexPort 0x3c4
-#define sequencerDataPort 0x3c5
+#define VGA_SEQ_IDX 0x3c4
+#define VGA_SEQ_DATA 0x3c5
 #define graphicsControllerIndexPort 0x3ce
 #define graphicsControllerDataPort 0x3cf
 #define attributeControllerIndexPort 0x3c0
