@@ -27,14 +27,9 @@ void gr_clear_screen(void)
 	serial_print("GRAPHICS: clearing plane framebuffer\n");
 
 	char s[1];
-	for (u8 p = 3; p < 4; p--)
-	{
-		char str[24];
-		sprintf(str, "GRAPHICS: plane[%u]\n", p);
-		serial_print(str);
-		vga_set_plane(p);
-		memset((u8 *)GR_START, BLACK, 64 * 1024);
-	}
+	port_word_out(sequencerIndexPort, 0x02);
+	port_byte_out(sequencerDataPort, 0xff);
+	memset((u8 *)GR_START, BLACK, 64 * 1024);
 }
 
 void gr_print_string(int x, int y, char *string)
@@ -239,7 +234,7 @@ void gr_window_scroll(void)
 	char *tmp = (char *)malloc((nH) * (nW));
 	memcpy(&windowctx->charbuf[nW], tmp, ((nH) * (nW)) - (nW));
 
-	for (int row = 0; row < (nH) - 1; row++)
+	for (int row = 0; row < (nH)-1; row++)
 	{
 		char *first = (char *)malloc(nW);
 		char *second = (char *)malloc(nW);
@@ -279,7 +274,7 @@ void gr_window_scroll(void)
 	}
 
 	char *last = (char *)malloc(nW);
-	memcpy(&windowctx->charbuf[((nH) - 1) * nW], last, nW);
+	memcpy(&windowctx->charbuf[((nH)-1) * nW], last, nW);
 
 	if (last != "")
 	{
@@ -293,8 +288,8 @@ void gr_window_scroll(void)
 
 			int cx, cy;
 			char *bitmapa = font8x8_basic[(int)a];
-			int x = gr_window_get_x(last_col + (((nH) - 1) * (GR_WIDTH) / 8));
-			int y = gr_window_get_y(last_col + (((nH) - 1) * (GR_WIDTH) / 8));
+			int x = gr_window_get_x(last_col + (((nH)-1) * (GR_WIDTH) / 8));
+			int y = gr_window_get_y(last_col + (((nH)-1) * (GR_WIDTH) / 8));
 			for (cx = 0; cx < 8; cx++)
 			{
 				for (cy = 0; cy < 8; cy++)
