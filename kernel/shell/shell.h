@@ -3,9 +3,10 @@
 
 #include "../../drivers/keyboard.h"
 
-#define SHELL_PROMPT "]"
-#define SHELL_WAIT_CHAR "_"
-#define SHELL_BUFFER_MAX 512
+#define SHELL_PROMPT        "]"
+#define SHELL_WAIT_CHAR     "_"
+#define SHELL_BUFFER_MAX    512
+#define SHELL_COMMAND_INFO  "\n---------LOSE OS, VERSION 1337---------\n   Tired of government spying on you?\n   try lose!\n"
 
 void shell_init(void);
 void shell_loop(void);

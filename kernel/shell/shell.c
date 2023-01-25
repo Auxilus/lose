@@ -74,6 +74,11 @@ void shell_keypress(key_event ke)
   if (ke.letter == 0x08)
   {
     shell_buffer_loc--;
+    if (shell_buffer_loc < 0)
+    {
+      shell_buffer_loc = 0;
+    }
+    shell_buffer[shell_buffer_loc] = '\0';
     gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ', 1);
   }
   else
@@ -95,13 +100,13 @@ void handle_command()
 
   if (strcmp(shell_buffer, "info") == 0)
   {
-    gr_window_print("CHAD OS, VERSION 1.3.3.7\n");
+    gr_window_print(SHELL_COMMAND_INFO);
     return;
   }
 
   if (strcmp(shell_buffer, "exit") == 0)
   {
-    gr_window_print("Shutting down\n");
+    gr_window_print("Shutting down...\n");
     timer_sleep(1);
     gr_clear_screen();
     port_word_out(0x604, 0x2000);
