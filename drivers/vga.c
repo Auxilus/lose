@@ -14,11 +14,9 @@ int vga_mode12h_pixel(u8 color, u16 x, u16 y)
 	unsigned char *fb = (unsigned char *)0xA0000;
 	unsigned int offset = (y * 640 + x) / 8;
 	unsigned bit_no = x % 8;
-	for (u8 p = 3; p < 4; p--)
-	{
-		vga_set_plane(p);
-		bit_write(fb[offset], 1 << (7 - bit_no), (bit_get(color, 1 << p)));
-	}
+	port_word_out(sequencerIndexPort, 0x02);
+	port_byte_out(sequencerDataPort, 0xff);
+	bit_write(fb[offset], 1 << (7 - bit_no), (bit_get(color, 1 << 0)));
 	return 0;
 }
 
