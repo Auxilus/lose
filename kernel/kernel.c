@@ -59,7 +59,7 @@ void main()
 	rtc_time time = read_rtc();
 
 	char timestamp[256];
-	sprintf(timestamp, "KERNEL: %u/%u/%u %u:%u:%u\n",
+	sprintf(timestamp, "KERNEL: %02u/%02u/%02u %02u:%02u:%02u\n",
 					time.month, time.day, time.year, time.hour, time.minute, time.second);
 	console_pre_print(timestamp);
 	
