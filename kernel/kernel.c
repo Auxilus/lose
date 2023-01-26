@@ -32,12 +32,6 @@ void main()
 	vga_write_registers();
 	gr_init_graphics();
 	console_set_enable_gr_print(1);
-	rtc_time time = read_rtc();
-
-	char timestamp[256];
-	sprintf(timestamp, "KERNEL: %u/%u/%u %u:%u:%u\n",
-					time.month, time.day, time.year, time.hour, time.minute, time.second);
-	console_pre_print(timestamp);
 
 	isr_install();
 	irq_install();
@@ -61,6 +55,14 @@ void main()
 	pmm_dump();
 	acpi_init();
 	pci_init();
+
+	rtc_time time = read_rtc();
+
+	char timestamp[256];
+	sprintf(timestamp, "KERNEL: %u/%u/%u %u:%u:%u\n",
+					time.month, time.day, time.year, time.hour, time.minute, time.second);
+	console_pre_print(timestamp);
+	
 	shell_init();
 
 	// gr_print_string(520, 430, "VGA mode 0x12\nfont test\n640x480x16");

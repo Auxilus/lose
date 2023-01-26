@@ -1,28 +1,22 @@
 C_SOURCES = $(wildcard kernel/*.c kernel/shell/*.c drivers/*.c utils/*.c cpu/*.c)
 ASM_SOURCES = ${wildcard cpu/*.asm}
 HEADERS = $(wildcard kernel/*.h drivers/*.h utils/*.h cpu/*.h)
-# Nice syntax for file extension replacement
 OBJ = ${C_SOURCES:.c=.o}
 ASMOBJ = ${ASM_SOURCES:.asm=.o}
 
-# Change this if your cross-compiler is somewhere else
 CC = i386-elf-gcc
 GDB = i386-elf-gdb
-# -g: Use debugging symbols in gcc
 CFLAGS = -g -fcommon
+QEMU_OPTIONS = -d cpu_reset,guest_errors -no-reboot -serial stdio -rtc base=localtime
 
 all: os-image.bin
 
-# First rule is run by default
 os-image.bin: boot/boot.bin kernel.bin
 	cat $^ > os-image.bin
 
-# '--oformat binary' deletes all symbols as a collateral, so we don't need
-# to 'strip' them manually on this case
 kernel.bin: boot/kernel_entry.o ${OBJ} ${ASMOBJ}
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ --oformat binary
 
-# Used for debugging purposes
 kernel.elf: boot/kernel_entry.o ${OBJ} ${ASMOBJ}
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ 
 
@@ -39,20 +33,15 @@ lose.iso: os-image.bin
 		-hide floppy.img iso/
 
 run: os-image.bin
-	qemu-system-i386 -d cpu_reset,guest_errors -no-reboot -serial stdio -fda $<
+	qemu-system-i386 ${QEMU_OPTIONS} -fda $<
 
 run-bin: os-image.bin
-	qemu-system-i386 -d cpu_reset,guest_errors -serial stdio -fda os-image.bin
+	qemu-system-i386 ${QEMU_OPTIONS} -fda os-image.bin
 
-ng: os-image.bin
-	qemu-system-i386 -curses -nographic -d guest_errors -fda os-image.bin
-# Open the connection to qemu and load our kernel-object file with symbols
 debug: os-image.bin kernel.elf
 	qemu-system-i386 -s -S -fda os-image.bin & #-fda os-image.bin &
 	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
 
-# Generic rules for wildcards
-# To make an object, always compile from its .c
 %.o: %.c ${HEADERS}
 	${CC} ${CFLAGS} -ffreestanding -c $< -o $@
 
@@ -64,4 +53,4 @@ debug: os-image.bin kernel.elf
 
 clean:
 	rm -rf iso/  *.bin *.dis *.o os-image.bin *.elf *.iso *.img
-	rm -rf **/*.o boot/*.bin drivers/*.o boot/*.o
+	rm -rf **/*.o boot/*.bin drivers/*.o boot/*.o kernel/shell/*.o
