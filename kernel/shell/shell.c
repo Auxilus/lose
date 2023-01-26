@@ -126,7 +126,7 @@ int handle_command()
     gr_print('\n');
     // reset isReturn
     isReturn = 0;
-    return;
+    return 0;
   }
   // clear the wait character
   gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ', 1);
@@ -146,10 +146,16 @@ int handle_command()
     return 1;
   }
 
+  if (strcmp(shell_buffer, "help") == 0)
+  {
+    gr_window_print(SHELL_COMMAND_HELP);
+    return 1;
+  }
+
   if (strcmp(shell_buffer, "exit") == 0)
   {
     gr_window_print("Shutting down...\n");
-    timer_sleep(1);
+    // timer_sleep(1);
     gr_clear_screen();
     port_word_out(0x604, 0x2000);
     return 1;
@@ -164,6 +170,7 @@ int handle_command()
     gr_window_print(timestamp);
     return 1;
   }
+
   char unknown[512 + 20];
   sprintf(unknown, "Unknown command %s\n", shell_buffer);
   gr_window_print(unknown);
