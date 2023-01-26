@@ -33,10 +33,8 @@ typedef struct {
 } winctx;
 
 static winctx *windowctx;
-static u8 gr_color_fg;
 
 void gr_init_graphics(void);
-void gr_set_color_fg(u8 color);
 void gr_clear_screen(void);
 void gr_print_character(int x, int y, int character, int skipAdvance);
 void gr_print_string(int x, int y, char* string);
