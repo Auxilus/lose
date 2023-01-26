@@ -9,8 +9,14 @@
 
 int graphics_abs(int value) { return value < 0 ? 0 - value : value; }
 
+void gr_set_color_fg(u8 color)
+{
+	gr_color_fg = color;
+}
+
 void gr_init_graphics(void)
 {
+	gr_color_fg = WHITE;
 	serial_print("GRAPHICS: init graphics\n");
 	gr_clear_screen();
 	serial_print("GRAPHICS: init window context\n");
@@ -30,6 +36,7 @@ void gr_clear_screen(void)
 	port_word_out(VGA_SEQ_IDX, 0x02);
 	port_byte_out(VGA_SEQ_DATA, 0xff);
 	memset((u8 *)GR_START, BLACK, 64 * 1024);
+	memset(windowctx->charbuf, 0, (GR_HEIGHT / 8) * (GR_WIDTH / 8));
 }
 
 void gr_print_string(int x, int y, char *string)
@@ -91,7 +98,7 @@ void gr_print_character(int x, int y, int character, int skipAdvance)
 		for (cy = 0; cy < 8; cy++)
 		{
 			set = bitmap[cx] & 1 << cy;
-			vga_mode12h_pixel(set ? WHITE : BLACK, (u16)x + cy, (u16)y + cx);
+			vga_mode12h_pixel(set ? gr_color_fg : BLACK, (u16)x + cy, (u16)y + cx);
 		}
 	}
 }
@@ -263,7 +270,7 @@ void gr_window_scroll(void)
 					setb = bitmapb[cx] & 1 << cy;
 					if (seta != setb)
 					{
-						vga_mode12h_pixel((setb && !seta) ? WHITE : BLACK, (u16)x + cy, (u16)y + cx);
+						vga_mode12h_pixel((setb && !seta) ? gr_color_fg : BLACK, (u16)x + cy, (u16)y + cx);
 					}
 				}
 			}

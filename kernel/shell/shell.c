@@ -23,6 +23,7 @@ void shell_init(void)
   last_command = (char *)malloc(SHELL_BUFFER_MAX);
   console_pre_print("SHELL: init, disabling system log output\n");
   console_set_enable_gr_print(0);
+  // gr_set_color_fg(GREEN);
   gr_print('\n');
   gr_window_print(SHELL_PROMPT);
   gr_print_character(windowctx->cursor_x, windowctx->cursor_y, '_', 1);
@@ -126,7 +127,7 @@ int handle_command()
     gr_print('\n');
     // reset isReturn
     isReturn = 0;
-    return;
+    return 0;
   }
   // clear the wait character
   gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ', 1);
@@ -159,7 +160,7 @@ int handle_command()
   {
     rtc_time time = read_rtc();
     char timestamp[256];
-    sprintf(timestamp, "%u/%u/%u %u:%u:%u\n",
+    sprintf(timestamp, "%02u %02u %02u %02u:%02u:%02u\n",
             time.month, time.day, time.year, time.hour, time.minute, time.second);
     gr_window_print(timestamp);
     return 1;
