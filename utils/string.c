@@ -4,25 +4,30 @@
 #include <stdarg.h>
 #include <stdbool.h>
 
-#define true	1
+#define true 1
 #define false 0
 
 int strlen(char *string)
 {
 	int i;
-	for (i=0;string[i] != '\0'; ++i);
+	for (i = 0; string[i] != '\0'; ++i)
+		;
 	return i;
 }
 
-void itoa(int n, char str[]) {
+void itoa(int n, char str[])
+{
 	int i, sign;
-	if ((sign = n) < 0) n = -n;
+	if ((sign = n) < 0)
+		n = -n;
 	i = 0;
-	do {
+	do
+	{
 		str[i++] = n % 10 + '0';
 	} while ((n /= 10) > 0);
 
-	if (sign < 0) str[i++] = '-';
+	if (sign < 0)
+		str[i++] = '-';
 	str[i] = '\0';
 
 	reverse(str);
@@ -46,18 +51,21 @@ long atoi(const char *s)
 }
 
 /* K&R */
-void reverse(char s[]) {
+void reverse(char s[])
+{
 	int c, i, j;
-	for (i = 0, j = strlen(s)-1; i < j; i++, j--) {
+	for (i = 0, j = strlen(s) - 1; i < j; i++, j--)
+	{
 		c = s[i];
 		s[i] = s[j];
 		s[j] = c;
 	}
 }
 
-int strcmp(const char* str1, const char* str2) {
-	unsigned int len1 = strlen((char*)str1);
-	unsigned int len2 = strlen((char*)str2);
+int strcmp(const char *str1, const char *str2)
+{
+	unsigned int len1 = strlen((char *)str1);
+	unsigned int len2 = strlen((char *)str2);
 
 	int cmpResult = memcmp(str1, str2, (len1 < len2) ? len1 : len2);
 	if (cmpResult != 0)
@@ -71,10 +79,11 @@ int strcmp(const char* str1, const char* str2) {
 	return 0;
 }
 
-char*  strcat(char* destination, const char* source)
+char *strcat(char *destination, const char *source)
 {
 	// return if no memory is allocated to the destination
-	if (destination == NULL) {
+	if (destination == NULL)
+	{
 		return NULL;
 	}
 
@@ -100,7 +109,8 @@ char*  strcat(char* destination, const char* source)
 
 /* TEST: string functions */
 
-int snprintf(char* str, size_t size, const char* format, ...) {
+int snprintf(char *str, size_t size, const char *format, ...)
+{
 	va_list ap;
 	va_start(ap, format);
 	int n = vsnprintf(str, size, format, ap);
@@ -108,7 +118,8 @@ int snprintf(char* str, size_t size, const char* format, ...) {
 	return n;
 }
 
-int sprintf(char* str, const char* format, ...) {
+int sprintf(char *str, const char *format, ...)
+{
 	va_list ap;
 	va_start(ap, format);
 	int n = vsprintf(str, format, ap);
@@ -116,7 +127,8 @@ int sprintf(char* str, const char* format, ...) {
 	return n;
 }
 
-int sscanf(const char* s, const char* format, ...) {
+int sscanf(const char *s, const char *format, ...)
+{
 	va_list ap;
 	va_start(ap, format);
 	int n = vsscanf(s, format, ap);
@@ -124,7 +136,8 @@ int sscanf(const char* s, const char* format, ...) {
 	return n;
 }
 
-int vsnprintf(char* str, size_t size, const char* format, va_list ap) {
+int vsnprintf(char *str, size_t size, const char *format, va_list ap)
+{
 	// TODO: 'size' is not handled
 	// TODO: 'e', 'f', 'g', 'n' specifiers to do
 	// TODO: function doesn't return the number of printed characters
@@ -133,16 +146,19 @@ int vsnprintf(char* str, size_t size, const char* format, va_list ap) {
 		return 0;
 
 	// we loop through each character of the format
-	while (*format != '\0' && size > 1) {
+	while (*format != '\0' && size > 1)
+	{
 		// first we handle the most common case: a normal character
-		if (*format != '%') {
+		if (*format != '%')
+		{
 			*str++ = *format++;
 			continue;
 		}
 
 		// then we check if format is "%%"
 		format++;
-		if (*format == '%') {
+		if (*format == '%')
+		{
 			*str++ = '%';
 			format++;
 			continue;
@@ -167,184 +183,255 @@ int vsnprintf(char* str, size_t size, const char* format, va_list ap) {
 		bool tagFinished = false;
 
 		// then we loop (and we modify variables) until we find a specifier
-		do {
+		do
+		{
 
-			switch (*format) {
-				// flags
-				case '-': alignLeft = true; 		format++; break;
-				case '+': alwaysSign = true;		format++; break;
-				case ' ': noSign = true;		format++; break;
-				case '0': padding = '0';			format++; break;
-				case '#': sharpFlag = true;		format++; break;
+			switch (*format)
+			{
+			// flags
+			case '-':
+				alignLeft = true;
+				format++;
+				break;
+			case '+':
+				alwaysSign = true;
+				format++;
+				break;
+			case ' ':
+				noSign = true;
+				format++;
+				break;
+			case '0':
+				padding = '0';
+				format++;
+				break;
+			case '#':
+				sharpFlag = true;
+				format++;
+				break;
 
-									// width
-				case '1':
-				case '2':
-				case '3':
-				case '4':
-				case '5':		// width cannot start with 0 or it would be a flag
-				case '6':
-				case '7':
-				case '8':
-				case '9':
-									minimumWidth = atoi(format);
-									while (*format >= '0' && *format <= '9') format++;
-									break;
-				case '*':
-									minimumWidth = va_arg(ap, int);
-									format++;
-									break;
+				// width
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5': // width cannot start with 0 or it would be a flag
+			case '6':
+			case '7':
+			case '8':
+			case '9':
+				minimumWidth = atoi(format);
+				while (*format >= '0' && *format <= '9')
+					format++;
+				break;
+			case '*':
+				minimumWidth = va_arg(ap, int);
+				format++;
+				break;
 
-									// precision
-				case '.':
-									format++;
-									if (*format == '*') {
-										precision = va_arg(ap, int);
-										format++;
-									} else if (*format >= '0' && *format <= '9') {
-										precision = atoi(format);
-										while (*format >= '0' && *format <= '9') format++;
-									} else {
-										precision = 0;		// this behavior is standardized
-									}
-									break;
+				// precision
+			case '.':
+				format++;
+				if (*format == '*')
+				{
+					precision = va_arg(ap, int);
+					format++;
+				}
+				else if (*format >= '0' && *format <= '9')
+				{
+					precision = atoi(format);
+					while (*format >= '0' && *format <= '9')
+						format++;
+				}
+				else
+				{
+					precision = 0; // this behavior is standardized
+				}
+				break;
 
-									// length
-				case 'h': numberMustBeShort = true;	format++; break;
-				case 'l':
-				case 'L': numberMustBeLong = true;	format++; break;
+				// length
+			case 'h':
+				numberMustBeShort = true;
+				format++;
+				break;
+			case 'l':
+			case 'L':
+				numberMustBeLong = true;
+				format++;
+				break;
 
-									// specifiers
+				// specifiers
 
+				//	strings
+			case 's':
+			{
+				char *nStr = va_arg(ap, char *);
+				size_t len = strlen(nStr);
 
-									//	strings
-				case 's': {
-										char* nStr = va_arg(ap, char*);
-										size_t len = strlen(nStr);
+				if (!alignLeft && len < minimumWidth)
+				{
+					while (len++ < minimumWidth)
+						*str++ = padding;
+				}
 
-										if (!alignLeft && len < minimumWidth) {
-											while (len++ < minimumWidth)
-												*str++ = padding;
-										}
+				while (*nStr)
+					*str++ = *nStr++;
 
-										while (*nStr)
-											*str++ = *nStr++;
+				if (alignLeft && len < minimumWidth)
+				{
+					while (len++ < minimumWidth)
+						*str++ = padding;
+				}
 
-										if (alignLeft && len < minimumWidth) {
-											while (len++ < minimumWidth)
-												*str++ = padding;
-										}
+				format++;
+				tagFinished = true;
+				break;
+			}
 
-										format++;
-										tagFinished = true;
-										break;
-									}
+				// 	characters
+			case 'c':
+			{
+				char toWrite;
+				/*if (numberMustBeLong)		toWrite = (char)va_arg(ap, wchar_t);
+					else					*/
+				toWrite = (char)va_arg(ap, int);
 
+				if (!alignLeft)
+				{
+					for (; minimumWidth > 1; minimumWidth--)
+						*str++ = padding;
+				}
 
+				*str++ = toWrite;
 
-									// 	characters
-				case 'c': {
-										char toWrite;
-										/*if (numberMustBeLong)		toWrite = (char)va_arg(ap, wchar_t);
-											else					*/toWrite = (char)va_arg(ap, int);
+				if (alignLeft)
+				{
+					for (; minimumWidth > 1; minimumWidth--)
+						*str++ = padding;
+				}
 
-										if (!alignLeft) {
-											for (; minimumWidth > 1; minimumWidth--)
-												*str++ = padding;
-										}
+				format++;
+				tagFinished = true;
+				break;
+			}
 
-										*str++ = toWrite;
+				// 	numbers
+			case 'o':
+				octal = true;
+			case 'p':
+				pointer = true;
+			case 'X':
+				capitalLetters = true;
+			case 'x':
+				hexadecimal = true;
+			case 'u':
+				unsignedNumber = true;
+			case 'd':
+			case 'i':
+			{
+				// first we handle problems with our switch-case
+				if (octal)
+				{
+					pointer = false;
+					hexadecimal = false;
+					unsignedNumber = false;
+				}
 
-										if (alignLeft) {
-											for (; minimumWidth > 1; minimumWidth--)
-												*str++ = padding;
-										}
+				// then we retreive the value to write
+				unsigned long int toWrite;
+				if (numberMustBeLong)
+					toWrite = va_arg(ap, long int);
+				else if (numberMustBeShort)
+					toWrite = (short int)va_arg(ap, int);
+				else if (pointer)
+					toWrite = (unsigned long int)va_arg(ap, void *);
+				else
+					toWrite = va_arg(ap, int);
 
-										format++;
-										tagFinished = true;
-										break;
-									}
+				// handling sign
+				if (!noSign)
+				{
+					bool positive = (unsignedNumber || (((signed)toWrite) > 0));
+					if (alwaysSign || !positive)
+						*str++ = (positive ? '+' : '-');
+					if (!unsignedNumber && (((signed)toWrite) < 0))
+						toWrite = -((signed)toWrite);
+				}
 
+				if (sharpFlag && toWrite != 0)
+				{
+					if (octal || hexadecimal)
+						*str++ = '0';
+					if (hexadecimal)
+					{
+						if (capitalLetters)
+							*str++ = 'X';
+						else
+							*str++ = 'x';
+					}
+				}
 
-									// 	numbers
-				case 'o':	octal = true;
-				case 'p':	pointer = true;
-				case 'X':	capitalLetters = true;
-				case 'x':	hexadecimal = true;
-				case 'u':	unsignedNumber = true;
-				case 'd':
-				case 'i': {
-										// first we handle problems with our switch-case
-										if (octal) { pointer = false; hexadecimal = false; unsignedNumber = false; }
+				// writing number
+				int digitSwitch = 10;
+				if (hexadecimal)
+					digitSwitch = 16;
+				else if (octal)
+					digitSwitch = 8;
 
-										// then we retreive the value to write
-										unsigned long int toWrite;
-										if (numberMustBeLong)			toWrite = va_arg(ap, long int);
-										else if (numberMustBeShort)		toWrite = (short int)va_arg(ap, int);
-										else if (pointer)				toWrite = (unsigned long int)va_arg(ap, void*);
-										else						toWrite = va_arg(ap, int);
+				// this variable will be usefull
+				char *baseStr = str;
 
-										// handling sign
-										if (!noSign) {
-											bool positive = (unsignedNumber || (((signed)toWrite) > 0));
-											if (alwaysSign || !positive)
-												*str++ = (positive ? '+' : '-');
-											if (!unsignedNumber && (((signed)toWrite) < 0))
-												toWrite = -((signed)toWrite);
-										}
+				int numDigits = 0;
+				do
+				{
+					if (numDigits)
+						memmove(baseStr + 1, baseStr, numDigits * sizeof(char));
+					int modResult = toWrite % digitSwitch;
+					if (modResult < 10)
+					{
+						*baseStr = '0' + modResult;
+						str++;
+					}
+					else if (capitalLetters)
+					{
+						*baseStr = 'A' + (modResult - 10);
+						str++;
+					}
+					else
+					{
+						*baseStr = 'a' + (modResult - 10);
+						str++;
+					}
+					toWrite /= digitSwitch;
+					numDigits++;
+				} while (toWrite != 0);
 
-										if (sharpFlag && toWrite != 0) {
-											if (octal || hexadecimal)
-												*str++ = '0';
-											if (hexadecimal) {
-												if (capitalLetters)	*str++ = 'X';
-												else				*str++ = 'x';
-											}
-										}
+				if (numDigits < minimumWidth)
+				{
+					minimumWidth -= numDigits;
+					if (alignLeft)
+					{
+						for (; minimumWidth > 0; minimumWidth--)
+							*str++ = padding;
+					}
+					else
+					{
+						memmove(baseStr + minimumWidth * sizeof(char), baseStr, numDigits * sizeof(char));
+						memset(baseStr, padding, minimumWidth * sizeof(char));
+						str += minimumWidth;
+					}
+				}
 
-										// writing number
-										int digitSwitch = 10;
-										if (hexadecimal)	digitSwitch = 16;
-										else if (octal)	digitSwitch = 8;
+				// finished
+				format++;
+				tagFinished = true;
+				break;
+			}
 
-										// this variable will be usefull
-										char* baseStr = str;
-
-										int numDigits = 0;
-										do {
-											if (numDigits)
-												memmove(baseStr + 1, baseStr, numDigits * sizeof(char));
-											int modResult = toWrite % digitSwitch;
-											if (modResult < 10)	{	*baseStr = '0' + modResult;			str++;	}
-											else if (capitalLetters)	{	*baseStr = 'A' + (modResult - 10);		str++;	}
-											else				{	*baseStr = 'a' + (modResult - 10);		str++;	}
-											toWrite /= digitSwitch;
-											numDigits++;
-										} while (toWrite != 0);
-
-										if (numDigits < minimumWidth) {
-											minimumWidth -= numDigits;
-											if (alignLeft) {
-												for (; minimumWidth > 0; minimumWidth--)
-													*str++ = padding;
-											} else {
-												memmove(baseStr + minimumWidth * sizeof(char), baseStr, numDigits * sizeof(char));
-												memset(baseStr, padding, minimumWidth * sizeof(char));
-												str += minimumWidth;
-											}
-										}
-
-										// finished
-										format++;
-										tagFinished = true;
-										break;
-									}
-
-				default:
-									format++;
-									tagFinished = true;
-									break;
-
+			default:
+				format++;
+				tagFinished = true;
+				break;
 			}
 		} while (!tagFinished);
 	}
@@ -354,11 +441,11 @@ int vsnprintf(char* str, size_t size, const char* format, va_list ap) {
 	return 1;
 }
 
-int vsprintf(char* str, const char* format, va_list ap) {
+int vsprintf(char *str, const char *format, va_list ap)
+{
 	return vsnprintf(str, (size_t)-1, format, ap);
 }
 
-int vsscanf(const char* s, const char* format, va_list ap) {
-
+int vsscanf(const char *s, const char *format, va_list ap)
+{
 }
-
