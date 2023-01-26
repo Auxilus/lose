@@ -6,6 +6,7 @@
 #include "../drivers/ports.h"
 #include "../drivers/serial.h"
 #include "../drivers/memory.h"
+#include "../drivers/rtc.h"
 #include "../utils/mem.h"
 #include "../utils/console.h"
 #include "../utils/string.h"
@@ -21,32 +22,6 @@ void dummy_test_entrypoint()
 
 void kernel_handle_key(key_event ke)
 {
-	// if (ke.is_shift && ke.is_ctrl && ke.letter == 'Z')
-	// {
-	// 	// basic shutdown for qemu ctrl+shift+c
-	// 	console_pre_print("kernel: kernel shutdown initiated\n");
-	// 	gr_clear_screen();
-	// 	gr_print_string(10, 10, "shutting down...");
-	// 	timer_sleep(1);
-	// 	port_word_out(0x604, 0x2000);
-	// 	return;
-	// }
-	// if (ke.is_shift && ke.is_ctrl && ke.letter == 'T')
-	// {
-	// 	// scroll test
-	// 	gr_window_scroll();
-	// 	return;
-	// }
-
-	// if (ke.is_shift && ke.is_ctrl && ke.letter == 'C')
-	// {
-	// 	// basic shutdown for qemu ctrl+shift+c
-	// 	gr_clear_screen();
-	// 	windowctx->cursor_x = 0;
-	// 	windowctx->cursor_y = 0;
-	// 	return;
-	// }
-
 	shell_keypress(ke);
 }
 
@@ -57,6 +32,13 @@ void main()
 	vga_write_registers();
 	gr_init_graphics();
 	console_set_enable_gr_print(1);
+	rtc_time time = read_rtc();
+
+	char timestamp[256];
+	sprintf(timestamp, "KERNEL: %u/%u/%u %u:%u:%u\n",
+					time.month, time.day, time.year, time.hour, time.minute, time.second);
+	console_pre_print(timestamp);
+
 	isr_install();
 	irq_install();
 

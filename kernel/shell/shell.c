@@ -4,6 +4,7 @@
 #include "../../utils/console.h"
 #include "../../cpu/timer.h"
 #include "../../drivers/ports.h"
+#include "../../drivers/rtc.h"
 
 void handle_command(void);
 
@@ -91,12 +92,30 @@ void shell_keypress(key_event ke)
 
 void handle_command()
 {
+  if (strcmp(shell_buffer, "clear") == 0)
+  {
+    gr_clear_screen();
+    windowctx->cursor_x = 0;
+    windowctx->cursor_y = 0;
+    // clear the wait character
+    gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ', 1);
+    // print result on new line
+    gr_print('\n');
+    // reset isReturn
+    isReturn = 0;
+    return;
+  }
   // clear the wait character
   gr_print_character(windowctx->cursor_x, windowctx->cursor_y, ' ', 1);
   // print result on new line
   gr_print('\n');
   // reset isReturn
   isReturn = 0;
+
+  if (strcmp(shell_buffer, "") == 0)
+  {
+    return;
+  }
 
   if (strcmp(shell_buffer, "info") == 0)
   {
@@ -113,6 +132,15 @@ void handle_command()
     return;
   }
 
+  if (strcmp(shell_buffer, "time") == 0)
+  {
+    rtc_time time = read_rtc();
+    char timestamp[256];
+    sprintf(timestamp, "%u/%u/%u %u:%u:%u\n",
+            time.month, time.day, time.year, time.hour, time.minute, time.second);
+    gr_window_print(timestamp);
+    return;
+  }
   char unknown[512 + 20];
   sprintf(unknown, "Unknown command %s\n", shell_buffer);
   gr_window_print(unknown);
