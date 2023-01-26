@@ -11,8 +11,8 @@ int vga_mode12h_pixel(u8 color, u16 x, u16 y)
 {
 	if ((x >= 640) || (y >= 480))
 		return -1;
-	port_word_out(VGA_SEQ_IDX, 0x02);
-	port_byte_out(VGA_SEQ_DATA, 0xff);
+	// port_word_out(VGA_SEQ_IDX, 0x02);
+	// port_byte_out(VGA_SEQ_DATA, 0xff);
 	unsigned char *fb = (unsigned char *)0xA0000;
 	unsigned int offset = (y * 640 + x) / 8;
 	unsigned bit_no = x % 8;
