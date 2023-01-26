@@ -159,7 +159,7 @@ int handle_command()
   {
     rtc_time time = read_rtc();
     char timestamp[256];
-    sprintf(timestamp, "%u/%u/%u %u:%u:%u\n",
+    sprintf(timestamp, "%02u %02u %02u %02u:%02u:%02u\n",
             time.month, time.day, time.year, time.hour, time.minute, time.second);
     gr_window_print(timestamp);
     return 1;
