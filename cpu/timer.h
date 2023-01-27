@@ -4,7 +4,7 @@
 #include "../utils/string.h"
 #include "types.h"
 
-#define FREQ 2
+#define FREQ 1000
 
 void init_timer(u32 freq);
 void timer_sleep(int seconds);

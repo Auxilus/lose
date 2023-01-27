@@ -7,12 +7,6 @@
 #include "pci_lookup.h"
 #include "ports.h"
 
-pci_device **pci_devices = 0;
-uint32_t devs = 0;
-
-pci_driver **pci_drivers = 0;
-uint32_t drivs = 0;
-
 void add_pci_device(pci_device *pdev)
 {
 	pci_devices[devs] = pdev;
@@ -40,6 +34,12 @@ uint16_t getVendorID(uint16_t bus, uint16_t device, uint16_t function)
 	return r0;
 }
 
+uint16_t getProgIF(uint16_t bus, uint16_t device, uint16_t function)
+{
+	uint32_t r0 = pci_read_word(bus, device, function, 0x8);
+	return (r0 & ~0x00FF) >> 8;
+}
+
 uint16_t getHeaderType(uint16_t bus, uint16_t device, uint16_t function)
 {
 	uint32_t r0 = pci_read_word(bus, device, function, 0xd);
@@ -56,6 +56,16 @@ uint16_t getClassId(uint16_t bus, uint16_t device, uint16_t function)
 {
 	uint32_t r0 = pci_read_word(bus, device, function, 0xA);
 	return (r0 & ~0x00FF) >> 8;
+}
+
+uint32_t getBar5(uint16_t bus, uint16_t device, uint16_t function)
+{
+	uint32_t bar = 0x0;
+	uint16_t bar50 = pci_read_word(bus, device, function, 0x24);
+	uint16_t bar51 = pci_read_word(bus, device, function, 0x26);
+	bar |= bar50;
+	bar |= bar51 << 16;
+	return bar;
 }
 
 uint16_t getSubClassId(uint16_t bus, uint16_t device, uint16_t function)
@@ -90,6 +100,7 @@ void pci_probe()
 				pdev->subClassId = getSubClassId(bus, slot, function);
 				pdev->headerType = header;
 				pdev->driver = 0;
+				pdev->progIF = getProgIF(bus, slot, function);
 
 				add_pci_device(pdev);
 			}
@@ -100,11 +111,16 @@ void pci_probe()
 void pci_init()
 {
 	devs = drivs = 0;
-	console_pre_print("PCI: probe started\n");
 	pci_devices = (pci_device **)malloc(32 * sizeof(pci_device));
 	pci_drivers = (pci_driver **)malloc(32 * sizeof(pci_driver));
+	console_pre_print("PCI: probe started\n");
 	pci_probe();
 	pci_proc_dump();
+
+	// 0x01	mass storage device
+	// 0x06 SERIAL/ATA
+	// 0x01 AHCI 1.0
+	pci_device_search *sata = pci_find_by_type(0x01, 0x06, 0x01);
 }
 
 void pci_register_driver(pci_driver *driv)
@@ -112,6 +128,24 @@ void pci_register_driver(pci_driver *driv)
 	pci_drivers[drivs] = driv;
 	drivs++;
 	return;
+}
+
+pci_device_search *pci_find_by_type(uint16_t class_id, uint16_t sub_class_id, uint16_t prog_if)
+{
+	pci_device_search *ret = (pci_device_search *)malloc(sizeof(pci_device_search));
+	ret->devices = (pci_device **)malloc(32 * sizeof(pci_device));
+	ret->count = 0;
+	for (int i = 0; i < devs; i++)
+	{
+		pci_device *device = pci_devices[i];
+		if (device->classId == class_id && device->subClassId == sub_class_id && device->progIF == prog_if)
+		{
+			ret->devices[ret->count] = device;
+			ret->count++;
+		}
+	}
+
+	return ret;
 }
 
 void pci_proc_dump()

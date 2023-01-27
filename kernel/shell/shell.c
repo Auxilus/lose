@@ -6,6 +6,11 @@
 #include "../../drivers/ports.h"
 #include "../../drivers/rtc.h"
 
+// TEST COMMAND INCLUDES
+#include "../../drivers/pci.h"
+//
+
+
 int handle_command(void);
 
 // shell_buffer will have maximum 512 characters.
@@ -149,6 +154,12 @@ int handle_command()
   if (strcmp(shell_buffer, "help") == 0)
   {
     gr_window_print(SHELL_COMMAND_HELP);
+    return 1;
+  }
+
+  if (strcmp(shell_buffer, "test") == 0)
+  {
+    pci_init();
     return 1;
   }
 

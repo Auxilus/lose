@@ -32,9 +32,16 @@ void main()
 	vga_write_registers();
 	gr_init_graphics();
 	console_set_enable_gr_print(1);
+	rtc_time time = read_rtc();
+	char timestamp[256];
+	sprintf(timestamp, "KERNEL: %02u/%02u/%02u %02u:%02u:%02u\n",
+					time.month, time.day, time.year, time.hour, time.minute, time.second);
 
 	isr_install();
 	irq_install();
+	pmm_dump();
+	acpi_init();
+	pci_init();
 
 	console_pre_print("KERNEL: testing interrupts\n");
 	asm("int $2");
@@ -52,15 +59,7 @@ void main()
 
 	console_pre_print(message1);
 	console_pre_print(message2);
-	pmm_dump();
-	acpi_init();
-	pci_init();
 
-	rtc_time time = read_rtc();
-
-	char timestamp[256];
-	sprintf(timestamp, "KERNEL: %02u/%02u/%02u %02u:%02u:%02u\n",
-					time.month, time.day, time.year, time.hour, time.minute, time.second);
 	console_pre_print(timestamp);
 	
 	shell_init();

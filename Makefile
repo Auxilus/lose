@@ -7,7 +7,10 @@ ASMOBJ = ${ASM_SOURCES:.asm=.o}
 CC = i386-elf-gcc
 GDB = i386-elf-gdb
 CFLAGS = -g -fcommon
-QEMU_OPTIONS = -d cpu_reset,guest_errors -no-reboot -serial stdio -rtc base=localtime
+QEMU_OPTIONS = -d cpu_reset,guest_errors -no-reboot -serial stdio -rtc base=localtime \
+							 -drive id=disk,file=data/lose.img,if=none \
+							 -device ahci,id=ahci \
+							 -device ide-hd,drive=disk,bus=ahci.0
 
 all: os-image.bin
 
@@ -39,7 +42,7 @@ run-bin: os-image.bin
 	qemu-system-i386 ${QEMU_OPTIONS} -fda os-image.bin
 
 debug: os-image.bin kernel.elf
-	qemu-system-i386 -s -S -fda os-image.bin & #-fda os-image.bin &
+	qemu-system-i386 -s -S ${QEMU_OPTIONS} -fda os-image.bin & #-fda os-image.bin &
 	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
 
 %.o: %.c ${HEADERS}
