@@ -11,8 +11,8 @@ int vga_mode12h_pixel(u8 color, u16 x, u16 y)
 {
 	if ((x >= 640) || (y >= 480))
 		return -1;
-	// port_word_out(VGA_SEQ_IDX, 0x02);
-	// port_byte_out(VGA_SEQ_DATA, 0xff);
+	// port_word_out(VGA_SC_IDX, 0x02);
+	// port_byte_out(VGA_SC_DATA, 0xff);
 	unsigned char *fb = (unsigned char *)0xA0000;
 	unsigned int offset = (y * 640 + x) / 8;
 	unsigned bit_no = x % 8;
@@ -44,30 +44,30 @@ void vga_write_registers(void)
 
 	for (uint8_t i = 0; i < 5; i++)
 	{
-		port_byte_out(VGA_SEQ_IDX, i);
-		port_byte_out(VGA_SEQ_DATA, *(registers));
+		port_byte_out(VGA_SC_IDX, i);
+		port_byte_out(VGA_SC_DATA, *(registers));
 		registers++;
 	}
 
-	port_byte_out(crtcIndexPort, 0x03);
-	port_byte_out(crtcDataPort, port_byte_in(crtcDataPort) | 0x80);
-	port_byte_out(crtcIndexPort, 0x11);
-	port_byte_out(crtcDataPort, port_byte_in(crtcDataPort) & ~0x80);
+	port_byte_out(VGA_CRTC_IDX, 0x03);
+	port_byte_out(VGA_CRTC_DATA, port_byte_in(VGA_CRTC_DATA) | 0x80);
+	port_byte_out(VGA_CRTC_IDX, 0x11);
+	port_byte_out(VGA_CRTC_DATA, port_byte_in(VGA_CRTC_DATA) & ~0x80);
 
 	registers[0x03] = registers[0x03] | 0x80;
 	// registers[0x11] = registers[0x11] & ~0x80;
 
 	for (uint8_t i = 0; i < 25; i++)
 	{
-		port_byte_out(crtcIndexPort, i);
-		port_byte_out(crtcDataPort, *(registers));
+		port_byte_out(VGA_CRTC_IDX, i);
+		port_byte_out(VGA_CRTC_DATA, *(registers));
 		registers++;
 	}
 
 	for (uint8_t i = 0; i < 9; i++)
 	{
-		port_byte_out(graphicsControllerIndexPort, i);
-		port_byte_out(graphicsControllerDataPort, *(registers));
+		port_byte_out(VGA_GC_IDX, i);
+		port_byte_out(VGA_GC_DATA, *(registers));
 		registers++;
 	}
 

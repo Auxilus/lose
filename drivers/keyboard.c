@@ -214,8 +214,10 @@ u8 scancode2char(int sc)
 
 void keyboard_callback(registers_t *regs)
 {
+  // send EOI at port 0x20
 	port_byte_out(0x20, 0x20);
-	u8 scancode = port_byte_in(0x60);
+
+	u8 scancode = port_byte_in(KEYBOARD_DATA);
 	int sc = (int) scancode;
 
 	// TODO: verify release handler
@@ -225,17 +227,8 @@ void keyboard_callback(registers_t *regs)
 		// TODO: don't hardcode scancode values
 		if (sc == 170 || sc == 182) { is_shift = 0; }
 		if (sc == 157 || sc == 224) { is_ctrl = 0; }
-
-		//char message[128];
-		//sprintf(message, "KEYBOARD: key released [%d] [%x]\n", sc, scancode);
-		//console_pre_print(message);
 	}
 	else {
-		// keypress handler
-		//char message[128];
-		//sprintf(message, "KEYBOARD: key pressed [%d] [%x]\n", sc, scancode);
-		//console_pre_print(message);
-		
 		// check for shift press L & R
 		// TODO: don't hardcode scancode values
 		if (sc == 42 || sc == 54) { is_shift = 1; return; }

@@ -68,9 +68,8 @@ void serial_print(char *message) {
 
 	int c = 0;
 	while(message[c] != '\0') {
-		serial_write(message[c]);
-		c++;
+		serial_write(message[c++]);
 	}
 
-	serial_color_off();
+	// serial_color_off();
 }

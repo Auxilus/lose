@@ -36,6 +36,8 @@
 #define CH_SHIFT_SPACE	0x1F
 #define CH_SPACE				0x20
 
+#define KEYBOARD_DATA   0x60
+
 typedef struct {
 	char letter;
 	int scancode;

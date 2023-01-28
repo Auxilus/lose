@@ -4,7 +4,7 @@
 #include "../cpu/types.h"
 
 //REGISTER VALUES
-unsigned static const char g_640x480x16[] = {
+unsigned static char g_640x480x16[] = {
 /* MISC */
   0xE3, 
 /* SEQ */
@@ -24,14 +24,14 @@ unsigned static const char g_640x480x16[] = {
 };
 
 #define miscPort 0x3c2
-#define crtcIndexPort 0x3d4
-#define crtcDataPort 0x3d5
-#define crtcIndexPortText 0x3b4
-#define crtcDataPortText 0x3b5
-#define VGA_SEQ_IDX 0x3c4
-#define VGA_SEQ_DATA 0x3c5
-#define graphicsControllerIndexPort 0x3ce
-#define graphicsControllerDataPort 0x3cf
+#define VGA_CRTC_IDX 0x3d4
+#define VGA_CRTC_DATA 0x3d5
+#define VGA_CRTC_IDXText 0x3b4
+#define VGA_CRTC_DATAText 0x3b5
+#define VGA_SC_IDX 0x3c4
+#define VGA_SC_DATA 0x3c5
+#define VGA_GC_IDX 0x3ce
+#define VGA_GC_DATA 0x3cf
 #define attributeControllerIndexPort 0x3c0
 #define attributeControllerReadPort 0x3c1
 #define attributeControllerWritePort 0x3c0
@@ -42,14 +42,6 @@ unsigned static const char g_640x480x16[] = {
 #define bit_clear(p, m) ((p) &= ~(m))
 #define bit_flip(p, m) ((p) ^= (m))
 #define bit_write(p, m, v) ((v) ? bit_set(p, m) : bit_clear(p, m))
-
-// VGA graphics controller ports
-#define VGA_GC_IDX 0x3ce
-#define VGA_GC_DATA 0x3cf
-
-// VGA sequencer ports
-#define VGA_SC_IDX 0x3c4
-#define VGA_SC_DATA 0x3c5
 
 void vga_write_registers(void);
 

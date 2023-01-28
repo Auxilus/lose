@@ -8,9 +8,10 @@ int sigcmp(char *ptr1, char *ptr2);
 
 RSDPDescriptor20 *acpi_locate_rsdp(void)
 {
-	char *mem_start = (char *)0x10000; // kernel start; maybe we should figure out kernel_end at some point for this
+	char *mem_start = (char *)0x10000;
 	char *mem_end = (char *)0x100000;
 
+	// bruteforce search for RSDP signature
 	while (mem_start < mem_end)
 	{
 		char memstr[8];
@@ -19,14 +20,17 @@ RSDPDescriptor20 *acpi_locate_rsdp(void)
 		{
 			break;
 		};
+
+		// we are reading 8 bytes at a time
 		mem_start += 8;
 	}
 
-	RSDPDescriptor20 *d = (RSDPDescriptor20 *)malloc(sizeof(RSDPDescriptor20));
-	memcpy(mem_start, (u8 *)d, sizeof(RSDPDescriptor20));
-	char *message = (char *)malloc(64);
+	RSDPDescriptor20 *d = (RSDPDescriptor20 *)mem_start;
+	
+	char *message = (char *)malloc(40);
 	sprintf(message, "ACPI: RSDP revision %u found at 0x%x\n", d->firstPart.Revision, (u32)mem_start);
 	console_pre_print(message);
+	free(40);
 
 	return d;
 }
@@ -34,11 +38,13 @@ RSDPDescriptor20 *acpi_locate_rsdp(void)
 void acpi_init()
 {
 	RSDPDescriptor20 *d = acpi_locate_rsdp();
+	
 	if (d->firstPart.Revision != 0)
 	{
 		console_pre_print("ACPI: Unsupported RSDP\n");
 		return;
 	}
+
 	SDTHeader *xsdt = (SDTHeader *)d->firstPart.RsdtAddress;
 
 	int entries = (xsdt->Length - sizeof(SDTHeader)) / 8;

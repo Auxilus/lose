@@ -25,8 +25,8 @@ void gr_clear_screen(void)
 {
 	serial_print("GRAPHICS: clearing plane framebuffer\n");
 	char s[1];
-	port_word_out(VGA_SEQ_IDX, 0x02);
-	port_byte_out(VGA_SEQ_DATA, 0xff);
+	port_word_out(VGA_SC_IDX, 0x02);
+	port_byte_out(VGA_SC_DATA, 0xff);
 	memset((u8 *)GR_START, BLACK, 64 * 1024);
 	memset(windowctx->charbuf, 0, (GR_HEIGHT / 8) * (GR_WIDTH / 8));
 }
