@@ -8,9 +8,7 @@ CC = i386-elf-gcc
 GDB = i386-elf-gdb
 CFLAGS = -g -fcommon
 QEMU_OPTIONS = -d cpu_reset,guest_errors -no-reboot -serial stdio -rtc base=localtime \
-							 -drive id=disk,file=data/lose.img,if=none \
-							 -device ahci,id=ahci \
-							 -device ide-hd,drive=disk,bus=ahci.0
+							 -drive file=data/lose.img,index=0,media=disk,format=raw,if=ide
 
 all: os-image.bin
 
