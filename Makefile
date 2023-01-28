@@ -1,6 +1,6 @@
-C_SOURCES = $(wildcard kernel/*.c kernel/shell/*.c drivers/*.c utils/*.c cpu/*.c)
+C_SOURCES = $(wildcard kernel/*.c kernel/shell/*.c kernel/fs/*.c drivers/*.c utils/*.c cpu/*.c)
 ASM_SOURCES = ${wildcard cpu/*.asm}
-HEADERS = $(wildcard kernel/*.h drivers/*.h utils/*.h cpu/*.h)
+HEADERS = $(wildcard kernel/*.h kernel/fs/*.h kernel/shell/*.h drivers/*.h utils/*.h cpu/*.h)
 OBJ = ${C_SOURCES:.c=.o}
 ASMOBJ = ${ASM_SOURCES:.asm=.o}
 
@@ -55,4 +55,4 @@ debug: os-image.bin kernel.elf
 
 clean:
 	rm -rf iso/  *.bin *.dis *.o os-image.bin *.elf *.iso *.img
-	rm -rf **/*.o boot/*.bin drivers/*.o boot/*.o kernel/shell/*.o
+	rm -rf **/*.o boot/*.bin drivers/*.o boot/*.o kernel/shell/*.o kernel/fs/*.o

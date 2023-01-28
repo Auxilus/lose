@@ -61,11 +61,7 @@ void main()
 	console_pre_print(message2);
 
 	console_pre_print(timestamp);
-	char *buffer = (char*)malloc(512);
-	read_sector(0, 1, buffer);
 
-	console_pre_print(buffer);
-	console_pre_print("\n");
 	shell_init();
 
 	// gr_print_string(520, 430, "VGA mode 0x12\nfont test\n640x480x16");

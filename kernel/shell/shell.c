@@ -1,15 +1,14 @@
 #include "shell.h"
-#include "../../utils/mem.h"
 #include "../graphics.h"
+#include "../../utils/mem.h"
 #include "../../utils/console.h"
 #include "../../cpu/timer.h"
 #include "../../drivers/ports.h"
 #include "../../drivers/rtc.h"
 
 // TEST COMMAND INCLUDES
-#include "../../drivers/pci.h"
+#include "../fs/fat12.h"
 //
-
 
 int handle_command(void);
 
@@ -159,7 +158,11 @@ int handle_command()
 
   if (strcmp(shell_buffer, "test") == 0)
   {
-    pci_init();
+    char *buffer = (char *)malloc(512);
+    read_sector(0, 1, buffer);
+    console_set_enable_gr_print(1);
+    fat12_init(buffer);
+    console_set_enable_gr_print(0);
     return 1;
   }
 
