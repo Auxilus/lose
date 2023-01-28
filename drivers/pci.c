@@ -2,10 +2,11 @@
 #include "../utils/mem.h"
 #include "../utils/string.h"
 #include "../utils/console.h"
-#include "serial.h"
 #include "pci.h"
-#include "pci_lookup.h"
+#include "ahci.h"
 #include "ports.h"
+#include "serial.h"
+#include "pci_lookup.h"
 
 void add_pci_device(pci_device *pdev)
 {
@@ -101,6 +102,10 @@ void pci_probe()
 				pdev->headerType = header;
 				pdev->driver = 0;
 				pdev->progIF = getProgIF(bus, slot, function);
+				if (pdev->headerType == 0x0)
+				{
+					pdev->BAR5 = pci_read_word(bus, device, function, 0x26) << 16 | pci_read_word(bus, device, function, 0x24);
+				}
 
 				add_pci_device(pdev);
 			}
@@ -121,6 +126,10 @@ void pci_init()
 	// 0x06 SERIAL/ATA
 	// 0x01 AHCI 1.0
 	pci_device_search *sata = pci_find_by_type(0x01, 0x06, 0x01);
+	if (sata->count > 0)
+	{
+		ahci_init(sata->devices[0]);
+	}
 }
 
 void pci_register_driver(pci_driver *driv)
