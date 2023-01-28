@@ -8,9 +8,10 @@ CC = i386-elf-gcc
 GDB = i386-elf-gdb
 CFLAGS = -g -fcommon
 QEMU_OPTIONS = -d cpu_reset,guest_errors -no-reboot -serial stdio -rtc base=localtime \
-							 -drive file=data/lose.img,index=0,media=disk,format=raw,if=ide
+							 -drive file=data/lose.img,index=0,media=disk,format=raw,if=ide \
+							 -boot d
 
-all: os-image.bin
+all: os-image.bin lose.iso
 
 os-image.bin: boot/boot.bin kernel.bin
 	cat $^ > os-image.bin
@@ -40,7 +41,7 @@ run-bin: os-image.bin
 	qemu-system-i386 ${QEMU_OPTIONS} -fda os-image.bin
 
 debug: os-image.bin kernel.elf
-	qemu-system-i386 -s -S ${QEMU_OPTIONS} -fda os-image.bin & #-fda os-image.bin &
+	qemu-system-i386 -s -S ${QEMU_OPTIONS} -fda os-image.bin &
 	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
 
 %.o: %.c ${HEADERS}

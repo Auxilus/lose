@@ -61,22 +61,11 @@ void main()
 	console_pre_print(message2);
 
 	console_pre_print(timestamp);
-	// char *buffer = (char*)malloc(512);
-	// read_sector(0, 1, buffer);
+	char *buffer = (char*)malloc(512);
+	read_sector(0, 1, buffer);
 
-	// int i;
-	// for (i = 0; i < 512; i++)
-	// {
-	// 	if (i > 0)
-	// 	{
-	// 		console_pre_print(":");
-	// 	}
-	// 	char byte[1];
-
-	// 	sprintf(byte, "%x", (char)buffer[i]);
-	// 	console_pre_print(byte);
-	// }
-	// console_pre_print("\n");
+	console_pre_print(buffer);
+	console_pre_print("\n");
 	shell_init();
 
 	// gr_print_string(520, 430, "VGA mode 0x12\nfont test\n640x480x16");
