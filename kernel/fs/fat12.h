@@ -29,6 +29,24 @@ typedef struct
   uint8_t system_id[8];
 } __attribute__((packed)) fat12_boot_record_t;
 
-void fat12_init(char *buffer);
+typedef struct
+{
+  uint8_t name[11];
+  uint8_t attributes;
+  uint8_t reserved;
+  uint8_t created_time_tenth;
+  uint16_t created_time;
+  uint16_t created_date;
+  uint16_t last_access_date;
+  uint16_t first_cluster_high;
+  uint16_t last_modified_time;
+  uint16_t last_modified_date;
+  uint16_t first_cluster_low;
+  uint32_t size;
+} __attribute__((packed)) fat12_dir_entry_t;
+
+static char *fat12_boot;
+
+void fat12_init();
 
 #endif

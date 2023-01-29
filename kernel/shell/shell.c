@@ -158,10 +158,8 @@ int handle_command()
 
   if (strcmp(shell_buffer, "test") == 0)
   {
-    char *buffer = (char *)malloc(512);
-    read_sector(0, 1, buffer);
     console_set_enable_gr_print(1);
-    fat12_init(buffer);
+    fat12_init();
     console_set_enable_gr_print(0);
     return 1;
   }

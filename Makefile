@@ -8,19 +8,27 @@ CC = i386-elf-gcc
 GDB = i386-elf-gdb
 CFLAGS = -g -fcommon
 QEMU_OPTIONS = -d cpu_reset,guest_errors -no-reboot -serial stdio -rtc base=localtime \
-							 -drive file=data/lose.img,index=0,media=disk,format=raw,if=ide \
+							 -drive file=lose.img,index=0,media=disk,format=raw,if=ide \
 							 -boot d
 
-all: os-image.bin lose.iso
+all: os-image.bin lose.img
 
 os-image.bin: boot/boot.bin kernel.bin
-	cat $^ > os-image.bin
+	cat boot/boot.bin kernel.bin > os-image.bin
 
 kernel.bin: boot/kernel_entry.o ${OBJ} ${ASMOBJ}
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ --oformat binary
 
 kernel.elf: boot/kernel_entry.o ${OBJ} ${ASMOBJ}
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ 
+
+lose.img: boot/boot.bin kernel.bin
+	echo "Copy files to lose.img"
+	dd if=/dev/zero bs=512 count=2880 of=lose.img
+	mkfs.msdos -n "LOSE DATA" -F 12 lose.img
+	mcopy -i lose.img boot/boot.bin "::BOOT.BIN"
+	mcopy -i lose.img kernel.bin "::KERNEL.BIN"
+	mcopy -i lose.img data/test.txt "::TEXT.TXT"
 
 lose.iso: os-image.bin
 	dd if=/dev/zero of=floppy.img bs=1024 count=1440
@@ -34,13 +42,10 @@ lose.iso: os-image.bin
 		-b floppy.img \
 		-hide floppy.img iso/
 
-run: os-image.bin
+run: os-image.bin  lose.img
 	qemu-system-i386 ${QEMU_OPTIONS} -fda $<
 
-run-bin: os-image.bin
-	qemu-system-i386 ${QEMU_OPTIONS} -fda os-image.bin
-
-debug: os-image.bin kernel.elf
+debug: os-image.bin kernel.elf  lose.img
 	qemu-system-i386 -s -S ${QEMU_OPTIONS} -fda os-image.bin &
 	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
 
