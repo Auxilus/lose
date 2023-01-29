@@ -14,13 +14,52 @@ void fat12_init()
   int fat_start_sector = fat12_boot_record->reserved_sectors;
   int fat_sectors = fat12_boot_record->sectors_per_fat * fat12_boot_record->fat_count;
 
-  int root_dir_start_sector = fat_start_sector + fat_sectors;
-  int root_dir_sectors = (32 * fat12_boot_record->dir_entry + fat12_boot_record->bytes_per_sector - 1) / fat12_boot_record->bytes_per_sector;
+  int dir_start_sector = fat_start_sector + fat_sectors;
+  int dir_sectors = (32 * fat12_boot_record->dir_entry + fat12_boot_record->bytes_per_sector - 1) / fat12_boot_record->bytes_per_sector;
 
-  int data_start_sector = root_dir_start_sector + root_dir_sectors;
+  int data_start_sector = dir_start_sector + dir_sectors;
   int data_sectors = fat12_boot_record->total_sectors - data_start_sector;
 
   int total_clusters = data_sectors / fat12_boot_record->sectors_per_cluster;
+
+  char *dir_buf = (char *)malloc(dir_sectors);
+  read_sector(dir_start_sector, dir_sectors, dir_buf);
+  int offset = 0;
+
+  console_pre_print("FAT12 root directory\n\n");
+  console_pre_print("NAME    EXT\n");
+  console_pre_print("-----------\n");
+
+  while (dir_buf[offset] != 0x00)
+  {
+    if (dir_buf[offset] == 0xe5)
+    {
+      // unused entry, continue
+      offset += sizeof(fat12_dir_entry_t);
+      continue;
+    }
+
+    fat12_dir_entry_t *dir_entry = (fat12_dir_entry_t *)(dir_buf + offset);
+    offset += sizeof(fat12_dir_entry_t);
+
+    if (dir_entry->attributes == 0x08)
+    {
+      // volume label, continue
+      continue;
+    }
+    char name[13];
+    memcpy(dir_entry->name, name, 11);
+    name[11] = '\n';
+    name[12] = '\0';
+    console_pre_print(name);
+  }
+}
+
+void fat12_dump_boot_info(fat12_boot_record_t *fat12_boot_record)
+{
+  int total_size = fat12_boot_record->bytes_per_sector * fat12_boot_record->total_sectors;
+  int fat_start_sector = fat12_boot_record->reserved_sectors;
+  int fat_sectors = fat12_boot_record->sectors_per_fat * fat12_boot_record->fat_count;
 
   char *oem = (char *)malloc(9);
   char *volume_label = (char *)malloc(12);

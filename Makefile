@@ -26,9 +26,10 @@ lose.img: boot/boot.bin kernel.bin
 	echo "Copy files to lose.img"
 	dd if=/dev/zero bs=512 count=2880 of=lose.img
 	mkfs.msdos -n "LOSE DATA" -F 12 lose.img
+	mmd -i lose.img "::/DATA"
 	mcopy -i lose.img boot/boot.bin "::BOOT.BIN"
 	mcopy -i lose.img kernel.bin "::KERNEL.BIN"
-	mcopy -i lose.img data/test.txt "::TEXT.TXT"
+	mcopy -i lose.img data/test.txt "::/DATA/TEXT.TXT"
 
 lose.iso: os-image.bin
 	dd if=/dev/zero of=floppy.img bs=1024 count=1440
