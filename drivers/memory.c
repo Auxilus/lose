@@ -8,9 +8,9 @@ void pmm_dump(void)
 {
 	console_pre_print("MEMORY: detecting memory\n");
 
-	// memory map is stored at 0x8900 by the bootloader (pmm.asm) using int 0x15
-	uint32_t num = *(uint32_t*)0x8900;
-	SMAP_entry_t *smaps = (SMAP_entry_t *)0x8904;
+	// memory map is stored at 0xf900 by the bootloader (pmm.asm) using int 0x15
+	uint32_t num = *(uint32_t*)0xf900;
+	SMAP_entry_t *smaps = (SMAP_entry_t *)0xf904;
 
 	for (uint32_t i = 0; i < num; i++) {
 		char *message = (char*)malloc(256);

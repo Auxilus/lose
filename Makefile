@@ -17,10 +17,10 @@ os-image.bin: boot/boot.bin kernel.bin
 	cat boot/boot.bin kernel.bin > os-image.bin
 
 kernel.bin: boot/kernel_entry.o ${OBJ} ${ASMOBJ}
-	i386-elf-ld -o $@ -Ttext 0x1000 $^ --oformat binary
+	i386-elf-ld -o $@ -Ttext 0x8000 $^ --oformat binary
 
 kernel.elf: boot/kernel_entry.o ${OBJ} ${ASMOBJ}
-	i386-elf-ld -o $@ -Ttext 0x1000 $^ 
+	i386-elf-ld -o $@ -Ttext 0x8000 $^ 
 
 lose.img: boot/boot.bin kernel.bin
 	echo "Copy files to lose.img"
