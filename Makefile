@@ -26,10 +26,10 @@ lose.img: boot/boot.bin kernel.bin
 	echo "Copy files to lose.img"
 	dd if=/dev/zero bs=512 count=2880 of=lose.img
 	mkfs.msdos -n "LOSE DATA" -F 12 lose.img
-	mmd -i lose.img "::/DATA"
+	mmd -i lose.img "::DATA"
 	mcopy -i lose.img boot/boot.bin "::BOOT.BIN"
 	mcopy -i lose.img kernel.bin "::KERNEL.BIN"
-	mcopy -i lose.img data/test.txt "::/DATA/TEXT.TXT"
+	mcopy -i lose.img data/test.txt "::DATA/TEXT.TXT"
 
 lose.iso: os-image.bin
 	dd if=/dev/zero of=floppy.img bs=1024 count=1440
@@ -42,6 +42,9 @@ lose.iso: os-image.bin
 		-o lose.iso \
 		-b floppy.img \
 		-hide floppy.img iso/
+
+ng: os-image.bin  lose.img
+	qemu-system-i386 ${QEMU_OPTIONS} -curses -fda $<
 
 run: os-image.bin  lose.img
 	qemu-system-i386 ${QEMU_OPTIONS} -fda $<

@@ -8,6 +8,7 @@
 
 // TEST COMMAND INCLUDES
 #include "../fs/fat12.h"
+#include "../fs/vfs.h"
 //
 
 int handle_command(void);
@@ -159,7 +160,12 @@ int handle_command()
   if (strcmp(shell_buffer, "test") == 0)
   {
     console_set_enable_gr_print(1);
-    fat12_init();
+    fs_node *top_node = vfs_get_top_node();
+    for (int i = 0; i < top_node->node_count; i++)
+    {
+      console_pre_print(((fs_node*)top_node->child[i])->name);
+      console_pre_print("\n");
+    }
     console_set_enable_gr_print(0);
     return 1;
   }

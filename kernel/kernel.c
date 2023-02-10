@@ -14,6 +14,7 @@
 #include "../cpu/timer.h"
 #include "./graphics.h"
 #include "kernel.h"
+#include "fs/vfs.h"
 #include "shell/shell.h"
 
 void dummy_test_entrypoint()
@@ -61,6 +62,12 @@ void main()
 	console_pre_print(message2);
 
 	console_pre_print(timestamp);
+
+	console_pre_print("KERNEL: initializing vfs\n");
+	fs_node *root_node = vfs_init();
+	char vfs_msg[20];
+	sprintf(vfs_msg, "KERNEL: %s", ((fs_node *)root_node->volume)->name);
+	console_pre_print(vfs_msg);
 
 	shell_init();
 
