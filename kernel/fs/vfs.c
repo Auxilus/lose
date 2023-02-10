@@ -55,7 +55,6 @@ fs_node *vfs_init()
   current_top_node->name[10] = boot_record->volume_label[10];
   current_top_node->name[11] = '\0';
 
-
   int current_top_node_cnt = 0;
 
   while (dir_buf[offset] != 0x00)
@@ -85,6 +84,7 @@ fs_node *vfs_init()
 
     new_node->size = dir_entry->size;
     new_node->parent = current_top_node;
+    new_node->type = dir_entry->attributes;
 
     if ((dir_entry->attributes != ATTR_DIRECTORY) || (dir_entry->attributes != ATTR_VOLUME_ID))
     {
@@ -111,4 +111,41 @@ fs_node *vfs_init()
 fs_node *vfs_get_top_node()
 {
   return current_top_node;
+}
+
+char vfs_get_node_type(fs_node *node)
+{
+  // #define ATTR_READ_ONLY 0x01
+  // #define ATTR_HIDDEN 0x02
+  // #define ATTR_SYSTEM 0x04
+  // #define ATTR_VOLUME_ID 0x08
+  // #define ATTR_DIRECTORY 0x10
+  // #define ATTR_ARCHIVE 0x20
+
+  char type = '\0';
+  switch (node->type)
+  {
+  case 0x01:
+    type = 'X';
+    break;
+  case 0x02:
+    type = 'H';
+    break;
+  case 0x04:
+    type = 'S';
+    break;
+  case 0x08:
+    type = 'V';
+    break;
+  case 0x10:
+    type = 'D';
+    break;
+  case 0x20:
+    type = 'A';
+    break;
+  default:
+    break;
+  }
+
+  return type;
 }

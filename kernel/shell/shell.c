@@ -157,13 +157,33 @@ int handle_command()
     return 1;
   }
 
+  if (strcmp(shell_buffer, "dir") == 0)
+  {
+    fs_node *top_node = vfs_get_top_node();
+    for (int i = 0; i < top_node->node_count; i++)
+    {
+      fs_node *node = (fs_node *)top_node->child[i];
+      char node_info[30];
+      // uint8_t type;
+      // uint8_t name[12];
+      // int node_count;
+      // uint32_t size;
+      // struct fs_node **child;
+      // struct fs_node *parent;
+      // struct fs_node *volume;
+      sprintf(node_info, "%c    %10u    %s\n", vfs_get_node_type(node), node->size, node->name);
+      gr_window_print(node_info);
+    }
+    return 1;
+  }
+
   if (strcmp(shell_buffer, "test") == 0)
   {
     console_set_enable_gr_print(1);
     fs_node *top_node = vfs_get_top_node();
     for (int i = 0; i < top_node->node_count; i++)
     {
-      console_pre_print(((fs_node*)top_node->child[i])->name);
+      console_pre_print(((fs_node *)top_node->child[i])->name);
       console_pre_print("\n");
     }
     console_set_enable_gr_print(0);

@@ -66,7 +66,7 @@ void main()
 	console_pre_print("KERNEL: initializing vfs\n");
 	fs_node *root_node = vfs_init();
 	char vfs_msg[20];
-	sprintf(vfs_msg, "KERNEL: %s", ((fs_node *)root_node->volume)->name);
+	sprintf(vfs_msg, "KERNEL: %s\n", ((fs_node *)root_node->volume)->name);
 	console_pre_print(vfs_msg);
 
 	shell_init();
