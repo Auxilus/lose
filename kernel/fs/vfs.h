@@ -6,6 +6,7 @@
 typedef struct fs_node
 {
   uint8_t type;
+  uint8_t depth;
   uint8_t name[12];
   int node_count;
   uint32_t size;
@@ -27,5 +28,6 @@ int vfs_initialized;
 fs_node *vfs_init(void);
 fs_node *vfs_get_top_node(void);
 char vfs_get_node_type(fs_node *node);
+char *vfs_get_pwd();
 
 #endif

@@ -41,7 +41,9 @@ fs_node *vfs_init()
   current_top_node->volume = (fs_node *)malloc(sizeof(fs_node));
   current_top_node->node_count = 0;
   current_top_node->size = 0;
+  current_top_node->depth = 0;
   current_top_node->type = 0;
+
   current_top_node->name[0] = boot_record->volume_label[0];
   current_top_node->name[1] = boot_record->volume_label[1];
   current_top_node->name[2] = boot_record->volume_label[2];
@@ -88,7 +90,7 @@ fs_node *vfs_init()
 
     if ((dir_entry->attributes != ATTR_DIRECTORY) || (dir_entry->attributes != ATTR_VOLUME_ID))
     {
-      new_node->parent = ((void *)0);
+      new_node->parent = NULL;
     }
 
     if (dir_entry->attributes == ATTR_VOLUME_ID)
@@ -97,6 +99,7 @@ fs_node *vfs_init()
     }
     else
     {
+      new_node->depth = 1;
       current_top_node->child[current_top_node_cnt] = new_node;
       current_top_node_cnt++;
       current_top_node->node_count++;
@@ -148,4 +151,25 @@ char vfs_get_node_type(fs_node *node)
   }
 
   return type;
+}
+
+char *vfs_get_pwd()
+{
+  char *pwd_string = (char *)malloc(1024);
+  fs_node *node_itr = current_top_node;
+  char **dir_tree = (char **)malloc(node_itr->depth * 12);
+
+  dir_tree[0] = "/";
+  strcat(pwd_string, dir_tree[0]);
+
+  do
+  {
+  } while (node_itr->parent != NULL);
+
+  for (int i = node_itr->depth; i > 0; i--)
+  {
+    strcat(pwd_string, dir_tree[i - 1]);
+  }
+
+  return pwd_string;
 }

@@ -157,26 +157,6 @@ int handle_command()
     return 1;
   }
 
-  if (strcmp(shell_buffer, "dir") == 0)
-  {
-    fs_node *top_node = vfs_get_top_node();
-    for (int i = 0; i < top_node->node_count; i++)
-    {
-      fs_node *node = (fs_node *)top_node->child[i];
-      char node_info[30];
-      // uint8_t type;
-      // uint8_t name[12];
-      // int node_count;
-      // uint32_t size;
-      // struct fs_node **child;
-      // struct fs_node *parent;
-      // struct fs_node *volume;
-      sprintf(node_info, "%c    %10u    %s\n", vfs_get_node_type(node), node->size, node->name);
-      gr_window_print(node_info);
-    }
-    return 1;
-  }
-
   if (strcmp(shell_buffer, "test") == 0)
   {
     console_set_enable_gr_print(1);
@@ -206,6 +186,36 @@ int handle_command()
     sprintf(timestamp, "%02u %02u %02u %02u:%02u:%02u\n",
             time.month, time.day, time.year, time.hour, time.minute, time.second);
     gr_window_print(timestamp);
+    return 1;
+  }
+
+  // fs commands
+  if (strcmp(shell_buffer, "dir") == 0)
+  {
+    fs_node *top_node = vfs_get_top_node();
+    for (int i = 0; i < top_node->node_count; i++)
+    {
+      fs_node *node = (fs_node *)top_node->child[i];
+      char node_info[30];
+      // uint8_t type;
+      // uint8_t name[12];
+      // int node_count;
+      // uint32_t size;
+      // struct fs_node **child;
+      // struct fs_node *parent;
+      // struct fs_node *volume;
+      sprintf(node_info, "%c    %10u    %s\n", vfs_get_node_type(node), node->size, node->name);
+      gr_window_print(node_info);
+    }
+    return 1;
+  }
+
+  if (strcmp(shell_buffer, "pwd") == 0)
+  {
+    char *pwd = vfs_get_pwd();
+    char node_info[30];
+    sprintf(node_info, "%s\n", pwd);
+    gr_window_print(node_info);
     return 1;
   }
 
