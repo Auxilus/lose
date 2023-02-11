@@ -18,7 +18,13 @@ fs_node *vfs_init()
 
   fat12_boot_record_t *boot_record = (fat12_boot_record_t *)boot_sector;
   int total_size = boot_record->bytes_per_sector * boot_record->total_sectors;
+  
   vfs_info->total_size = total_size;
+  vfs_info->drive_number = boot_record->drive_number;
+  memcpy(boot_record->volume_label, vfs_info->volume_label, 12);
+  memcpy(boot_record->system_id, vfs_info->system_id, 9);
+  vfs_info->volume_label[11] = '\0';
+  vfs_info->system_id[8] = '\0';
 
   // FAT table
   int fat_start_sector = boot_record->reserved_sectors;
@@ -44,17 +50,18 @@ fs_node *vfs_init()
   current_top_node->depth = 0;
   current_top_node->type = 0;
 
-  current_top_node->name[0] = boot_record->volume_label[0];
-  current_top_node->name[1] = boot_record->volume_label[1];
-  current_top_node->name[2] = boot_record->volume_label[2];
-  current_top_node->name[3] = boot_record->volume_label[3];
-  current_top_node->name[4] = boot_record->volume_label[4];
-  current_top_node->name[5] = boot_record->volume_label[5];
-  current_top_node->name[6] = boot_record->volume_label[6];
-  current_top_node->name[7] = boot_record->volume_label[7];
-  current_top_node->name[8] = boot_record->volume_label[8];
-  current_top_node->name[9] = boot_record->volume_label[9];
-  current_top_node->name[10] = boot_record->volume_label[10];
+  // current_top_node->name[0] = boot_record->volume_label[0];
+  // current_top_node->name[1] = boot_record->volume_label[1];
+  // current_top_node->name[2] = boot_record->volume_label[2];
+  // current_top_node->name[3] = boot_record->volume_label[3];
+  // current_top_node->name[4] = boot_record->volume_label[4];
+  // current_top_node->name[5] = boot_record->volume_label[5];
+  // current_top_node->name[6] = boot_record->volume_label[6];
+  // current_top_node->name[7] = boot_record->volume_label[7];
+  // current_top_node->name[8] = boot_record->volume_label[8];
+  // current_top_node->name[9] = boot_record->volume_label[9];
+  // current_top_node->name[10] = boot_record->volume_label[10];
+  memcpy(boot_record->volume_label, current_top_node->name, 12);
   current_top_node->name[11] = '\0';
 
   int current_top_node_cnt = 0;
@@ -71,20 +78,22 @@ fs_node *vfs_init()
     fat12_dir_entry_t *dir_entry = (fat12_dir_entry_t *)(dir_buf + offset);
 
     fs_node *new_node = (fs_node *)malloc(sizeof(fs_node));
-    new_node->name[0] = dir_entry->name[0];
-    new_node->name[1] = dir_entry->name[1];
-    new_node->name[2] = dir_entry->name[2];
-    new_node->name[3] = dir_entry->name[3];
-    new_node->name[4] = dir_entry->name[4];
-    new_node->name[5] = dir_entry->name[5];
-    new_node->name[6] = dir_entry->name[6];
-    new_node->name[7] = (dir_entry->name[7] == 0xe5) ? 0x20 : dir_entry->name[7];
-    new_node->name[8] = (dir_entry->name[7] == 0x23) ? 0x20 : dir_entry->name[8];
-    new_node->name[9] = (dir_entry->name[7] == 0x10) ? 0x20 : dir_entry->name[9];
-    new_node->name[10] = dir_entry->name[10];
+    // new_node->name[0] = dir_entry->name[0];
+    // new_node->name[1] = dir_entry->name[1];
+    // new_node->name[2] = dir_entry->name[2];
+    // new_node->name[3] = dir_entry->name[3];
+    // new_node->name[4] = dir_entry->name[4];
+    // new_node->name[5] = dir_entry->name[5];
+    // new_node->name[6] = dir_entry->name[6];
+    // new_node->name[7] = (dir_entry->name[7] == 0xe5) ? 0x20 : dir_entry->name[7];
+    // new_node->name[8] = (dir_entry->name[8] == 0x23) ? 0x20 : dir_entry->name[8];
+    // new_node->name[9] = (dir_entry->name[9] == 0x10) ? 0x20 : dir_entry->name[9];
+    // new_node->name[10] = dir_entry->name[10];
+    memcpy(dir_entry->name, new_node->name, 11);
     new_node->name[11] = '\0';
 
     new_node->size = dir_entry->size;
+    new_node->first_cluster = dir_entry->first_cluster_low;
     new_node->parent = current_top_node;
     new_node->type = dir_entry->attributes;
 
@@ -172,4 +181,8 @@ char *vfs_get_pwd()
   }
 
   return pwd_string;
+}
+
+char *vfs_change_dir(char *dirname)
+{
 }

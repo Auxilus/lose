@@ -193,6 +193,8 @@ int handle_command()
   if (strcmp(shell_buffer, "dir") == 0)
   {
     fs_node *top_node = vfs_get_top_node();
+    gr_window_print("\nTYPE       SIZE CLUSTER    NAME    EXT\n");
+    gr_window_print("--------------------------------------\n");
     for (int i = 0; i < top_node->node_count; i++)
     {
       fs_node *node = (fs_node *)top_node->child[i];
@@ -204,7 +206,10 @@ int handle_command()
       // struct fs_node **child;
       // struct fs_node *parent;
       // struct fs_node *volume;
-      sprintf(node_info, "%c    %10u    %s\n", vfs_get_node_type(node), node->size, node->name);
+      sprintf(node_info, "%c    %10u    %4u    %s\n", vfs_get_node_type(node),
+              node->size,
+              node->first_cluster,
+              node->name);
       gr_window_print(node_info);
     }
     return 1;
