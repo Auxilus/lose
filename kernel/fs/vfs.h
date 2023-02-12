@@ -27,6 +27,7 @@ typedef struct _vfs_info
 } __attribute__((packed)) _vfs_info;
 
 static fs_node *current_top_node;
+static fs_node *last_top_node;
 static _vfs_info *vfs_info;
 
 int vfs_initialized;

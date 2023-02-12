@@ -11,7 +11,7 @@ QEMU_OPTIONS = -d cpu_reset,guest_errors -no-reboot -serial stdio -rtc base=loca
 							 -drive file=lose.img,index=0,media=disk,format=raw,if=ide \
 							 -boot d
 
-all: os-image.bin lose.img
+all: os-image.bin
 
 os-image.bin: boot/boot.bin kernel.bin
 	cat boot/boot.bin kernel.bin > os-image.bin
@@ -22,7 +22,7 @@ kernel.bin: boot/kernel_entry.o ${OBJ} ${ASMOBJ}
 kernel.elf: boot/kernel_entry.o ${OBJ} ${ASMOBJ}
 	i386-elf-ld -o $@ -Ttext 0x8000 $^ 
 
-lose.img: boot/boot.bin kernel.bin
+lose.img:
 	echo "Copy files to lose.img"
 	dd if=/dev/zero bs=512 count=2880 of=lose.img
 	mkfs.msdos -n "LOSE DATA" -F 12 lose.img

@@ -243,11 +243,10 @@ int handle_command()
 
   if (strcmp(cmd, "cd") == 0)
   {
-    vfs_change_dir(arg);
-    char *pwd = vfs_get_pwd();
-    char node_info[30];
-    sprintf(node_info, "%s\n", pwd);
-    gr_window_print(node_info);
+    if (vfs_change_dir(arg) != 1)
+    {
+      gr_window_print("error: directory not found\n");
+    }
     return 1;
   }
 

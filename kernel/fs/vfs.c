@@ -146,25 +146,36 @@ char *vfs_get_pwd()
 {
   char *pwd_string = (char *)malloc(1024);
   fs_node *node_itr = current_top_node;
-  char **dir_tree = (char **)malloc(node_itr->depth * 12);
+  char **dir_tree = (char **)malloc((node_itr->depth + 1) * 12);
+  int entries = 0;
 
   dir_tree[0] = "/";
-  strcat(pwd_string, dir_tree[0]);
-
-  do
+  entries++;
+  while (node_itr->parent != NULL)
   {
-  } while (node_itr->parent != NULL);
 
-  for (int i = node_itr->depth; i > 0; i--)
-  {
-    strcat(pwd_string, dir_tree[i - 1]);
+    char *trimmed = (char *)malloc(12);
+    trimwhitespace(trimmed, strlen(node_itr->name), node_itr->name);
+    dir_tree[node_itr->depth] = trimmed;
+    entries++;
+    node_itr = node_itr->parent;
   }
 
+  for (int i = 0; i < entries; i++)
+  {
+    strcat(pwd_string, dir_tree[i]);
+  }
+
+  if (entries > 1)
+  {
+    strcat(pwd_string, "/");
+  }
   return pwd_string;
 }
 
 int vfs_change_dir(char *dirname)
 {
+
   fs_node *node;
   int found = 0;
   for (int i = 0; i < current_top_node->node_count; i++)
@@ -174,6 +185,7 @@ int vfs_change_dir(char *dirname)
     trimwhitespace(trimmed, strlen(node->name), &node->name);
     if (strcmp(trimmed, dirname) == 0 && node->type == 0x10)
     {
+      node->parent = current_top_node;
       found = 1;
       break;
     }
@@ -182,6 +194,17 @@ int vfs_change_dir(char *dirname)
   if (found == 0)
   {
     return -1;
+  }
+
+  if (strcmp(dirname, ".") == 0 && current_top_node != NULL)
+  {
+    return 1;
+  }
+
+  if (strcmp(dirname, "..") == 0 && last_top_node != NULL)
+  {
+    current_top_node = last_top_node;
+    return 1;
   }
 
   // current_top_node = node;
@@ -215,13 +238,20 @@ int vfs_change_dir(char *dirname)
 
     new_node->size = dir_entry->size;
     new_node->first_cluster = dir_entry->first_cluster_low;
-    new_node->parent = current_top_node;
+    if (strcmp(&new_node->name, "..         ") == 0)
+    {
+      new_node->parent = current_top_node;
+    }
+    else
+    {
+      new_node->parent = node;
+    }
     new_node->type = dir_entry->attributes;
 
-    if ((dir_entry->attributes != ATTR_DIRECTORY) || (dir_entry->attributes != ATTR_VOLUME_ID))
-    {
-      new_node->parent = NULL;
-    }
+    // if ((dir_entry->attributes != ATTR_DIRECTORY) || (dir_entry->attributes != ATTR_VOLUME_ID))
+    // {
+    //   new_node->parent = NULL;
+    // }
 
     if (dir_entry->attributes == ATTR_VOLUME_ID)
     {
@@ -229,7 +259,7 @@ int vfs_change_dir(char *dirname)
     }
     else
     {
-      new_node->depth = 1;
+      new_node->depth = node->depth + 1;
       node->child[current_top_node_cnt] = new_node;
       current_top_node_cnt++;
       node->node_count++;
@@ -238,5 +268,7 @@ int vfs_change_dir(char *dirname)
     offset += sizeof(fat12_dir_entry_t);
   }
 
+  last_top_node = current_top_node;
   current_top_node = node;
+  return 1;
 }
