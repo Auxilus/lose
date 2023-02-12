@@ -164,12 +164,12 @@ char *vfs_get_pwd()
   for (int i = 0; i < entries; i++)
   {
     strcat(pwd_string, dir_tree[i]);
+    if (i > 0)
+    {
+      strcat(pwd_string, "/");
+    }
   }
 
-  if (entries > 1)
-  {
-    strcat(pwd_string, "/");
-  }
   return pwd_string;
 }
 
