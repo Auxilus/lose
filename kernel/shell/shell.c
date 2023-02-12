@@ -5,6 +5,7 @@
 #include "../../cpu/timer.h"
 #include "../../drivers/ports.h"
 #include "../../drivers/rtc.h"
+#include "../../drivers/ata.h"
 
 // TEST COMMAND INCLUDES
 #include "../fs/fat12.h"
@@ -120,7 +121,26 @@ void shell_keypress(key_event ke)
 
 int handle_command()
 {
-  if (strcmp(shell_buffer, "clear") == 0)
+  char *cmd = (char *)malloc(10);
+  char *arg = (char *)malloc(20);
+
+  for (int i = 0; i < strlen(shell_buffer); i++)
+  {
+    if (shell_buffer[i] != ' ')
+    {
+      cmd[i] = shell_buffer[i];
+    }
+    else
+    {
+      if (strlen(shell_buffer) - i + 1 > 0)
+      {
+        memcpy(&shell_buffer[i + 1], arg, strlen(shell_buffer) - i - 1);
+      }
+      break;
+    }
+  }
+
+  if (strcmp(cmd, "clear") == 0)
   {
     gr_clear_screen();
     windowctx->cursor_x = 0;
@@ -140,37 +160,34 @@ int handle_command()
   // reset isReturn
   isReturn = 0;
 
-  if (strcmp(shell_buffer, "") == 0)
+  if (strcmp(cmd, "") == 0)
   {
     return 0;
   }
 
-  if (strcmp(shell_buffer, "info") == 0)
+  if (strcmp(cmd, "info") == 0)
   {
     gr_window_print(SHELL_COMMAND_INFO);
     return 1;
   }
 
-  if (strcmp(shell_buffer, "help") == 0)
+  if (strcmp(cmd, "help") == 0)
   {
     gr_window_print(SHELL_COMMAND_HELP);
     return 1;
   }
 
-  if (strcmp(shell_buffer, "test") == 0)
+  if (strcmp(cmd, "test") == 0)
   {
     console_set_enable_gr_print(1);
-    fs_node *top_node = vfs_get_top_node();
-    for (int i = 0; i < top_node->node_count; i++)
-    {
-      console_pre_print(((fs_node *)top_node->child[i])->name);
-      console_pre_print("\n");
-    }
+    char *buf = (char *)malloc(512);
+    int sector = atoi(arg);
+    ata_pio_read48(sector, 1, buf);
     console_set_enable_gr_print(0);
     return 1;
   }
 
-  if (strcmp(shell_buffer, "exit") == 0)
+  if (strcmp(cmd, "exit") == 0)
   {
     gr_window_print("Shutting down...\n");
     // timer_sleep(1);
@@ -179,7 +196,7 @@ int handle_command()
     return 1;
   }
 
-  if (strcmp(shell_buffer, "time") == 0)
+  if (strcmp(cmd, "time") == 0)
   {
     rtc_time time = read_rtc();
     char timestamp[256];
@@ -190,7 +207,7 @@ int handle_command()
   }
 
   // fs commands
-  if (strcmp(shell_buffer, "dir") == 0)
+  if (strcmp(cmd, "dir") == 0)
   {
     fs_node *top_node = vfs_get_top_node();
     gr_window_print("\nTYPE       SIZE CLUSTER    NAME    EXT\n");
@@ -215,8 +232,18 @@ int handle_command()
     return 1;
   }
 
-  if (strcmp(shell_buffer, "pwd") == 0)
+  if (strcmp(cmd, "pwd") == 0)
   {
+    char *pwd = vfs_get_pwd();
+    char node_info[30];
+    sprintf(node_info, "%s\n", pwd);
+    gr_window_print(node_info);
+    return 1;
+  }
+
+  if (strcmp(cmd, "cd") == 0)
+  {
+    vfs_change_dir(arg);
     char *pwd = vfs_get_pwd();
     char node_info[30];
     sprintf(node_info, "%s\n", pwd);

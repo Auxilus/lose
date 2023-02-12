@@ -14,16 +14,17 @@ typedef struct fs_node
   struct fs_node **child;
   struct fs_node *parent;
   struct fs_node *volume;
-} fs_node;
+} __attribute__((packed)) fs_node;
 
 typedef struct _vfs_info
 {
   int total_size;
   int drive_number;
+  uint8_t sectors_per_cluster;
   char volume_label[12];
   char system_id[9];
 
-} _vfs_info;
+} __attribute__((packed)) _vfs_info;
 
 static fs_node *current_top_node;
 static _vfs_info *vfs_info;
@@ -34,6 +35,6 @@ fs_node *vfs_init(void);
 fs_node *vfs_get_top_node(void);
 char vfs_get_node_type(fs_node *node);
 char *vfs_get_pwd();
-char *vfs_change_dir(char *dirname);
+int vfs_change_dir(char *dirname);
 
 #endif

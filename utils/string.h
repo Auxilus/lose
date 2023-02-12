@@ -17,4 +17,5 @@ int sscanf(const char* s, const char* format, ...);
 int vsnprintf(char* str, size_t size, const char* format, va_list ap);
 int vsprintf(char* str, const char* format, va_list ap);
 int vsscanf(const char* s, const char* format, va_list ap);
+size_t trimwhitespace(char *out, size_t len, const char *str);
 #endif

@@ -48,7 +48,7 @@ load_kernel:
 		pop ax
 
     mov bx, KERNEL_OFFSET ; Read from disk and store in 0x1000
-    mov dh, 54 ; Our future kernel will be larger, make this big
+    mov dh, 56 ; Our future kernel will be larger, make this big
     mov dl, [BOOT_DRIVE]
     call disk_load
     ret
