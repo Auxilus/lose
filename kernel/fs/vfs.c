@@ -203,7 +203,9 @@ int vfs_change_dir(char *dirname)
 
   if (strcmp(dirname, "..") == 0 && last_top_node != NULL)
   {
-    current_top_node = last_top_node;
+		if (current_top_node->parent != NULL) {
+			current_top_node = current_top_node->parent;
+		}
     return 1;
   }
 
