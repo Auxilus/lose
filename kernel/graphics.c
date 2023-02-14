@@ -90,7 +90,7 @@ void gr_print_character(int x, int y, int character, int skipAdvance)
 		for (cy = 0; cy < 8; cy++)
 		{
 			set = bitmap[cx] & 1 << cy;
-			vga_mode12h_pixel(set ? WHITE : BLACK, (u16)x + cy, (u16)y + cx);
+			vga_mode12h_pixel(set ? LTGREEN : BLACK, (u16)x + cy, (u16)y + cx);
 		}
 	}
 }
@@ -262,7 +262,7 @@ void gr_window_scroll(void)
 					setb = bitmapb[cx] & 1 << cy;
 					if (seta != setb)
 					{
-						vga_mode12h_pixel((setb && !seta) ? WHITE : BLACK, (u16)x + cy, (u16)y + cx);
+						vga_mode12h_pixel((setb && !seta) ? LTGREEN : BLACK, (u16)x + cy, (u16)y + cx);
 					}
 				}
 			}

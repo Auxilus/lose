@@ -11,12 +11,17 @@ int vga_mode12h_pixel(u8 color, u16 x, u16 y)
 {
 	if ((x >= 640) || (y >= 480))
 		return -1;
-	// port_word_out(VGA_SC_IDX, 0x02);
-	// port_byte_out(VGA_SC_DATA, 0xff);
+
+	// set bitmask
+	uint8_t bitmask = 1 << ((x & 0x07) ^ 0x07);
+	port_word_out(VGA_GC_IDX, 0x08);
+	port_byte_out(VGA_GC_DATA, bitmask);
+
+	int offset = y * 80 + x / 8;
 	unsigned char *fb = (unsigned char *)0xA0000;
-	unsigned int offset = (y * 640 + x) / 8;
-	unsigned bit_no = x % 8;
-	bit_write(fb[offset], 1 << (7 - bit_no), (bit_get(color, 1 << 0)));
+	// trigger latching
+	volatile uint8_t dummy = *(fb + offset);
+	*(fb + offset) = color % 16;
 	return 0;
 }
 
@@ -38,6 +43,7 @@ void vga_set_plane(u8 p)
 
 void vga_write_registers(void)
 {
+	// asm volatile("cli");
 	uint8_t *registers = g_640x480x16;
 	port_byte_out(miscPort, *(registers));
 	registers++;
@@ -81,4 +87,11 @@ void vga_write_registers(void)
 
 	port_byte_in(attributeControllerResetPort);
 	port_byte_out(attributeControllerIndexPort, 0x20);
+
+	// asm volatile("sti");
+
+	port_word_out(VGA_GC_IDX, 0x05); // R/W mode
+	uint8_t mode = port_byte_in(VGA_GC_DATA) & 0xF4;
+	mode |= ((0 & 1) << 3) | (2 & 3);
+	port_byte_out(VGA_GC_DATA, mode);
 }
