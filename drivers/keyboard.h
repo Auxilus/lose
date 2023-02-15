@@ -43,6 +43,7 @@ typedef struct {
 	int scancode;
 	int is_shift;
 	int is_ctrl;
+	int is_alt;
 } key_event;
 
 u8 scancode2char(int sc);

@@ -202,6 +202,7 @@ char shifted_key_map[0x100] = {
 
 static int is_shift = 0;
 static int is_ctrl = 0;
+static int is_alt = 0;
 
 u8 scancode2char(int sc)
 {
@@ -226,13 +227,15 @@ void keyboard_callback(registers_t *regs)
 		// check for shift release L & R
 		// TODO: don't hardcode scancode values
 		if (sc == 170 || sc == 182) { is_shift = 0; }
-		if (sc == 157 || sc == 224) { is_ctrl = 0; }
+    else if (sc == 184) { is_alt = 0; }
+		else if (sc == 157 || sc == 224) { is_ctrl = 0; }
 	}
 	else {
 		// check for shift press L & R
 		// TODO: don't hardcode scancode values
 		if (sc == 42 || sc == 54) { is_shift = 1; return; }
 		if (sc == 29) { is_ctrl = 1; return; }
+    if (sc == 56) { is_alt = 1; return; }
 
 		if (sc < 0x50) {
 			key_event ke;
