@@ -8,6 +8,7 @@
 #define GR_WIDTH 640
 #define GR_HEIGHT 480
 
+
 #define TRANSPARENT		0xFF
 #define BLACK					0
 #define BLUE					1
@@ -25,6 +26,8 @@
 #define LTPURPLE			13
 #define YELLOW				14
 #define WHITE					15
+
+#define GR_FC WHITE
 
 typedef struct {
 	int cursor_x;

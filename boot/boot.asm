@@ -1,53 +1,49 @@
-; Identical to lesson 13's boot sector, but the %included files have new paths
+; Add BIOS load offset
 [org 0x7c00]
 
 
-KERNEL_OFFSET equ 0x8000 ; The same one we used when linking the kernel
+KERNEL_OFFSET equ 0x8000 ; This should match the value in Makefile Ttext
 
-    mov [BOOT_DRIVE], dl ; Remember that the BIOS sets us the boot drive in 'dl' on boot
+    ; store the boot drive additional disk real operations
+    ; BIOD will set this in dl
+    mov [BOOT_DRIVE], dl
+
     mov bp, 0x70000
     mov sp, bp
-		
-    ;mov si, MSG_REAL_MODE 
-    ;call print
-    ;call print_nl
+
+    ; set graphics mode 13h
+	;push ax
+	;mov ah, 0x00
+	;mov al, 0x13
+	;int 0x10
+	;pop ax
+
+	; set graphics mode 12h (640x480x16)
+    ; not sure if ax and bx have to be restored
+	push ax
+	push bx
+	mov ax, 0x4f02 ; set VESA-Compliant video modes
+	mov bx, 0x12
+	int 0x10
+	pop bx
+	pop ax
 
     call load_kernel ; read the kernel from disk
     call detect_pmm
     call switch_to_pm ; disable interrupts, load GDT,  etc. Finally jumps to 'BEGIN_PM'
     jmp $ ; Never executed
 
-%include "boot/print.asm"
-%include "boot/print_hex.asm"
 %include "boot/disk.asm"
 %include "boot/gdt.asm"
-%include "boot/32bit_print.asm"
 %include "boot/switch_pm.asm"
 %include "boot/pmm.asm"
 
 [bits 16]
 load_kernel:
-    ;mov si, MSG_LOAD_KERNEL
-    ;call print
-    ;call print_nl
 
-		;; set graphics mode 13h
-		;push ax
-		;mov ah, 0x00
-		;mov al, 0x13
-		;int 0x10
-		;pop ax
-
-		;; set graphics mode 12h
-		push ax
-		push bx
-		mov ax, 0x4f02
-		mov bx, 0x12
-		int 0x10
-		pop bx
-		pop ax
-
-    mov bx, KERNEL_OFFSET ; Read from disk and store in 0x1000
+    ; load kernel at KERNEL_OFFSET
+    ; for now, the number of sectors has to be hard-coded, this should be refactored in the future
+    mov bx, KERNEL_OFFSET
     mov dh, 56 ; Our future kernel will be larger, make this big
     mov dl, [BOOT_DRIVE]
     call disk_load
@@ -55,17 +51,13 @@ load_kernel:
 
 [bits 32]
 BEGIN_PM:
-    ;mov ebx, MSG_PROT_MODE
-    ;call print_string_pm
-    call KERNEL_OFFSET ; Give control to the kernel
-    jmp $ ; Stay here when the kernel returns control to us (if ever)
+    ; jump to kernel code
+    call KERNEL_OFFSET
+    hlt ; don't crash, lol.
 
 
-BOOT_DRIVE db 0 ; It is a good idea to store it in memory because 'dl' may get overwritten
-;MSG_REAL_MODE db "Started in 16-bit Real Mode", 0
-;MSG_PROT_MODE db "Landed in 32-bit Protected Mode", 0
-;MSG_LOAD_KERNEL db "Loading kernel into memory", 0
+BOOT_DRIVE db 0
 
-; padding
+; boot magic padding
 times 510 - ($-$$) db 0
 dw 0xaa55

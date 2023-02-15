@@ -4,6 +4,8 @@ HEADERS = $(wildcard kernel/*.h kernel/fs/*.h kernel/shell/*.h drivers/*.h utils
 OBJ = ${C_SOURCES:.c=.o}
 ASMOBJ = ${ASM_SOURCES:.asm=.o}
 
+KERNEL_OFFSET = 0x8000
+
 CC = i386-elf-gcc
 GDB = i386-elf-gdb
 CFLAGS = -g -fcommon
@@ -17,10 +19,10 @@ os-image.bin: boot/boot.bin kernel.bin
 	cat boot/boot.bin kernel.bin > os-image.bin
 
 kernel.bin: boot/kernel_entry.o ${OBJ} ${ASMOBJ}
-	i386-elf-ld -o $@ -Ttext 0x8000 $^ --oformat binary
+	i386-elf-ld -o $@ -Ttext ${KERNEL_OFFSET} $^ --oformat binary
 
 kernel.elf: boot/kernel_entry.o ${OBJ} ${ASMOBJ}
-	i386-elf-ld -o $@ -Ttext 0x8000 $^ 
+	i386-elf-ld -o $@ -Ttext ${KERNEL_OFFSET} $^ 
 
 lose.img:
 	echo "Copy files to lose.img"

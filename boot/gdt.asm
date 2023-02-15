@@ -1,3 +1,4 @@
+; https://github.com/cfenollosa/os-tutorial/tree/master/09-32bit-gdt
 gdt_start: ; don't remove the labels, they're needed to compute sizes and jumps
     ; the GDT starts with a null 8-byte
     dd 0x0 ; 4 byte

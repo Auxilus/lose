@@ -7,7 +7,7 @@
 #include "../utils/string.h"
 #include "../utils/console.h"
 
-int graphics_abs(int value) { return value < 0 ? 0 - value : value; }
+int gr_abs(int value) { return value < 0 ? 0 - value : value; }
 
 void gr_init_graphics(void)
 {
@@ -17,6 +17,7 @@ void gr_init_graphics(void)
 	windowctx->cursor_y = 0;
 	windowctx->charbuf = (char *)malloc((GR_HEIGHT / 8) * (GR_WIDTH / 8));
 	gr_clear_screen();
+	console_set_gr_ready(1);
 	gr_print_character(0, 0, '_', 1);
 	serial_print("GRAPHICSL: init done\n");
 }
@@ -90,91 +91,91 @@ void gr_print_character(int x, int y, int character, int skipAdvance)
 		for (cy = 0; cy < 8; cy++)
 		{
 			set = bitmap[cx] & 1 << cy;
-			vga_mode12h_pixel(set ? LTGREEN : BLACK, (u16)x + cy, (u16)y + cx);
+			vga_mode12h_pixel(set ? GR_FC : BLACK, (u16)x + cy, (u16)y + cx);
 		}
 	}
 }
 
-void gr_draw_line(int x0, int y0, int x1, int y1, char color)
-{
-	int dx = x1 - x0;
-	int dy = y1 - y0;
-	int xsign, ysign;
+// void gr_draw_line(int x0, int y0, int x1, int y1, char color)
+// {
+// 	int dx = x1 - x0;
+// 	int dy = y1 - y0;
+// 	int xsign, ysign;
 
-	if (dx > 0)
-	{
-		xsign = 1;
-	}
-	else
-	{
-		xsign = -1;
-	}
+// 	if (dx > 0)
+// 	{
+// 		xsign = 1;
+// 	}
+// 	else
+// 	{
+// 		xsign = -1;
+// 	}
 
-	if (dy > 0)
-	{
-		ysign = 1;
-	}
-	else
-	{
-		ysign = -1;
-	}
+// 	if (dy > 0)
+// 	{
+// 		ysign = 1;
+// 	}
+// 	else
+// 	{
+// 		ysign = -1;
+// 	}
 
-	dx = graphics_abs(dx);
-	dy = graphics_abs(dy);
+// 	dx = gr_abs(dx);
+// 	dy = gr_abs(dy);
 
-	int xx, xy, yx, yy;
-	if (dx > dy)
-	{
-		xx = xsign;
-		xy = 0;
-		yx = 0;
-		yy = ysign;
-	}
-	else
-	{
-		int tmp = dx;
-		dx = dy;
-		dy = tmp;
-		xx = 0;
-		xy = ysign;
-		yx = xsign;
-		yy = 0;
-	}
+// 	int xx, xy, yx, yy;
+// 	if (dx > dy)
+// 	{
+// 		xx = xsign;
+// 		xy = 0;
+// 		yx = 0;
+// 		yy = ysign;
+// 	}
+// 	else
+// 	{
+// 		int tmp = dx;
+// 		dx = dy;
+// 		dy = tmp;
+// 		xx = 0;
+// 		xy = ysign;
+// 		yx = xsign;
+// 		yy = 0;
+// 	}
 
-	int D = 2 * dy - dx;
-	int y = 0;
+// 	int D = 2 * dy - dx;
+// 	int y = 0;
 
-	for (int x = 0; x < dx; x++)
-	{
-		int pixel_x = x0 + x * xx + y * yx;
-		int pixel_y = y0 + x * xy + y * yy;
-		if (pixel_x > 640)
-			pixel_x = 640;
-		if (pixel_x < 0)
-			pixel_x = 0;
-		if (pixel_y > 480)
-			pixel_y = 480;
-		if (pixel_y < 0)
-			pixel_y = 0;
+// 	for (int x = 0; x < dx; x++)
+// 	{
+// 		int pixel_x = x0 + x * xx + y * yx;
+// 		int pixel_y = y0 + x * xy + y * yy;
+// 		if (pixel_x > 640)
+// 			pixel_x = 640;
+// 		if (pixel_x < 0)
+// 			pixel_x = 0;
+// 		if (pixel_y > 480)
+// 			pixel_y = 480;
+// 		if (pixel_y < 0)
+// 			pixel_y = 0;
 
-		vga_mode12h_pixel(color, pixel_x, pixel_y);
+// 		vga_mode12h_pixel(color, pixel_x, pixel_y);
 
-		if (D >= 0)
-		{
-			y += 1;
-			D -= 2 * dx;
-		}
-		D += 2 * dy;
-	}
-}
+// 		if (D >= 0)
+// 		{
+// 			y += 1;
+// 			D -= 2 * dx;
+// 		}
+// 		D += 2 * dy;
+// 	}
+// }
 
-void gr_draw_rect(int x0, int y0, int w, int h, char color)
-{
-	gr_draw_line(x0, y0, x0 + w, y0, color);
-	gr_draw_line(x0, y0 + h, x0 + w, y0 + h, color);
-	gr_draw_line(x0 + w, y0, x0 + w, y0 + h, color);
-	gr_draw_line(x0, y0, x0, y0 + h, color);
-}
+// void gr_draw_rect(int x0, int y0, int w, int h, char color)
+// {
+// 	gr_draw_line(x0, y0, x0 + w, y0, color);
+// 	gr_draw_line(x0, y0 + h, x0 + w, y0 + h, color);
+// 	gr_draw_line(x0 + w, y0, x0 + w, y0 + h, color);
+// 	gr_draw_line(x0, y0, x0, y0 + h, color);
+// }
 
 void gr_print(char character)
 {
@@ -232,12 +233,6 @@ void gr_window_scroll(void)
 
 	for (int row = 0; row < (nH)-1; row++)
 	{
-		// char *first = (char *)malloc(nW);
-		// char *second = (char *)malloc(nW);
-
-		// memcpy(&windowctx->charbuf[row * nW], first, nW);
-		// memcpy(&windowctx->charbuf[(row + 1) * nW], second, nW);
-
 		for (int col = 0; col < nW; col++)
 		{
 			char a = windowctx->charbuf[(row * nW) + col];
@@ -262,15 +257,12 @@ void gr_window_scroll(void)
 					setb = bitmapb[cx] & 1 << cy;
 					if (seta != setb)
 					{
-						vga_mode12h_pixel((setb && !seta) ? LTGREEN : BLACK, (u16)x + cy, (u16)y + cx);
+						vga_mode12h_pixel((setb && !seta) ? GR_FC : BLACK, (u16)x + cy, (u16)y + cx);
 					}
 				}
 			}
 		}
 	}
-
-	// char *last = (char *)malloc(nW);
-	// memcpy(&windowctx->charbuf[((nH)-1) * nW], last, nW);
 
 	for (int last_col = 0; last_col < nW; last_col++)
 	{
@@ -283,7 +275,6 @@ void gr_window_scroll(void)
 		int cx, cy;
 		char *bitmapa = font8x8_basic[(int)a];
 		int x = gr_window_get_x(last_col + (((nH)-1) * (GR_WIDTH) / 8));
-		// int y = gr_window_get_y(last_col + (((nH)-1) * (GR_WIDTH) / 8));
 		int y = 472;
 		for (cx = 0; cx < 8; cx++)
 		{

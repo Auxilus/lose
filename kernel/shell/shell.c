@@ -56,32 +56,6 @@ void shell_loop(void)
 
 void shell_keypress(key_event ke)
 {
-  // if (ke.is_shift && ke.is_ctrl && ke.letter == 'Z')
-  // {
-  // 	// basic shutdown for qemu ctrl+shift+c
-  // 	console_pre_print("kernel: kernel shutdown initiated\n");
-  // 	gr_clear_screen();
-  // 	gr_print_string(10, 10, "shutting down...");
-  // 	timer_sleep(1);
-  // 	port_word_out(0x604, 0x2000);
-  // 	return;
-  // }
-  // if (ke.is_shift && ke.is_ctrl && ke.letter == 'T')
-  // {
-  // 	// scroll test
-  // 	gr_window_scroll();
-  // 	return;
-  // }
-
-  // if (ke.is_shift && ke.is_ctrl && ke.letter == 'C')
-  // {
-  // 	// basic shutdown for qemu ctrl+shift+c
-  // 	gr_clear_screen();
-  // 	windowctx->cursor_x = 0;
-  // 	windowctx->cursor_y = 0;
-  // 	return;
-  // }
-
   if (ke.letter == 0x0a)
   {
     isReturn = 1;
@@ -190,7 +164,7 @@ int handle_command()
   if (strcmp(cmd, "exit") == 0)
   {
     gr_window_print("Shutting down...\n");
-    // timer_sleep(1);
+    timer_sleep(5);
     gr_clear_screen();
     port_word_out(0x604, 0x2000);
     return 1;
