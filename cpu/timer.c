@@ -1,6 +1,6 @@
 #include "timer.h"
-#include "../drivers/serial.h"
 #include "isr.h"
+#include "../drivers/serial.h"
 #include "../utils/console.h"
 
 volatile u32 tick = 0;
@@ -17,7 +17,6 @@ void init_timer(u32 freq) {
 	// hardware clock at 1193180 Hz
 	u32 divisor = 1193180 / freq;
 	u8 low  = (u8)(divisor & 0xFF);
-	// u8 high = (u8)( (divisor >> 8) & 0xFF);
 	u8 high = (u8)((divisor & 0xFF00) >>8);
 	
 	// send PIT command 0x36

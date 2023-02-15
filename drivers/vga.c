@@ -1,6 +1,8 @@
 #include "vga.h"
 #include "ports.h"
 
+unsigned char *fb = (unsigned char *)0xA0000;
+
 void vga_set_pixel(int pos_x, int pos_y, u8 VGA_COLOR)
 {
 	u8 *location = (u8 *)0xA0000 + 320 * pos_y + pos_x;
@@ -18,7 +20,6 @@ int vga_mode12h_pixel(u8 color, u16 x, u16 y)
 	port_byte_out(VGA_GC_DATA, bitmask);
 
 	int offset = y * 80 + x / 8;
-	unsigned char *fb = (unsigned char *)0xA0000;
 	// trigger latching
 	volatile uint8_t dummy = *(fb + offset);
 	*(fb + offset) = color % 16;
@@ -45,7 +46,7 @@ void vga_write_registers(void)
 {
 	// asm volatile("cli");
 	uint8_t *registers = g_640x480x16;
-	port_byte_out(miscPort, *(registers));
+	port_byte_out(VGA_MISC_PORT, *(registers));
 	registers++;
 
 	for (uint8_t i = 0; i < 5; i++)
@@ -79,14 +80,14 @@ void vga_write_registers(void)
 
 	for (uint8_t i = 0; i < 21; i++)
 	{
-		(void)port_byte_in(attributeControllerResetPort);
-		port_byte_out(attributeControllerIndexPort, i);
-		port_byte_out(attributeControllerWritePort, *(registers));
+		(void)port_byte_in(VGA_ATC_RESET);
+		port_byte_out(VGA_ATC_IDX, i);
+		port_byte_out(VGA_ATC_WRITE, *(registers));
 		registers++;
 	}
 
-	port_byte_in(attributeControllerResetPort);
-	port_byte_out(attributeControllerIndexPort, 0x20);
+	port_byte_in(VGA_ATC_RESET);
+	port_byte_out(VGA_ATC_IDX, 0x20);
 
 	// asm volatile("sti");
 

@@ -99,7 +99,6 @@ uint8_t identify() {
     }
 
     console_pre_print("ATA: Reading IDENTIFY structure.\n");
-    //uint8_t *buff = kmalloc(40960, 0, NULL);
     uint8_t buff[256 * 2];
     insw(ATA_PRIMARY_DATA, buff, 256);
     console_pre_print("ATA: Success. Disk is ready to go.\n");

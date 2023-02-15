@@ -164,7 +164,7 @@ int handle_command()
   if (strcmp(cmd, "exit") == 0)
   {
     gr_window_print("Shutting down...\n");
-    timer_sleep(5);
+    // timer_sleep(5);
     gr_clear_screen();
     port_word_out(0x604, 0x2000);
     return 1;

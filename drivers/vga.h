@@ -23,7 +23,7 @@ unsigned static char g_640x480x16[] = {
   0x01, 0x00, 0x0F, 0x00, 0x00, 
 };
 
-#define miscPort 0x3c2
+#define VGA_MISC_PORT 0x3c2
 #define VGA_CRTC_IDX 0x3d4
 #define VGA_CRTC_DATA 0x3d5
 #define VGA_CRTC_IDXText 0x3b4
@@ -32,10 +32,10 @@ unsigned static char g_640x480x16[] = {
 #define VGA_SC_DATA 0x3c5
 #define VGA_GC_IDX 0x3ce
 #define VGA_GC_DATA 0x3cf
-#define attributeControllerIndexPort 0x3c0
-#define attributeControllerReadPort 0x3c1
-#define attributeControllerWritePort 0x3c0
-#define attributeControllerResetPort 0x3da
+#define VGA_ATC_IDX 0x3c0
+#define VGA_ATC_READ 0x3c1
+#define VGA_ATC_WRITE 0x3c0
+#define VGA_ATC_RESET 0x3da
 
 #define bit_get(p, m) ((p) & (m))
 #define bit_set(p, m) ((p) |= (m))
