@@ -450,10 +450,7 @@ int vsscanf(const char *s, const char *format, va_list ap)
 {
 }
 
-// Stores the trimmed input string into the given output buffer, which must be
-// large enough to store the result.  If it is too small, the output is
-// truncated.
-size_t trimwhitespace(char *out, size_t len, const char *str)
+size_t trimwhitespace(char *out, size_t len, char *str)
 {
 	if (len == 0)
 		return 0;
@@ -481,7 +478,7 @@ size_t trimwhitespace(char *out, size_t len, const char *str)
 	out_size = (end - str) < len - 1 ? (end - str) : len - 1;
 
 	// Copy trimmed string and add null terminator
-	memcpy(str, out, out_size);
+	memcpy((u8*)str, out, out_size);
 	out[out_size] = 0;
 
 	return out_size;

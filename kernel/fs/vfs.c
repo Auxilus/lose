@@ -182,7 +182,7 @@ int vfs_change_dir(char *dirname)
   {
     node = (fs_node *)current_top_node->child[i];
     char *trimmed = (char *)malloc(strlen(node->name));
-    trimwhitespace(trimmed, strlen(node->name), &node->name);
+    trimwhitespace(trimmed, strlen(node->name), (char *)&node->name);
     if (strcmp(trimmed, dirname) == 0 && node->type == 0x10)
     {
       node->parent = current_top_node;
@@ -240,7 +240,7 @@ int vfs_change_dir(char *dirname)
 
     new_node->size = dir_entry->size;
     new_node->first_cluster = dir_entry->first_cluster_low;
-    if (strcmp(&new_node->name, "..         ") == 0)
+    if (strcmp((const char*)&new_node->name, "..         ") == 0)
     {
       new_node->parent = current_top_node;
     }
