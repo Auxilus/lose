@@ -164,7 +164,7 @@ void ata_pio_read28(uint32_t LBA, uint8_t sectorcount, uint8_t *target) {
  * Send the "READ SECTORS EXT" command (0x24) to port 0x1F7: port_byte_out(0x1F7, 0x24)
  */
 
-void ata_pio_read48(uint64_t LBA, uint16_t sectorcount, uint8_t *target) {
+int ata_pio_read48(uint64_t LBA, uint16_t sectorcount, uint8_t *target) {
     // HARD CODE MASTER (for now)
     port_byte_out(ATA_PRIMARY_DRIVE_HEAD, 0x40);                     // Select master
     port_byte_out(ATA_PRIMARY_SECCOUNT, (sectorcount >> 8) & 0xFF ); // sectorcount high

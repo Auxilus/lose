@@ -2,6 +2,7 @@
 #define _FS_VFS
 
 #include "../../cpu/types.h"
+#include "./fat12.h"
 
 typedef struct fs_node
 {
@@ -21,11 +22,13 @@ typedef struct _vfs_info
   int total_size;
   int drive_number;
   uint8_t sectors_per_cluster;
+  int root_directory_end;
   char volume_label[12];
   char system_id[9];
 
 } __attribute__((packed)) _vfs_info;
 
+static fat12_boot_record_t *vfs_boot_record;
 static fs_node *current_top_node;
 static fs_node *last_top_node;
 static _vfs_info *vfs_info;
@@ -37,5 +40,6 @@ fs_node *vfs_get_top_node(void);
 char vfs_get_node_type(fs_node *node);
 char *vfs_get_pwd();
 int vfs_change_dir(char *dirname);
+char *vfs_cat_dir(char *dirname);
 
 #endif

@@ -224,6 +224,23 @@ int handle_command()
     return 1;
   }
 
+  if (strcmp(cmd, "cat") == 0)
+  {
+    char *ret = vfs_cat_dir(arg);
+
+    if (ret != NULL)
+    {
+      gr_window_print(ret);
+      gr_window_print("\n");
+    }
+    else
+    {
+      gr_window_print("error: file read failed\n");
+    }
+
+    return 1;
+  }
+
   char unknown[512 + 20];
   sprintf(unknown, "Unknown command %s\n", shell_buffer);
   gr_window_print(unknown);

@@ -18,6 +18,7 @@ fs_node *vfs_init()
   ata_pio_read48((uint64_t)0, (uint16_t)1, boot_sector);
 
   fat12_boot_record_t *boot_record = (fat12_boot_record_t *)boot_sector;
+  vfs_boot_record = boot_record;
   int total_size = boot_record->bytes_per_sector * boot_record->total_sectors;
 
   vfs_info->total_size = total_size;
@@ -35,6 +36,11 @@ fs_node *vfs_init()
   // Root directory
   int root_start_sector = fat_start_sector + fat_sectors;
   int root_sectors = (32 * boot_record->dir_entry + boot_record->bytes_per_sector - 1) / boot_record->bytes_per_sector;
+  int size = sizeof(fat12_dir_entry_t) * boot_record->dir_entry;
+  int sectors = (size / boot_record->bytes_per_sector);
+  if (size % boot_record->bytes_per_sector > 0)
+    sectors++;
+  vfs_info->root_directory_end = (boot_record->reserved_sectors + boot_record->sectors_per_fat * boot_record->fat_count) + sectors;
 
   // read root directory
   char *dir_buf = (char *)malloc(root_sectors * 512);
@@ -203,9 +209,10 @@ int vfs_change_dir(char *dirname)
 
   if (strcmp(dirname, "..") == 0 && last_top_node != NULL)
   {
-		if (current_top_node->parent != NULL) {
-			current_top_node = current_top_node->parent;
-		}
+    if (current_top_node->parent != NULL)
+    {
+      current_top_node = current_top_node->parent;
+    }
     return 1;
   }
 
@@ -240,7 +247,7 @@ int vfs_change_dir(char *dirname)
 
     new_node->size = dir_entry->size;
     new_node->first_cluster = dir_entry->first_cluster_low;
-    if (strcmp((const char*)&new_node->name, "..         ") == 0)
+    if (strcmp((const char *)&new_node->name, "..         ") == 0)
     {
       new_node->parent = current_top_node;
     }
@@ -273,4 +280,49 @@ int vfs_change_dir(char *dirname)
   last_top_node = current_top_node;
   current_top_node = node;
   return 1;
+}
+
+char *vfs_cat_dir(char *dirname)
+{
+  fs_node *node;
+  int found = 0;
+  for (int i = 0; i < current_top_node->node_count; i++)
+  {
+    node = (fs_node *)current_top_node->child[i];
+    char *trimmed = (char *)malloc(strlen(node->name));
+    trimwhitespace(trimmed, strlen(node->name), (char *)&node->name);
+    if (strcmp(trimmed, dirname) == 0 && (node->type == 0x20 || node->type == 0x01))
+    {
+      found = 1;
+      break;
+    }
+  }
+
+  if (!found)
+  {
+    return NULL;
+  }
+
+  int current_cluster = node->first_cluster;
+  char *file_data = (char *)malloc(node->size + vfs_boot_record->bytes_per_sector);
+  int sectors_to_be_read = node->size / 512;
+  char *ret = file_data;
+  if (node->size - (sectors_to_be_read * 512) > 0)
+  {
+    sectors_to_be_read++;
+  }
+
+  while (sectors_to_be_read > 0)
+  {
+    uint64_t sector = vfs_info->root_directory_end + (current_cluster - 2) * vfs_boot_record->sectors_per_cluster;
+
+    ata_pio_read48(sector, vfs_boot_record->sectors_per_cluster, file_data);
+    file_data += vfs_boot_record->sectors_per_cluster * vfs_boot_record->bytes_per_sector;
+    sectors_to_be_read -= vfs_boot_record->sectors_per_cluster;
+  }
+
+  file_data -= vfs_boot_record->sectors_per_cluster * vfs_boot_record->bytes_per_sector * sectors_to_be_read;
+  console_pre_print(ret);
+
+  return ret;
 }
