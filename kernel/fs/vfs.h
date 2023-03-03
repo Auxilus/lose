@@ -32,6 +32,7 @@ static fat12_boot_record_t *vfs_boot_record;
 static fs_node *current_top_node;
 static fs_node *last_top_node;
 static _vfs_info *vfs_info;
+static char* fat_table;
 
 int vfs_initialized;
 

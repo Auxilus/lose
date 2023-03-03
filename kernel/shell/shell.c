@@ -230,6 +230,7 @@ int handle_command()
 
     if (ret != NULL)
     {
+      gr_window_print("\n");
       gr_window_print(ret);
       gr_window_print("\n");
     }

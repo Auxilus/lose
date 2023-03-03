@@ -32,6 +32,8 @@ fs_node *vfs_init()
   // FAT table
   int fat_start_sector = boot_record->reserved_sectors;
   int fat_sectors = boot_record->sectors_per_fat * boot_record->fat_count;
+  fat_table = (char *)malloc(fat_sectors * boot_record->bytes_per_sector);
+  ata_pio_read48(fat_start_sector, fat_sectors, fat_table);
 
   // Root directory
   int root_start_sector = fat_start_sector + fat_sectors;
@@ -305,23 +307,26 @@ char *vfs_cat_dir(char *dirname)
 
   int current_cluster = node->first_cluster;
   char *file_data = (char *)malloc(node->size + vfs_boot_record->bytes_per_sector);
-  int sectors_to_be_read = node->size / 512;
   char *ret = file_data;
-  if (node->size - (sectors_to_be_read * 512) > 0)
-  {
-    sectors_to_be_read++;
-  }
 
-  while (sectors_to_be_read > 0)
+  do
   {
     uint64_t sector = vfs_info->root_directory_end + (current_cluster - 2) * vfs_boot_record->sectors_per_cluster;
 
     ata_pio_read48(sector, vfs_boot_record->sectors_per_cluster, file_data);
     file_data += vfs_boot_record->sectors_per_cluster * vfs_boot_record->bytes_per_sector;
-    sectors_to_be_read -= vfs_boot_record->sectors_per_cluster;
-  }
 
-  file_data -= vfs_boot_record->sectors_per_cluster * vfs_boot_record->bytes_per_sector * sectors_to_be_read;
+    uint32_t fat_index = current_cluster * 3 / 2;
+    if (current_cluster % 2 == 0)
+    {
+      current_cluster = (*(uint16_t *)(fat_table + fat_index)) & 0x0FFF;
+    }
+    else
+    {
+      current_cluster = (*(uint16_t *)(fat_table + fat_index)) >> 4;
+    }
+  } while (current_cluster < 0x0FF8);
+
   console_pre_print(ret);
 
   return ret;
