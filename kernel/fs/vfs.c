@@ -284,10 +284,11 @@ int vfs_change_dir(char *dirname)
   return 1;
 }
 
-char *vfs_cat_dir(char *dirname)
+vfs_file *vfs_cat_dir(char *dirname)
 {
   fs_node *node;
   int found = 0;
+
   for (int i = 0; i < current_top_node->node_count; i++)
   {
     node = (fs_node *)current_top_node->child[i];
@@ -298,6 +299,7 @@ char *vfs_cat_dir(char *dirname)
       found = 1;
       break;
     }
+    free(strlen(node->name));
   }
 
   if (!found)
@@ -305,9 +307,13 @@ char *vfs_cat_dir(char *dirname)
     return NULL;
   }
 
+  vfs_file *ret = (vfs_file*)malloc(sizeof(vfs_file));
+  ret->size = node->size;
+  ret->read_size = node->size + vfs_boot_record->bytes_per_sector;
+  ret->fptr = (char *)malloc(node->size + vfs_boot_record->bytes_per_sector);
+
   int current_cluster = node->first_cluster;
-  char *file_data = (char *)malloc(node->size + vfs_boot_record->bytes_per_sector);
-  char *ret = file_data;
+  char *file_data = ret->fptr;
 
   do
   {
@@ -326,8 +332,6 @@ char *vfs_cat_dir(char *dirname)
       current_cluster = (*(uint16_t *)(fat_table + fat_index)) >> 4;
     }
   } while (current_cluster < 0x0FF8);
-
-  console_pre_print(ret);
 
   return ret;
 }

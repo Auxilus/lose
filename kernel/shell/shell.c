@@ -226,12 +226,13 @@ int handle_command()
 
   if (strcmp(cmd, "cat") == 0)
   {
-    char *ret = vfs_cat_dir(arg);
+    vfs_file *ret = vfs_cat_dir(arg);
 
     if (ret != NULL)
     {
       gr_window_print("\n");
-      gr_window_print(ret);
+      gr_window_print(ret->fptr);
+      free(ret->read_size);
       gr_window_print("\n");
     }
     else

@@ -28,6 +28,13 @@ typedef struct _vfs_info
 
 } __attribute__((packed)) _vfs_info;
 
+typedef struct vfs_file
+{
+  char *fptr;
+  int size;
+  int read_size;
+} vfs_file;
+
 static fat12_boot_record_t *vfs_boot_record;
 static fs_node *current_top_node;
 static fs_node *last_top_node;
@@ -41,6 +48,6 @@ fs_node *vfs_get_top_node(void);
 char vfs_get_node_type(fs_node *node);
 char *vfs_get_pwd();
 int vfs_change_dir(char *dirname);
-char *vfs_cat_dir(char *dirname);
+vfs_file *vfs_cat_dir(char *dirname);
 
 #endif
