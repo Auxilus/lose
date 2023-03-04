@@ -1,5 +1,3 @@
-/* This will force us to create a kernel entry function instead of jumping to kernel.c:0x00 */
-
 #include "../drivers/vga.h"
 #include "../drivers/pci.h"
 #include "../drivers/acpi.h"
@@ -17,7 +15,7 @@
 #include "fs/vfs.h"
 #include "shell/shell.h"
 
-void dummy_test_entrypoint()
+void dummy()
 {
 }
 
@@ -34,8 +32,8 @@ void main()
 	gr_init_graphics();
 	console_set_enable_gr_print(1);
 	rtc_time time = read_rtc();
-	char timestamp[256];
-	sprintf(timestamp, "KERNEL: %02u/%02u/%02u %02u:%02u:%02u\n",
+	char timestamp[80];
+	sprintf(timestamp, "KERNEL: time %02u/%02u/%02u %02u:%02u:%02u\n",
 					time.month, time.day, time.year, time.hour, time.minute, time.second);
 
 	isr_install();
@@ -50,16 +48,11 @@ void main()
 	console_pre_print("KERNEL: interrupt test complete\n");
 
 	console_pre_print("KERNEL: testing malloc\n");
-	int *a = (int *)malloc(sizeof(int) * 5);
-	char *s = (char *)malloc(64);
-
-	char message1[128];
-	sprintf(message1, "KERNEL: int[5]   0x%p\n", a);
-	char message2[128];
-	sprintf(message2, "KERNEL: char[64] 0x%p\n", s);
-
-	console_pre_print(message1);
-	console_pre_print(message2);
+	char *s = (char *)malloc(32);
+	char malloc_test[128];
+	sprintf(malloc_test, "KERNEL: char[32] 0x%p\n", s);
+	console_pre_print(malloc_test);
+	console_pre_print("KERNEL: malloc triggered\n");
 
 	console_pre_print(timestamp);
 

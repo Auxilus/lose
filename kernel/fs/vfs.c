@@ -9,6 +9,7 @@ fs_node *vfs_init()
 {
   // implement vfs for fat12 for now
   // read first fat12 sector
+  // read fat table
   // build root directory node tree
   identify();
 
@@ -16,20 +17,21 @@ fs_node *vfs_init()
 
   char *boot_sector = (char *)malloc(512);
   ata_pio_read48((uint64_t)0, (uint16_t)1, boot_sector);
-
   fat12_boot_record_t *boot_record = (fat12_boot_record_t *)boot_sector;
+
   vfs_boot_record = boot_record;
   int total_size = boot_record->bytes_per_sector * boot_record->total_sectors;
-
   vfs_info->total_size = total_size;
   vfs_info->drive_number = boot_record->drive_number;
   vfs_info->sectors_per_cluster = boot_record->sectors_per_cluster;
+
+  // copy required number of characters and append \0 manually at the end
   memcpy(boot_record->volume_label, vfs_info->volume_label, 12);
   memcpy(boot_record->system_id, vfs_info->system_id, 9);
   vfs_info->volume_label[11] = '\0';
   vfs_info->system_id[8] = '\0';
 
-  // FAT table
+  // read the FAT table(s)
   int fat_start_sector = boot_record->reserved_sectors;
   int fat_sectors = boot_record->sectors_per_fat * boot_record->fat_count;
   fat_table = (char *)malloc(fat_sectors * boot_record->bytes_per_sector);

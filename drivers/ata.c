@@ -1,27 +1,27 @@
+// Ref.-https://github.com/knusbaum/kernel/blob/master/ata_pio_drv.c
+
 #include "ata.h"
 #include "ports.h"
 #include "../utils/string.h"
 #include "../utils/console.h"
 
-#define ATA_PRIMARY_DATA         0x1F0
-#define ATA_PRIMARY_ERR          0x1F1
-#define ATA_PRIMARY_SECCOUNT     0x1F2
-#define ATA_PRIMARY_LBA_LO       0x1F3
-#define ATA_PRIMARY_LBA_MID      0x1F4
-#define ATA_PRIMARY_LBA_HI       0x1F5
-#define ATA_PRIMARY_DRIVE_HEAD   0x1F6
+#define ATA_PRIMARY_DATA 0x1F0
+#define ATA_PRIMARY_ERR 0x1F1
+#define ATA_PRIMARY_SECCOUNT 0x1F2
+#define ATA_PRIMARY_LBA_LO 0x1F3
+#define ATA_PRIMARY_LBA_MID 0x1F4
+#define ATA_PRIMARY_LBA_HI 0x1F5
+#define ATA_PRIMARY_DRIVE_HEAD 0x1F6
 #define ATA_PRIMARY_COMM_REGSTAT 0x1F7
-#define ATA_PRIMARY_ALTSTAT_DCR  0x3F6
+#define ATA_PRIMARY_ALTSTAT_DCR 0x3F6
 
-
-#define STAT_ERR  (1 << 0) // Indicates an error occurred. Send a new command to clear it
-#define STAT_DRQ  (1 << 3) // Set when the drive has PIO data to transfer, or is ready to accept PIO data.
-#define STAT_SRV  (1 << 4) // Overlapped Mode Service Request.
-#define STAT_DF   (1 << 5) // Drive Fault Error (does not set ERR).
-#define STAT_RDY  (1 << 6) // Bit is clear when drive is spun down, or after an error. Set otherwise.
-#define STAT_BSY  (1 << 7) // Indicates the drive is preparing to send/receive data (wait for it to clear).
-                           // In case of 'hang' (it never clears), do a software reset.
-
+#define STAT_ERR (1 << 0) // Indicates an error occurred. Send a new command to clear it
+#define STAT_DRQ (1 << 3) // Set when the drive has PIO data to transfer, or is ready to accept PIO data.
+#define STAT_SRV (1 << 4) // Overlapped Mode Service Request.
+#define STAT_DF (1 << 5)  // Drive Fault Error (does not set ERR).
+#define STAT_RDY (1 << 6) // Bit is clear when drive is spun down, or after an error. Set otherwise.
+#define STAT_BSY (1 << 7) // Indicates the drive is preparing to send/receive data (wait for it to clear).
+                          // In case of 'hang' (it never clears), do a software reset.
 
 /**
  * To use the IDENTIFY command, select a target drive by sending 0xA0 for the master drive,
@@ -41,7 +41,8 @@
  * Read 256 16-bit values, and store them.
  */
 
-uint8_t identify() {
+uint8_t identify()
+{
     port_byte_in(ATA_PRIMARY_COMM_REGSTAT);
     port_byte_out(ATA_PRIMARY_DRIVE_HEAD, 0xA0);
     port_byte_in(ATA_PRIMARY_COMM_REGSTAT);
@@ -59,50 +60,54 @@ uint8_t identify() {
     // Read the status port. If it's zero, the drive does not exist.
     uint8_t status = port_byte_in(ATA_PRIMARY_COMM_REGSTAT);
 
-    console_pre_print("ATA: Waiting for status.\n");
-    while(status & STAT_BSY) {
+    console_pre_print("ATA: waiting for status\n");
+    while (status & STAT_BSY)
+    {
         uint32_t i = 0;
-        while(1) {
-            // printf("Printing stuff %d\n", i);
+        while (1)
+        {
             i++;
         }
-        for(i = 0; i < 0x0FFFFFFF; i++) {}
-        console_pre_print("ATA: Checking regstat.\n");
+        for (i = 0; i < 0x0FFFFFFF; i++)
+        {
+        }
+        console_pre_print("ATA: checking regstat.\n");
         status = port_byte_in(ATA_PRIMARY_COMM_REGSTAT);
     }
-    
-    if(status == 0) return 0;
 
-    console_pre_print("ATA: Status indicates presence of a drive. Polling while STAT_BSY... ");
-    while(status & STAT_BSY) {
-      console_pre_print("\nport_byte_in(ATA_PRIMARY_COMM_REGSTAT);... ");
-      status = port_byte_in(ATA_PRIMARY_COMM_REGSTAT);
+    if (status == 0)
+        return 0;
+
+    console_pre_print("ATA: status indicates presence of a drive\n");
+    while (status & STAT_BSY)
+    {
+        status = port_byte_in(ATA_PRIMARY_COMM_REGSTAT);
     }
-    console_pre_print("Done.\n");
 
     uint8_t mid = port_byte_in(ATA_PRIMARY_LBA_MID);
     uint8_t hi = port_byte_in(ATA_PRIMARY_LBA_HI);
-    if(mid || hi) {
+    if (mid || hi)
+    {
         // The drive is not ATA. (Who knows what it is.)
         return 0;
     }
 
-    console_pre_print("ATA: Waiting for ERR or DRQ.\n");
+    console_pre_print("ATA: waiting for ERR or DRQ.\n");
     // Wait for ERR or DRQ
-    while(!(status & (STAT_ERR | STAT_DRQ))) {
+    while (!(status & (STAT_ERR | STAT_DRQ)))
+    {
         status = port_byte_in(ATA_PRIMARY_COMM_REGSTAT);
     }
 
-    if(status & STAT_ERR) {
+    if (status & STAT_ERR)
+    {
         // There was an error on the drive. Forget about it.
         return 0;
     }
 
-    console_pre_print("ATA: Reading IDENTIFY structure.\n");
+    console_pre_print("ATA: reading IDENTIFY structure.\n");
     uint8_t buff[256 * 2];
     insw(ATA_PRIMARY_DATA, buff, 256);
-    console_pre_print("ATA: Success. Disk is ready to go.\n");
-    // We read it!
     return 1;
 }
 
@@ -121,8 +126,8 @@ uint8_t identify() {
  *     Then loop back to waiting for the next IRQ (or poll again -- see next note) for each successive sector.
  */
 
-
-void ata_pio_read28(uint32_t LBA, uint8_t sectorcount, uint8_t *target) {
+void ata_pio_read28(uint32_t LBA, uint8_t sectorcount, uint8_t *target)
+{
     // HARD CODE MASTER (for now)
     port_byte_out(ATA_PRIMARY_DRIVE_HEAD, 0xE0 | ((LBA >> 24) & 0x0F));
     port_byte_out(ATA_PRIMARY_ERR, 0x00);
@@ -133,11 +138,14 @@ void ata_pio_read28(uint32_t LBA, uint8_t sectorcount, uint8_t *target) {
     port_byte_out(ATA_PRIMARY_COMM_REGSTAT, 0x20);
 
     uint8_t i;
-    for(i = 0; i < sectorcount; i++) {
+    for (i = 0; i < sectorcount; i++)
+    {
         // POLL!
-        while(1) {
+        while (1)
+        {
             uint8_t status = port_byte_in(ATA_PRIMARY_COMM_REGSTAT);
-            if(status & STAT_DRQ) {
+            if (status & STAT_DRQ)
+            {
                 // Drive is ready to transfer data!
                 break;
             }
@@ -146,7 +154,6 @@ void ata_pio_read28(uint32_t LBA, uint8_t sectorcount, uint8_t *target) {
         insw(ATA_PRIMARY_DATA, (void *)target, 256);
         target += 256;
     }
-
 }
 
 /**
@@ -164,26 +171,29 @@ void ata_pio_read28(uint32_t LBA, uint8_t sectorcount, uint8_t *target) {
  * Send the "READ SECTORS EXT" command (0x24) to port 0x1F7: port_byte_out(0x1F7, 0x24)
  */
 
-int ata_pio_read48(uint64_t LBA, uint16_t sectorcount, uint8_t *target) {
+int ata_pio_read48(uint64_t LBA, uint16_t sectorcount, uint8_t *target)
+{
     // HARD CODE MASTER (for now)
-    port_byte_out(ATA_PRIMARY_DRIVE_HEAD, 0x40);                     // Select master
-    port_byte_out(ATA_PRIMARY_SECCOUNT, (sectorcount >> 8) & 0xFF ); // sectorcount high
-    port_byte_out(ATA_PRIMARY_LBA_LO, (LBA >> 24) & 0xFF);           // LBA4
-    port_byte_out(ATA_PRIMARY_LBA_MID, (LBA >> 32) & 0xFF);          // LBA5
-    port_byte_out(ATA_PRIMARY_LBA_HI, (LBA >> 40) & 0xFF);           // LBA6
-    port_byte_out(ATA_PRIMARY_SECCOUNT, sectorcount & 0xFF);         // sectorcount low
-    port_byte_out(ATA_PRIMARY_LBA_LO, LBA & 0xFF);                   // LBA1
-    port_byte_out(ATA_PRIMARY_LBA_MID, (LBA >> 8) & 0xFF);           // LBA2
-    port_byte_out(ATA_PRIMARY_LBA_HI, (LBA >> 16) & 0xFF);           // LBA3
-    port_byte_out(ATA_PRIMARY_COMM_REGSTAT, 0x24);                   // READ SECTORS EXT
-
+    port_byte_out(ATA_PRIMARY_DRIVE_HEAD, 0x40);                    // Select master
+    port_byte_out(ATA_PRIMARY_SECCOUNT, (sectorcount >> 8) & 0xFF); // sectorcount high
+    port_byte_out(ATA_PRIMARY_LBA_LO, (LBA >> 24) & 0xFF);          // LBA4
+    port_byte_out(ATA_PRIMARY_LBA_MID, (LBA >> 32) & 0xFF);         // LBA5
+    port_byte_out(ATA_PRIMARY_LBA_HI, (LBA >> 40) & 0xFF);          // LBA6
+    port_byte_out(ATA_PRIMARY_SECCOUNT, sectorcount & 0xFF);        // sectorcount low
+    port_byte_out(ATA_PRIMARY_LBA_LO, LBA & 0xFF);                  // LBA1
+    port_byte_out(ATA_PRIMARY_LBA_MID, (LBA >> 8) & 0xFF);          // LBA2
+    port_byte_out(ATA_PRIMARY_LBA_HI, (LBA >> 16) & 0xFF);          // LBA3
+    port_byte_out(ATA_PRIMARY_COMM_REGSTAT, 0x24);                  // READ SECTORS EXT
 
     uint8_t i;
-    for(i = 0; i < sectorcount; i++) {
+    for (i = 0; i < sectorcount; i++)
+    {
         // POLL!
-        while(1) {
+        while (1)
+        {
             uint8_t status = port_byte_in(ATA_PRIMARY_COMM_REGSTAT);
-            if(status & STAT_DRQ) {
+            if (status & STAT_DRQ)
+            {
                 // Drive is ready to transfer data!
                 break;
             }
@@ -192,7 +202,6 @@ int ata_pio_read48(uint64_t LBA, uint16_t sectorcount, uint8_t *target) {
         insw(ATA_PRIMARY_DATA, (void *)target, 256);
         target += 256;
     }
-
 }
 
 /**
@@ -200,30 +209,35 @@ int ata_pio_read48(uint64_t LBA, uint16_t sectorcount, uint8_t *target) {
  * (As before, do not use REP OUTSW when writing.) And remember to do a Cache Flush after
  * each write command completes.
  */
-void ata_pio_write48(uint64_t LBA, uint16_t sectorcount, uint8_t *target) {
+void ata_pio_write48(uint64_t LBA, uint16_t sectorcount, uint8_t *target)
+{
 
     // HARD CODE MASTER (for now)
-    port_byte_out(ATA_PRIMARY_DRIVE_HEAD, 0x40);                     // Select master
-    port_byte_out(ATA_PRIMARY_SECCOUNT, (sectorcount >> 8) & 0xFF ); // sectorcount high
-    port_byte_out(ATA_PRIMARY_LBA_LO, (LBA >> 24) & 0xFF);           // LBA4
-    port_byte_out(ATA_PRIMARY_LBA_MID, (LBA >> 32) & 0xFF);          // LBA5
-    port_byte_out(ATA_PRIMARY_LBA_HI, (LBA >> 40) & 0xFF);           // LBA6
-    port_byte_out(ATA_PRIMARY_SECCOUNT, sectorcount & 0xFF);         // sectorcount low
-    port_byte_out(ATA_PRIMARY_LBA_LO, LBA & 0xFF);                   // LBA1
-    port_byte_out(ATA_PRIMARY_LBA_MID, (LBA >> 8) & 0xFF);           // LBA2
-    port_byte_out(ATA_PRIMARY_LBA_HI, (LBA >> 16) & 0xFF);           // LBA3
-    port_byte_out(ATA_PRIMARY_COMM_REGSTAT, 0x34);                   // READ SECTORS EXT
+    port_byte_out(ATA_PRIMARY_DRIVE_HEAD, 0x40);                    // Select master
+    port_byte_out(ATA_PRIMARY_SECCOUNT, (sectorcount >> 8) & 0xFF); // sectorcount high
+    port_byte_out(ATA_PRIMARY_LBA_LO, (LBA >> 24) & 0xFF);          // LBA4
+    port_byte_out(ATA_PRIMARY_LBA_MID, (LBA >> 32) & 0xFF);         // LBA5
+    port_byte_out(ATA_PRIMARY_LBA_HI, (LBA >> 40) & 0xFF);          // LBA6
+    port_byte_out(ATA_PRIMARY_SECCOUNT, sectorcount & 0xFF);        // sectorcount low
+    port_byte_out(ATA_PRIMARY_LBA_LO, LBA & 0xFF);                  // LBA1
+    port_byte_out(ATA_PRIMARY_LBA_MID, (LBA >> 8) & 0xFF);          // LBA2
+    port_byte_out(ATA_PRIMARY_LBA_HI, (LBA >> 16) & 0xFF);          // LBA3
+    port_byte_out(ATA_PRIMARY_COMM_REGSTAT, 0x34);                  // READ SECTORS EXT
 
     uint8_t i;
-    for(i = 0; i < sectorcount; i++) {
+    for (i = 0; i < sectorcount; i++)
+    {
         // POLL!
-        while(1) {
+        while (1)
+        {
             uint8_t status = port_byte_in(ATA_PRIMARY_COMM_REGSTAT);
-            if(status & STAT_DRQ) {
+            if (status & STAT_DRQ)
+            {
                 // Drive is ready to transfer data!
                 break;
             }
-            else if(status & STAT_ERR) {
+            else if (status & STAT_ERR)
+            {
                 console_pre_print("DISK SET ERROR STATUS!");
             }
         }
@@ -235,5 +249,7 @@ void ata_pio_write48(uint64_t LBA, uint16_t sectorcount, uint8_t *target) {
     // Flush the cache.
     port_byte_out(ATA_PRIMARY_COMM_REGSTAT, 0xE7);
     // Poll for BSY.
-    while(port_byte_in(ATA_PRIMARY_COMM_REGSTAT) & STAT_BSY) {}
+    while (port_byte_in(ATA_PRIMARY_COMM_REGSTAT) & STAT_BSY)
+    {
+    }
 }
