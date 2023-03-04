@@ -292,8 +292,17 @@ vfs_file *vfs_cat_dir(char *dirname)
   for (int i = 0; i < current_top_node->node_count; i++)
   {
     node = (fs_node *)current_top_node->child[i];
-    char *trimmed = (char *)malloc(strlen(node->name));
-    trimwhitespace(trimmed, strlen(node->name), (char *)&node->name);
+    char *trimmed = (char *)malloc(strlen(node->name) + 1);
+    memcpy(node->name, trimmed, strlen(node->name));
+
+    // for some reason trimwhitespace is removing the last character if there are no
+    // trailing whitespaces, so we have to manually check if there are any before calling
+    // trimwhitespace
+    if (trimmed[strlen(node->name) - 1] == ' ')
+    {
+      trimwhitespace(trimmed, strlen(node->name), (char *)&node->name);
+    }
+
     if (strcmp(trimmed, dirname) == 0 && (node->type == 0x20 || node->type == 0x01))
     {
       found = 1;
@@ -307,7 +316,7 @@ vfs_file *vfs_cat_dir(char *dirname)
     return NULL;
   }
 
-  vfs_file *ret = (vfs_file*)malloc(sizeof(vfs_file));
+  vfs_file *ret = (vfs_file *)malloc(sizeof(vfs_file));
   ret->size = node->size;
   ret->read_size = node->size + vfs_boot_record->bytes_per_sector;
   ret->fptr = (char *)malloc(node->size + vfs_boot_record->bytes_per_sector);
