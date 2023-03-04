@@ -182,9 +182,14 @@ void gr_print(char character)
 
 	if (character == '\n')
 	{
+		// This is a pretty rough hack. refactor this!
+		if ((windowctx->cursor_y + 8) > GR_HEIGHT)
+		{
+			gr_window_scroll();
+		}
 
-		windowctx->cursor_x = 0;
 		windowctx->cursor_y += 8;
+		windowctx->cursor_x = 0;
 	}
 	else if (character == 0x08)
 	{

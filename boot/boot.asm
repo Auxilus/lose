@@ -20,13 +20,12 @@ KERNEL_OFFSET equ 0x8000 ; This should match the value in Makefile Ttext
 
 	; set graphics mode 12h (640x480x16)
     ; not sure if ax and bx have to be restored
-	push ax
-	push bx
+    ; don't care about the cycles right now, push everything!
+	pusha
 	mov ax, 0x4f02 ; set VESA-Compliant video modes
 	mov bx, 0x12
 	int 0x10
-	pop bx
-	pop ax
+	popa
 
     call load_kernel ; read the kernel from disk
     call detect_pmm
