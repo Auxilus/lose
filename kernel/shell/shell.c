@@ -232,7 +232,8 @@ int handle_command()
     {
       gr_window_print("\n");
       gr_window_print(ret->fptr);
-      free(ret->read_size);
+      // this is causing the issue in cmd arg parsing. free is ovverriding the cmd buffer
+      // free(ret->read_size);
       gr_window_print("\n");
     }
     else

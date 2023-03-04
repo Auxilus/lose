@@ -308,7 +308,6 @@ vfs_file *vfs_cat_dir(char *dirname)
       found = 1;
       break;
     }
-    free(strlen(node->name));
   }
 
   if (!found)
