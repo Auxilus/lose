@@ -27,7 +27,7 @@
 #define YELLOW				14
 #define WHITE					15
 
-#define GR_FC WHITE
+#define GR_FC LTGREEN
 
 typedef struct {
 	int cursor_x;
