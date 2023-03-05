@@ -8,9 +8,9 @@ void pmm_dump(void)
 {
 	console_pre_print("MEMORY: detecting memory\n");
 
-	// memory map is stored at 0xfe00 by the bootloader (pmm.asm) using int 0x15
-	uint32_t total_regions = *(uint32_t*)0xfe00;
-	SMAP_entry_t *smaps = (SMAP_entry_t *)0xfe04;
+	// memory map is stored at 0x1fe00 by the bootloader (pmm.asm) using int 0x15
+	uint32_t total_regions = *(uint32_t*)0x1fe00;
+	SMAP_entry_t *smaps = (SMAP_entry_t *)0x1fe04;
 
 	for (uint32_t region = 0; region < total_regions; region++, smaps++) {
 		char *message = (char*)malloc(80); // 80 should be enough, right?
