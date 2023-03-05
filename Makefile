@@ -9,7 +9,7 @@ KERNEL_OFFSET = 0x8000
 CC = i386-elf-gcc
 GDB = i386-elf-gdb
 CFLAGS = -g -fcommon
-QEMU_OPTIONS = -d cpu_reset,guest_errors -no-reboot -serial stdio -rtc base=localtime \
+QEMU_OPTIONS = -d cpu_reset -no-reboot -serial stdio -rtc base=localtime \
 							 -drive file=lose.fat,index=0,media=disk,format=raw,if=ide \
 							 -boot d \
 							 -netdev user,id=n1,hostfwd=tcp::5555-:22 -device rtl8139,netdev=n1

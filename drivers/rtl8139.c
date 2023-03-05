@@ -9,6 +9,20 @@
 static void rtl8139_callback(registers_t *regs)
 {
   console_pre_print("NET (RTL8139): activity\n");
+  char bar0[80];
+  sprintf(bar0, "NET (RTL8139): base 0x%04x\n", rtl8139_io_base);
+  console_pre_print(bar0);
+  uint16_t status = port_word_in(rtl8139_io_base + 0x3e);
+  if (status & RTL8139_TOK)
+  {
+    console_pre_print("NET (RTL8139): Packet sent\n");
+  }
+  if (status & RTL8139_ROK)
+  {
+    console_pre_print("NET (RTL8139): Received packet\n");
+  }
+
+  port_word_out(rtl8139_io_base + 0x3E, 0x05);
 }
 
 int rtl8139_init(void)

@@ -12,6 +12,8 @@
 #define RTL8139_ISR 0x3E
 #define RTL8139_CONFIG0 0x51
 #define RTL8139_CONFIG1 0x52
+#define RTL8139_TOK (1 << 2)
+#define RTL8139_ROK (1 << 0)
 
 static uint32_t rtl8139_bar_type;
 static uint32_t rtl8139_io_base;
