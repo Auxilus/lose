@@ -28,6 +28,24 @@ uint16_t pci_read_word(uint16_t bus, uint16_t slot, uint16_t func, uint16_t offs
 	return (tmp);
 }
 
+uint16_t pci_write_word(uint16_t bus, uint16_t device, uint16_t function, uint16_t offset, uint16_t data)
+{
+	uint64_t address;
+	uint64_t lbus = (uint64_t)bus;
+	uint64_t lslot = (uint64_t)device;
+	uint64_t lfunc = (uint64_t)function;
+	uint32_t tmp = 0;
+	address = (uint64_t)((lbus << 16) | (lslot << 11) |
+											 (lfunc << 8) | (offset & 0xfc) | ((uint32_t)0x80000000));
+	port_long_out(0xCF8, address);
+	tmp = (port_long_in(0xCFC));
+	tmp &= ~(0xFFFF << ((offset & 0x2) * 8));			 // reset the word at the offset
+	tmp |= data << ((offset & 0x2) * 8);					 // write the data at the offset
+	port_long_out(0xCF8, address);											 // set address again just to be sure
+	port_long_out(0xCFC, tmp);													 // write data
+	return pci_read_word(bus, device, function, offset); // read back data;
+}
+
 uint16_t get_vendor_id(uint16_t bus, uint16_t device, uint16_t function)
 {
 	uint32_t r0 = pci_read_word(bus, device, function, 0);

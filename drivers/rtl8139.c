@@ -59,7 +59,19 @@ int rtl8139_init(void)
     port_byte_out(rtl8139_io_base + RTL8139_RBSTART, (uint32_t)rtl8139_rx_buffer);
     port_word_out(rtl8139_io_base + RTL8139_IMR, 0x0005);
     port_long_out(rtl8139_io_base + 0x44, 0xf | (1 << 7));
-    port_byte_out(rtl8139_io_base + 0x37, 0x0C);
+    port_byte_out(rtl8139_io_base + RTL8139_CMD, 0x0C);
+    uint16_t command_data = pci_read_word(devices->devices[0]->bus,
+                                          devices->devices[0]->device,
+                                          devices->devices[0]->function,
+                                          0x04);
+    char data[80];
+    sprintf(data, "NET (RTL8139): command register 0x%02x\n", command_data);
+    console_pre_print(data);
+    // uint16_t readback = pci_write_word(devices->devices[0]->bus,
+    //                                    devices->devices[0]->device,
+    //                                    devices->devices[0]->function,
+    //                                    0x04,
+    //                                    0);
     register_interrupt_handler(IRQ0 + devices->devices[0]->interrupt_line, rtl8139_callback);
   }
 }

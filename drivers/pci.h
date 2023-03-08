@@ -59,6 +59,9 @@ static uint32_t devs;
 static pci_driver **pci_drivers;
 static uint32_t drivs;
 
+uint16_t pci_read_word(uint16_t bus, uint16_t slot, uint16_t func, uint16_t offset);
+uint16_t pci_write_word(uint16_t bus, uint16_t device, uint16_t function, uint16_t offset, uint16_t data);
+
 void pci_init();
 void pci_proc_dump();
 pci_device_search* pci_find_by_type(uint16_t class_id, uint16_t sub_class_id, uint16_t prog_if);
