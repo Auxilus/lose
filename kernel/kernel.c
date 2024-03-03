@@ -4,6 +4,7 @@
 #include "../drivers/ports.h"
 #include "../drivers/serial.h"
 #include "../drivers/memory.h"
+#include "../drivers/rtl8139.h"
 #include "../drivers/rtc.h"
 #include "../utils/mem.h"
 #include "../utils/console.h"
@@ -62,6 +63,10 @@ void main()
 	sprintf(vfs_msg, "KERNEL: %s\n", ((fs_node *)root_node->volume)->name);
 	console_pre_print(vfs_msg);
 
+	// init rtl8139 network card
+	rtl8139_init();
+
+	// drop to shell
 	shell_init();
 
 	// gr_print_string(520, 430, "VGA mode 0x12\nfont test\n640x480x16");

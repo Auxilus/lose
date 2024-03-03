@@ -43,7 +43,7 @@ load_kernel:
     ; load kernel at KERNEL_OFFSET
     ; for now, the number of sectors has to be hard-coded, this should be refactored in the future
     mov bx, KERNEL_OFFSET
-    mov dh, 61 ; This needs to be changed once in a while
+    mov dh, 63 ; This needs to be changed once in a while
     mov dl, [BOOT_DRIVE]
     call disk_load
     ret

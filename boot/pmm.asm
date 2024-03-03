@@ -1,8 +1,8 @@
 [bits 16]
 
-mmap_ent equ 0xfe00 ; the number of entries will be stored at 0xfe00
+mmap_ent equ 0x1fe00 ; the number of entries will be stored at 0xfe00
 detect_pmm:
-	mov di, 0xfe04			; Set di to 0xf904. Otherwise this code will get stuck in `int 0x15` after some entries are fetched 
+	mov di, 0x1fe04			; Set di to 0xfe04. Otherwise this code will get stuck in `int 0x15` after some entries are fetched 
 	xor ebx, ebx			; ebx must be 0 to start
 	xor bp, bp				; keep an entry count in bp
 	mov edx, 0x0534D4150	; Place "SMAP" into edx

@@ -1,4 +1,3 @@
-/** @author Levente Kurusa <levex@linux.com> **/
 #ifndef __PCI_H_
 #define __PCI_H_
 #include "../cpu/types.h"
@@ -27,8 +26,9 @@ typedef struct
 	uint16_t subId;
 	uint32_t ExpROMBase;
 	uint8_t capPtr;
+	uint8_t interrupt_line;
 	struct __pci_driver *driver;
-} pci_device;
+} __attribute__((packed)) pci_device;
 
 typedef struct
 {

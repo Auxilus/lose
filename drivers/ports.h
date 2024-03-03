@@ -5,8 +5,8 @@
 
 u8 port_byte_in(u16 port);
 u16 port_word_in(u16 port);
-u32 inportl(u16 portid);
-void outportl(u16 portid, u32 value);
+u32 port_long_in(u16 portid);
+void port_long_out(u16 portid, u32 value);
 void port_byte_out(u16 port, u8 data);
 void port_word_out(u16 port, u16 data);
 static inline void outsw(uint16_t port, void *buf, int ns)

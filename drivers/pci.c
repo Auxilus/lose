@@ -22,9 +22,9 @@ uint16_t pci_read_word(uint16_t bus, uint16_t slot, uint16_t func, uint16_t offs
 	uint64_t lfunc = (uint64_t)func;
 	uint16_t tmp = 0;
 	address = (uint64_t)((lbus << 16) | (lslot << 11) |
-				(lfunc << 8) | (offset & 0xfc) | ((uint32_t)0x80000000));
-	outportl(0xCF8, address);
-	tmp = (uint16_t)((inportl(0xCFC) >> ((offset & 2) * 8)) & 0xffff);
+											 (lfunc << 8) | (offset & 0xfc) | ((uint32_t)0x80000000));
+	port_long_out(0xCF8, address);
+	tmp = (uint16_t)((port_long_in(0xCFC) >> ((offset & 2) * 8)) & 0xffff);
 	return (tmp);
 }
 
@@ -56,6 +56,22 @@ uint16_t get_class_id(uint16_t bus, uint16_t device, uint16_t function)
 {
 	uint32_t r0 = pci_read_word(bus, device, function, 0xA);
 	return (r0 & ~0x00FF) >> 8;
+}
+
+uint32_t get_bar0(uint16_t bus, uint16_t device, uint16_t function)
+{
+	uint32_t bar = 0x0;
+	uint16_t bar50 = pci_read_word(bus, device, function, 0x10);
+	uint16_t bar51 = pci_read_word(bus, device, function, 0x12);
+	bar |= bar50;
+	bar |= bar51 << 16;
+	return bar;
+}
+
+uint16_t get_interrupt_line(uint16_t bus, uint16_t device, uint16_t function)
+{
+	uint16_t r0 = pci_read_word(bus, device, function, 0x3c);
+	return r0;
 }
 
 uint32_t getBar5(uint16_t bus, uint16_t device, uint16_t function)
@@ -100,8 +116,9 @@ void pci_probe()
 				pdev->classId = get_class_id(bus, slot, function);
 				pdev->subClassId = get_subclass_id(bus, slot, function);
 				pdev->headerType = get_header_type(bus, slot, function);
-				;
 				pdev->progIF = get_prog_if(bus, slot, function);
+				pdev->BAR0 = get_bar0(bus, slot, function);
+				pdev->interrupt_line = (uint8_t)get_interrupt_line(bus, slot, function);
 
 				// if (pdev->headerType == 0x0)
 				// {
@@ -161,11 +178,12 @@ void pci_proc_dump()
 		// const char *vendor = get_vendor_name(pci_dev->vendor);
 
 		// sprintf(message, "PCI: %02u:%02u.%u 0x%04x:0x%04x 0x%04x 0x%04x %s (%s)\n",
-		sprintf(message, "PCI: 0x%04x:0x%04x 0x%04x 0x%04x %s (%s)\n",
+		sprintf(message, "PCI: 0x%04x:0x%04x 0x%04x 0x%04x 0x%04x %s (%s)\n",
 						pci_dev->classId,
 						pci_dev->subClassId,
 						pci_dev->vendor,
 						pci_dev->device,
+						pci_dev->progIF,
 						device_classes[pci_dev->classId],
 						get_subclass_name(pci_dev->classId, pci_dev->subClassId));
 		// sprintf(message, "PCI: %02u:%02u.%u [%-23s] [%-25s] [%-10s] [%s] 0x%x\n",
@@ -186,6 +204,6 @@ void pci_proc_dump()
 
 	char *message = (char *)malloc(30);
 	sprintf(message, "PCI: found %u devices\n", devs);
-	
+
 	console_pre_print(message);
 }
