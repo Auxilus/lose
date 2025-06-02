@@ -1,8 +1,8 @@
 ; Add BIOS load offset
 [org 0x7c00]
 
-
 KERNEL_OFFSET equ 0x8000 ; This should match the value in Makefile Ttext
+KERNEL_SIZE equ 63
 
     ; store the boot drive additional disk real operations
     ; BIOD will set this in dl
@@ -25,11 +25,11 @@ KERNEL_OFFSET equ 0x8000 ; This should match the value in Makefile Ttext
 	; set graphics mode 12h (640x480x16)
     ; not sure if ax and bx have to be restored
     ; don't care about the cycles right now, push everything!
-	pusha
+	; pusha
 	mov ax, 0x4f02 ; set VESA-Compliant video modes
 	mov bx, 0x12
 	int 0x10
-	popa
+	; popa
 
     call load_kernel ; read the kernel from disk
     call detect_pmm
@@ -47,7 +47,7 @@ load_kernel:
     ; load kernel at KERNEL_OFFSET
     ; for now, the number of sectors has to be hard-coded, this should be refactored in the future
     mov bx, KERNEL_OFFSET
-    mov dh, 63 ; This needs to be changed once in a while
+    mov dh, KERNEL_SIZE ; This needs to be changed once in a while
     mov dl, [BOOT_DRIVE]
     call disk_load
     ret

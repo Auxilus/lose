@@ -1,5 +1,6 @@
 #include "vga.h"
 #include "ports.h"
+#include "../utils/mem.h"
 
 unsigned char *fb = (unsigned char *)0xA0000;
 
@@ -95,4 +96,28 @@ void vga_write_registers(void)
 	uint8_t mode = port_byte_in(VGA_GC_DATA) & 0xF4;
 	mode |= ((0 & 1) << 3) | (2 & 3);
 	port_byte_out(VGA_GC_DATA, mode);
+}
+
+static inline uint8_t vga_read(uint16_t port, uint8_t idx)
+{
+    port_word_out(port, idx);          /* write index            */
+    return port_byte_in(port + 1);     /* read data              */
+}
+
+static inline void vga_write(uint16_t port, uint8_t idx, uint8_t val)
+{
+    port_word_out(port, idx);      /* latch index               */
+    port_byte_out(port + 1, val);  /* then write the data byte  */
+}
+
+void vga_clear_screen(void)
+{
+	vga_write(VGA_SC_IDX, 0x02, 0x0F);   /* Map-Mask: enable planes 0-3 */
+  vga_write(VGA_GC_IDX, 0x05, 0x00);   /* Graphics-Mode: write mode 0 */
+  vga_write(VGA_GC_IDX, 0x08, 0xFF);   /* Bit-Mask : touch all bits   */
+
+	memset((void *)0xA0000, 0, 0x10000);  /* good enough for C-only build */
+
+	/* restore registers */
+	vga_write_registers();
 }

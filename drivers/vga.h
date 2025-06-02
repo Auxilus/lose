@@ -48,5 +48,6 @@ void vga_write_registers(void);
 void vga_set_pixel(int pos_x, int pos_y, u8 VGA_COLOR);
 int vga_mode12h_pixel(u8 color, u16 x, u16 y);
 void vga_set_plane(u8 p);
+void vga_clear_screen(void);
 
 #endif
