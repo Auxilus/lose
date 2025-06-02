@@ -19,7 +19,7 @@ read_loop:
     mov [NREAD], al ; increment number of sectors read
     popa
     add bx, 0x200 ; increment buffer pointer by 512 bytes (1 sector)
-    cmp byte [NREAD], 61 ; compare with total number of sectors to read
+    cmp byte [NREAD], 63 ; compare with total number of sectors to read
     jl read_loop ; if not done, continue reading
 read_done:
     ret
