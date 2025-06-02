@@ -8,8 +8,12 @@ KERNEL_OFFSET equ 0x8000 ; This should match the value in Makefile Ttext
     ; BIOD will set this in dl
     mov [BOOT_DRIVE], dl
 
-    mov bp, 0x70000
-    mov sp, bp
+    cli                 ; no interrupts while we change SS
+    mov ax, 0x7000      ; segment 0x7000 = 0x70000 linear
+    mov ss, ax
+    mov sp, 0x0000      ; offset within the segment
+    mov bp, sp          ; optional, nice for debuggers
+    sti
 
     ; set graphics mode 13h
 	;push ax
