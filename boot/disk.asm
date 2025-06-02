@@ -2,51 +2,39 @@
 ; load 'dh' sectors from drive 'dl' into ES:BX
 disk_load:
     mov [DRIVE], dl ; save drive number
-    mov [TOTALREAD], dh
+    mov [TOTALREAD], dh ; save total number of sectors to read
     call get_disk_geometry ; get disk geometry
-    mov byte [CURSECTOR], 0x01
+    mov byte [CURSECTOR], 0x01 ; start reading from sector 1 (boot sector is 0)
+
 read_loop:
     call LBAtoCHS
-    call disk_load2
-    pusha
-    xor eax, eax
-    mov al, [CURSECTOR]
-    inc al
-    mov [CURSECTOR], al ; increment current sector
-    xor eax, eax
-    mov al, [NREAD]
-    inc al
-    mov [NREAD], al ; increment number of sectors read
-    popa
-    add bx, 0x200 ; increment buffer pointer by 512 bytes (1 sector)
-    cmp byte [NREAD], 63 ; compare with total number of sectors to read
+    call read_sector
+    inc byte [CURSECTOR] ; increment current logical sector
+    inc byte [NREAD] ; increment number of sectors read
+    add bx, 0x200 ; increment buffer address by 512 bytes (1 sector)
+    mov al, [TOTALREAD]
+    cmp byte [NREAD], al ; compare with total number of sectors to read
     jl read_loop ; if not done, continue reading
+
 read_done:
     ret
 
-disk_load2:
+read_sector:
     pusha
-    ; reading from disk requires setting specific values in all registers
-    ; so we will overwrite our input parameters from 'dx'. Let's save it
-    ; to the stack for later use.
     push dx
 
-    mov ah, 0x02 ; ah <- int 0x13 function. 0x02 = 'read'
-    mov al, 0x01   ; al <- number of sectors to read (0x01 .. 0x80)
-    mov cl, [PHYSECTOR] ; cl <- sector (0x01 .. 0x11)
-                 ; 0x01 is our boot sector, 0x02 is the first 'available' sector
-    mov ch, [CYLINDER] ; ch <- cylinder (0x0 .. 0x3FF, upper 2 bits in 'cl')
-    ; dl <- drive number. Our caller sets it as a parameter and gets it from BIOS
-    ; (0 = floppy, 1 = floppy2, 0x80 = hdd, 0x81 = hdd2)
-    mov dh, [HEAD] ; dh <- head number (0x0 .. 0xF)
+    mov ah, 0x02 ; 0x02 = 'read'
+    mov al, 0x01 ; number of sectors to read (0x01)
+    mov cl, [PHYSECTOR] ; sector
+    mov ch, [CYLINDER] ; cylinder
+    ; mov dl, [DRIVE] ; drive number
+    mov dh, [HEAD] ; head
 
-    ; [es:bx] <- pointer to buffer where the data will be stored
-    ; caller sets it up for us, and it is actually the standard location for int 13h
-    int 0x13      ; BIOS interrupt
-    jc disk_error ; if error (stored in the carry bit)
+    int 0x13
+    jc disk_error
 
     pop dx
-    cmp al, 0x01    ; BIOS also sets 'al' to the # of sectors read. Compare it.
+    cmp al, 0x01 ; make sure that we actually read one sector
     jne sectors_error
     popa
     ret
@@ -65,17 +53,18 @@ disk_loop:
 
 get_disk_geometry:
     pusha
-    push es
-    mov ah, 0x08
+    push es ; int 0x13 seems to modify this
+    mov ah, 0x08 ; 0x08 = get drive parameters
     int 0x13
-    and cx, 0x3f ; save max sectors
+    and cx, 0x3f ; max sectors
     mov [SECTORSPERCYLINDER], cl
-    add dh, 1 ; save max heads
+    add dh, 1 ; max heads
     mov [MAXHEAD], dh
     pop es
     popa
     ret
 
+; converts logical block address (LBA) to cylinder/head/sector (CHS)
 LBAtoCHS:
     pusha
     push es
@@ -91,15 +80,15 @@ LBAtoCHS:
     xor bx, bx
     mov bx, [MAXHEAD]
     div bx
-    mov byte [HEAD], dl
-    mov byte [CYLINDER], al
+    mov [HEAD], dl
+    mov [CYLINDER], al
     pop es
     popa
     ret
 
 SECTORSPERCYLINDER: dw 0x00
 MAXHEAD: db 0
-CURSECTOR: db 0x00 ; current sector, used by disk_load2
+CURSECTOR: db 0x00 ; current sector, used by read_sector
 PHYSECTOR: db 0x00
 CYLINDER: db 0x00
 HEAD: db 0x00
