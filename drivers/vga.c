@@ -113,8 +113,8 @@ static inline void vga_write(uint16_t port, uint8_t idx, uint8_t val)
 void vga_clear_screen(void)
 {
 	vga_write(VGA_SC_IDX, 0x02, 0x0F);   /* Map-Mask: enable planes 0-3 */
-  vga_write(VGA_GC_IDX, 0x05, 0x00);   /* Graphics-Mode: write mode 0 */
-  vga_write(VGA_GC_IDX, 0x08, 0xFF);   /* Bit-Mask : touch all bits   */
+	vga_write(VGA_GC_IDX, 0x05, 0x00);   /* Graphics-Mode: write mode 0 */
+	vga_write(VGA_GC_IDX, 0x08, 0xFF);   /* Bit-Mask : touch all bits   */
 
 	memset((void *)0xA0000, 0, 0x10000);  /* good enough for C-only build */
 
