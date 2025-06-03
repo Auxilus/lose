@@ -9,3 +9,4 @@ iso
 .vscode/settings.json
 kernel.elf
 lose.fat
+*.fat
