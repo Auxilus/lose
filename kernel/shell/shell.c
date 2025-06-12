@@ -10,9 +10,11 @@
 // TEST COMMAND INCLUDES
 #include "../fs/fat12.h"
 #include "../fs/vfs.h"
+#include "../process.h"
 //
 
 int handle_command(void);
+static void shell_command_process(void);
 
 // shell_buffer will have maximum 512 characters.
 // line width is 20, so this should be enough
@@ -41,15 +43,8 @@ void shell_loop(void)
   {
     if (isReturn)
     {
-      int ret = handle_command();
-      if (ret)
-      {
-        memcpy(shell_buffer, last_command, SHELL_BUFFER_MAX);
-      }
-      memset(shell_buffer, (u8)'\0', shell_buffer_loc);
-      shell_buffer_loc = 0;
-      gr_window_print(SHELL_PROMPT);
-      gr_print_character(windowctx->cursor_x, windowctx->cursor_y, '_', 1);
+      process_create(shell_command_process);
+      isReturn = 0;
     }
   }
 }
@@ -90,6 +85,19 @@ void shell_keypress(key_event ke)
     shell_buffer[shell_buffer_loc++] = ke.letter;
   }
   gr_print(ke.letter);
+  gr_print_character(windowctx->cursor_x, windowctx->cursor_y, '_', 1);
+}
+
+static void shell_command_process(void)
+{
+  int ret = handle_command();
+  if (ret)
+  {
+    memcpy(shell_buffer, last_command, SHELL_BUFFER_MAX);
+  }
+  memset(shell_buffer, (u8)'\0', shell_buffer_loc);
+  shell_buffer_loc = 0;
+  gr_window_print(SHELL_PROMPT);
   gr_print_character(windowctx->cursor_x, windowctx->cursor_y, '_', 1);
 }
 
