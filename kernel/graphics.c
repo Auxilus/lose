@@ -230,69 +230,34 @@ void gr_window_scroll(void)
 		return;
 	}
 
-	char *tmp = (char *)malloc((nH) * (nW));
-	memcpy(&windowctx->charbuf[nW], tmp, ((nH) * (nW)) - (nW));
+        memmove(windowctx->charbuf, windowctx->charbuf + nW, nW * (nH - 1));
+        memset(&windowctx->charbuf[(nH - 1) * nW], 0, nW);
 
-	for (int row = 0; row < (nH)-1; row++)
-	{
-		for (int col = 0; col < nW; col++)
-		{
-			char a = windowctx->charbuf[(row * nW) + col];
-			char b = windowctx->charbuf[((row + 1) * nW) + col];
-			if (a == 0 && b == 0)
-			{
-				continue;
-			}
+        for (int row = 0; row < nH; row++)
+        {
+                for (int col = 0; col < nW; col++)
+                {
+                        char a = windowctx->charbuf[(row * nW) + col];
+                        int x = gr_window_get_x(col + (row * (GR_WIDTH) / 8));
+                        int y = gr_window_get_y(col + (row * (GR_WIDTH) / 8));
+                        gr_print_character(x, y, a, 1);
+                }
+        }
 
-			char *bitmapa = font8x8_basic[(int)a];
-			char *bitmapb = font8x8_basic[(int)b];
+        for (int last_col = 0; last_col < nW; last_col++)
+        {
+                char a = windowctx->charbuf[((nH - 1) * nW) + last_col];
+                if (a == '\0')
+                {
+                        continue;
+                }
 
-			int cx, cy;
-			int x = gr_window_get_x(col + (row * (GR_WIDTH) / 8));
-			int y = gr_window_get_y(col + (row * (GR_WIDTH) / 8));
-			for (cx = 0; cx < 8; cx++)
-			{
-				for (cy = 0; cy < 8; cy++)
-				{
-					int seta, setb;
-					seta = bitmapa[cx] & 1 << cy;
-					setb = bitmapb[cx] & 1 << cy;
-					if (seta != setb)
-					{
-						vga_mode12h_pixel((setb && !seta) ? GR_FC : BLACK, (u16)x + cy, (u16)y + cx);
-					}
-				}
-			}
-		}
-	}
+                int x = gr_window_get_x(last_col + (((nH)-1) * (GR_WIDTH) / 8));
+                int y = 472;
+                gr_print_character(x, y, 0, 1);
+        }
 
-	for (int last_col = 0; last_col < nW; last_col++)
-	{
-		char a = windowctx->charbuf[(((nH)-1) * nW) + last_col];
-		if (last_col == '\0')
-		{
-			continue;
-		}
-
-		int cx, cy;
-		char *bitmapa = font8x8_basic[(int)a];
-		int x = gr_window_get_x(last_col + (((nH)-1) * (GR_WIDTH) / 8));
-		int y = 472;
-		for (cx = 0; cx < 8; cx++)
-		{
-			for (cy = 0; cy < 8; cy++)
-			{
-				int seta = bitmapa[cx] & 1 << cy;
-				if (seta)
-				{
-					vga_mode12h_pixel(BLACK, (u16)x + cy, (u16)y + cx);
-				}
-			}
-		}
-	}
-
-	windowctx->charbuf = tmp;
-	windowctx->cursor_y -= 8;
+        windowctx->cursor_y -= 8;
 }
 
 int gr_window_get_buffer_idx(int x, int y)
