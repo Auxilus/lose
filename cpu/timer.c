@@ -2,12 +2,14 @@
 #include "isr.h"
 #include "../drivers/serial.h"
 #include "../utils/console.h"
+#include "../kernel/process.h"
 
 volatile u32 tick = 0;
 
 static void timer_callback(registers_t *regs) {
-	tick++;
-	return;
+        tick++;
+        schedule(regs);
+        return;
 }
 
 void init_timer(u32 freq) {

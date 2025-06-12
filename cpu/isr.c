@@ -5,6 +5,7 @@
 #include "../drivers/serial.h"
 #include "../utils/string.h"
 #include "../utils/console.h"
+#include "../kernel/syscall.h"
 #include "timer.h"
 
 isr_t interrupt_handlers[256];
@@ -44,7 +45,8 @@ void isr_install() {
 	set_idt_gate(28, (u32)isr28);
 	set_idt_gate(29, (u32)isr29);
 	set_idt_gate(30, (u32)isr30);
-	set_idt_gate(31, (u32)isr31);
+        set_idt_gate(31, (u32)isr31);
+        set_idt_gate(128, (u32)isr128);
 
 	// Remap the PIC
 	console_pre_print("INTERRUPT: remapping PIC\n");
@@ -121,10 +123,14 @@ char *exception_messages[] = {
 };
 
 void isr_handler(registers_t *r) {
-	char str[64];
-	sprintf(str, "INTERRUPT: received interrupt: %d [%s]\n", r->int_no, exception_messages[r->int_no]);
-	console_pre_print(str);
-	//r->eip++;
+        if (r->int_no == 128) {
+                syscall_handler(r);
+                return;
+        }
+        char str[64];
+        sprintf(str, "INTERRUPT: received interrupt: %d [%s]\n", r->int_no, exception_messages[r->int_no]);
+        console_pre_print(str);
+        //r->eip++;
 }
 
 void register_interrupt_handler(u8 n, isr_t handler) {
